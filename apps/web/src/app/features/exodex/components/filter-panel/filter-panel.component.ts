@@ -24,55 +24,60 @@ import { SearchInputComponent, FilterChipComponent } from '@exodex/ui-components
       <div class="filter-section">
         <h3>Tipo de planeta</h3>
         <div class="filter-chips">
-          <app-filter-chip
-            *ngFor="let type of planetTypes"
-            [label]="type.label"
-            [selected]="isTypeSelected(type.value)"
-            (selectedChange)="toggleType(type.value)"
-          />
+          @for (type of planetTypes; track type.value) {
+            <app-filter-chip
+              [label]="type.label"
+              [selected]="isTypeSelected(type.value)"
+              (selectedChange)="toggleType(type.value)"
+            />
+          }
         </div>
       </div>
 
       <div class="filter-section">
         <h3>Habitabilidad</h3>
         <div class="filter-chips">
-          <app-filter-chip
-            *ngFor="let h of habitabilityOptions"
-            [label]="h.label"
-            [selected]="isHabitabilitySelected(h.value)"
-            (selectedChange)="toggleHabitability(h.value)"
-          />
+          @for (h of habitabilityOptions; track h.value) {
+            <app-filter-chip
+              [label]="h.label"
+              [selected]="isHabitabilitySelected(h.value)"
+              (selectedChange)="toggleHabitability(h.value)"
+            />
+          }
         </div>
       </div>
 
-      <div class="filter-section" *ngIf="stats() as s">
-        <h3>Año de descubrimiento</h3>
-        <div class="range-inputs">
-          <input
-            type="number"
-            [min]="s.yearRange[0]"
-            [max]="s.yearRange[1]"
-            [value]="filters().discoveryYearRange?.[0] ?? s.yearRange[0]"
-            (change)="updateYearRange($event, 0)"
-          />
-          <span>-</span>
-          <input
-            type="number"
-            [min]="s.yearRange[0]"
-            [max]="s.yearRange[1]"
-            [value]="filters().discoveryYearRange?.[1] ?? s.yearRange[1]"
-            (change)="updateYearRange($event, 1)"
-          />
+      @if (stats(); as s) {
+        <div class="filter-section">
+          <h3>Año de descubrimiento</h3>
+          <div class="range-inputs">
+            <input
+              type="number"
+              [min]="s.yearRange[0]"
+              [max]="s.yearRange[1]"
+              [value]="filters().discoveryYearRange?.[0] ?? s.yearRange[0]"
+              (change)="updateYearRange($event, 0)"
+            />
+            <span>-</span>
+            <input
+              type="number"
+              [min]="s.yearRange[0]"
+              [max]="s.yearRange[1]"
+              [value]="filters().discoveryYearRange?.[1] ?? s.yearRange[1]"
+              (change)="updateYearRange($event, 1)"
+            />
+          </div>
         </div>
-      </div>
+      }
 
-      <button
-        class="clear-btn"
-        *ngIf="filterState.hasActiveFilters()"
-        (click)="filterState.resetFilters()"
-      >
-        Limpiar filtros
-      </button>
+      @if (filterState.hasActiveFilters()) {
+        <button
+          class="clear-btn"
+          (click)="filterState.resetFilters()"
+        >
+          Limpiar filtros
+        </button>
+      }
     </div>
   `,
   styles: `

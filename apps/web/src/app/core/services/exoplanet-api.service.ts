@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, shareReplay, timer } from 'rxjs';
+import { Observable, shareReplay } from 'rxjs';
 import { Exoplanet, ExoplanetFilters, SortState } from '@exodex/shared-types';
 
 interface PaginatedResponse<T> {
@@ -32,9 +32,8 @@ const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutos
   providedIn: 'root',
 })
 export class ExoplanetApiService {
+  private http = inject(HttpClient);
   private cache = new Map<string, { data: unknown; timestamp: number }>();
-
-  constructor(private http: HttpClient) {}
 
   getExoplanets$(
     filters: ExoplanetFilters,

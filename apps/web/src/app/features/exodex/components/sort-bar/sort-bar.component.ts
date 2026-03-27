@@ -12,19 +12,22 @@ import { SortField } from '@exodex/shared-types';
     <div class="sort-bar">
       <span class="sort-label">Ordenar por:</span>
       <div class="sort-options">
-        <button
-          *ngFor="let option of sortOptions"
-          class="sort-btn"
-          [class.active]="sort().field === option.value"
-          [class.asc]="sort().field === option.value && sort().direction === 'asc'"
-          [class.desc]="sort().field === option.value && sort().direction === 'desc'"
-          (click)="toggleSort(option.value)"
-        >
-          {{ option.label }}
-          <span class="sort-arrow" *ngIf="sort().field === option.value">
-            {{ sort().direction === 'asc' ? '↑' : '↓' }}
-          </span>
-        </button>
+        @for (option of sortOptions; track option.value) {
+          <button
+            class="sort-btn"
+            [class.active]="sort().field === option.value"
+            [class.asc]="sort().field === option.value && sort().direction === 'asc'"
+            [class.desc]="sort().field === option.value && sort().direction === 'desc'"
+            (click)="toggleSort(option.value)"
+          >
+            {{ option.label }}
+            @if (sort().field === option.value) {
+              <span class="sort-arrow">
+                {{ sort().direction === 'asc' ? '↑' : '↓' }}
+              </span>
+            }
+          </button>
+        }
       </div>
     </div>
   `,

@@ -25,9 +25,11 @@ import { SearchInputComponent } from '@exodex/ui-components';
       <header class="exodex-header">
         <div class="header-left">
           <h1>Exodex</h1>
-          <span class="planet-count" *ngIf="stats() as s">
-            {{ s.totalCount | number }} exoplanetas
-          </span>
+          @if (stats(); as s) {
+            <span class="planet-count">
+              {{ s.totalCount | number }} exoplanetas
+            </span>
+          }
         </div>
         <div class="header-right">
           <app-search-input

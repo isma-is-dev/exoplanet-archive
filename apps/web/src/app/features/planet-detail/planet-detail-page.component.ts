@@ -12,71 +12,75 @@ import { PlanetAvatarComponent, StatBadgeComponent, StatRowComponent } from '@ex
   imports: [CommonModule, PlanetAvatarComponent, StatBadgeComponent, StatRowComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="planet-detail" *ngIf="planet() as p">
-      <button class="back-btn" (click)="goBack()">
-        ← Volver al listado
-      </button>
+    @if (planet(); as p) {
+      <div class="planet-detail">
+        <button class="back-btn" (click)="goBack()">
+          ← Volver al listado
+        </button>
 
-      <div class="detail-layout">
-        <div class="detail-left">
-          <div class="planet-avatar-container">
-            <app-planet-avatar [planet]="p" size="detail" />
+        <div class="detail-layout">
+          <div class="detail-left">
+            <div class="planet-avatar-container">
+              <app-planet-avatar [planet]="p" size="detail" />
+            </div>
+            <h1 class="planet-name">{{ p.name }}</h1>
+            <div class="planet-meta">
+              <span class="planet-index">#{{ p.index | number:'4.0-0' }}</span>
+              <span class="planet-star">{{ p.hostStar }}</span>
+            </div>
+            <div class="planet-badges">
+              <app-stat-badge type="type" [value]="p.planetType" />
+              <app-stat-badge type="habitability" [value]="p.habitabilityClass" />
+            </div>
+            <div class="discovery-year">Descubierto en {{ p.discoveryYear }}</div>
           </div>
-          <h1 class="planet-name">{{ p.name }}</h1>
-          <div class="planet-meta">
-            <span class="planet-index">#{{ p.index | number:'4.0-0' }}</span>
-            <span class="planet-star">{{ p.hostStar }}</span>
+
+          <div class="detail-right">
+            <section class="detail-section">
+              <h3>Propiedades orbitales</h3>
+              <app-stat-row label="Período orbital" [value]="p.orbitalPeriodDays" unit="días" />
+              <app-stat-row label="Semieje mayor" [value]="p.semiMajorAxisAU" unit="UA" />
+              <app-stat-row label="Excentricidad" [value]="p.eccentricity" />
+              <app-stat-row label="Inclinación" [value]="p.inclinationDeg" unit="°" />
+            </section>
+
+            <section class="detail-section">
+              <h3>Propiedades físicas</h3>
+              <app-stat-row label="Radio" [value]="p.radiusEarth" unit="R⊕" />
+              <app-stat-row label="Masa" [value]="p.massEarth" unit="M⊕" />
+              <app-stat-row label="Densidad" [value]="p.densityGCC" unit="g/cm³" />
+              <app-stat-row label="Gravedad" [value]="p.gravityMS2" unit="m/s²" />
+              <app-stat-row label="Temperatura de equilibrio" [value]="p.equilibriumTempK" unit="K" />
+            </section>
+
+            <section class="detail-section">
+              <h3>Estrella huésped</h3>
+              <app-stat-row label="Temperatura" [value]="p.stellarTempK" unit="K" />
+              <app-stat-row label="Radio" [value]="p.stellarRadiusSun" unit="R☉" />
+              <app-stat-row label="Masa" [value]="p.stellarMassSun" unit="M☉" />
+              <app-stat-row label="Metalicidad" [value]="p.stellarMetallicity" />
+              <app-stat-row label="Edad" [value]="p.stellarAge" unit="Gyr" />
+            </section>
+
+            <section class="detail-section">
+              <h3>Descubrimiento</h3>
+              <app-stat-row label="Método" [value]="p.discoveryMethod" />
+              <app-stat-row label="Año" [value]="p.discoveryYear" />
+              <app-stat-row label="Facilidad" [value]="p.discoveryFacility" />
+              <app-stat-row label="Telescopio" [value]="p.telescope" />
+            </section>
           </div>
-          <div class="planet-badges">
-            <app-stat-badge type="type" [value]="p.planetType" />
-            <app-stat-badge type="habitability" [value]="p.habitabilityClass" />
-          </div>
-          <div class="discovery-year">Descubierto en {{ p.discoveryYear }}</div>
-        </div>
-
-        <div class="detail-right">
-          <section class="detail-section">
-            <h3>Propiedades orbitales</h3>
-            <app-stat-row label="Período orbital" [value]="p.orbitalPeriodDays" unit="días" />
-            <app-stat-row label="Semieje mayor" [value]="p.semiMajorAxisAU" unit="UA" />
-            <app-stat-row label="Excentricidad" [value]="p.eccentricity" />
-            <app-stat-row label="Inclinación" [value]="p.inclinationDeg" unit="°" />
-          </section>
-
-          <section class="detail-section">
-            <h3>Propiedades físicas</h3>
-            <app-stat-row label="Radio" [value]="p.radiusEarth" unit="R⊕" />
-            <app-stat-row label="Masa" [value]="p.massEarth" unit="M⊕" />
-            <app-stat-row label="Densidad" [value]="p.densityGCC" unit="g/cm³" />
-            <app-stat-row label="Gravedad" [value]="p.gravityMS2" unit="m/s²" />
-            <app-stat-row label="Temperatura de equilibrio" [value]="p.equilibriumTempK" unit="K" />
-          </section>
-
-          <section class="detail-section">
-            <h3>Estrella huésped</h3>
-            <app-stat-row label="Temperatura" [value]="p.stellarTempK" unit="K" />
-            <app-stat-row label="Radio" [value]="p.stellarRadiusSun" unit="R☉" />
-            <app-stat-row label="Masa" [value]="p.stellarMassSun" unit="M☉" />
-            <app-stat-row label="Metalicidad" [value]="p.stellarMetallicity" />
-            <app-stat-row label="Edad" [value]="p.stellarAge" unit="Gyr" />
-          </section>
-
-          <section class="detail-section">
-            <h3>Descubrimiento</h3>
-            <app-stat-row label="Método" [value]="p.discoveryMethod" />
-            <app-stat-row label="Año" [value]="p.discoveryYear" />
-            <app-stat-row label="Facilidad" [value]="p.discoveryFacility" />
-            <app-stat-row label="Telescopio" [value]="p.telescope" />
-          </section>
         </div>
       </div>
-    </div>
+    }
 
-    <div class="error-state" *ngIf="error()">
-      <h2>No se encontró el planeta</h2>
-      <p>El planeta que buscas no existe en nuestra base de datos.</p>
-      <button (click)="goBack()">Volver al listado</button>
-    </div>
+    @if (error()) {
+      <div class="error-state">
+        <h2>No se encontró el planeta</h2>
+        <p>El planeta que buscas no existe en nuestra base de datos.</p>
+        <button (click)="goBack()">Volver al listado</button>
+      </div>
+    }
   `,
   styles: `
     .planet-detail {

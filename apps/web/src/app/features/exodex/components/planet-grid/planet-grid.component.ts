@@ -34,40 +34,39 @@ interface ExoplanetResponse {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="planet-grid-container">
-      <!-- Loading state -->
-      <div class="skeleton-grid" *ngIf="isLoading()">
-        <app-skeleton-card
-          *ngFor="let i of skeletonArray()"
-          [viewMode]="viewMode()"
+      @if (isLoading()) {
+        <!-- Loading state -->
+        <div class="skeleton-grid">
+          @for (i of skeletonArray(); track $index) {
+            <app-skeleton-card [viewMode]="viewMode()" />
+          }
+        </div>
+      } @else if (exoplanets().length === 0) {
+        <!-- Empty state -->
+        <app-empty-state (clearFilters)="clearFilters()" />
+      } @else {
+        <!-- Grid -->
+        <div
+          class="planet-grid"
+          [class.planet-grid--list]="viewMode() === 'list'"
+        >
+          @for (planet of exoplanets(); track planet.id) {
+            <app-planet-card
+              [planet]="planet"
+              (click)="navigateToDetail(planet)"
+            />
+          }
+        </div>
+      }
+
+      @if (!isLoading() && totalPages() > 1) {
+        <!-- Pagination -->
+        <app-pagination
+          [currentPage]="page()"
+          [totalPages]="totalPages()"
+          (pageChange)="goToPage($event)"
         />
-      </div>
-
-      <!-- Empty state -->
-      <app-empty-state
-        *ngIf="!isLoading() && exoplanets().length === 0"
-        (clearFilters)="clearFilters()"
-      />
-
-      <!-- Grid -->
-      <div
-        class="planet-grid"
-        [class.planet-grid--list]="viewMode() === 'list'"
-        *ngIf="!isLoading() && exoplanets().length > 0"
-      >
-        <app-planet-card
-          *ngFor="let planet of exoplanets(); trackBy: trackById"
-          [planet]="planet"
-          (click)="navigateToDetail(planet)"
-        />
-      </div>
-
-      <!-- Pagination -->
-      <app-pagination
-        *ngIf="!isLoading() && totalPages() > 1"
-        [currentPage]="page()"
-        [totalPages]="totalPages()"
-        (pageChange)="goToPage($event)"
-      />
+      }
     </div>
   `,
   styles: `
