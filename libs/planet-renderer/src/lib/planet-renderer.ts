@@ -147,7 +147,7 @@ export function renderPlanet(
   }
 
   // Assemble final SVG
-  const svgString = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${viewBoxSize} ${viewBoxSize}" width="${viewBoxSize}" height="${viewBoxSize}">${svgParts.join('')}</svg>`;
+  const svgString = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${viewBoxSize} ${viewBoxSize}" width="${viewBoxSize}" height="${viewBoxSize}" overflow="visible">${svgParts.join('')}</svg>`;
 
   // Generate description
   const description = generateDescription(planetType, radiusEarth, equilibriumTempK);
