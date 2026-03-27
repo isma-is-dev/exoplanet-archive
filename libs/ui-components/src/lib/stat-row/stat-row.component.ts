@@ -10,7 +10,17 @@ import { CommonModule } from '@angular/common';
       <span class="stat-label">{{ label() }}</span>
       <span class="stat-dots"></span>
       <span class="stat-value">
-        {{ formattedValue() }}
+        <ng-container *ngIf="!href()">
+          {{ formattedValue() }}
+        </ng-container>
+        <a *ngIf="href()" [href]="href()" [target]="isExternalLink() ? '_blank' : '_self'" class="stat-link">
+          {{ formattedValue() }}
+          <svg *ngIf="isExternalLink()" class="external-icon" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
+        </a>
         <span class="stat-unit" *ngIf="unit()">{{ unit() }}</span>
       </span>
     </div>
@@ -65,12 +75,33 @@ import { CommonModule } from '@angular/common';
       font-size: 11px;
       margin-left: 3px;
     }
+
+    .stat-link {
+      color: #6da5ff;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 200ms ease;
+    }
+
+    .stat-link:hover {
+      color: #9ac2ff;
+      text-shadow: 0 0 8px rgba(154, 194, 255, 0.4);
+    }
+
+    .external-icon {
+      opacity: 0.7;
+      margin-bottom: 1px;
+    }
   `,
 })
 export class StatRowComponent {
   label = input.required<string>();
   value = input<number | string | null>();
   unit = input<string>('');
+  href = input<string | null>(null);
+  isExternalLink = input<boolean>(false);
 
   formattedValue(): string {
     const val = this.value();

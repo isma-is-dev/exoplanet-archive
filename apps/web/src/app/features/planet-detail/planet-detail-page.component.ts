@@ -8,6 +8,7 @@ import { switchMap, catchError, of, startWith } from 'rxjs';
 import { ExoplanetApiService } from '../../core/services/exoplanet-api.service';
 import { PlanetAvatarComponent, StatBadgeComponent, StatRowComponent } from '@exodex/ui-components';
 import { renderStar } from '@exodex/planet-renderer';
+import { getTelescopeWikiLink } from '../../core/constants/telescopes';
 
 @Component({
   selector: 'app-planet-detail-page',
@@ -69,10 +70,24 @@ import { renderStar } from '@exodex/planet-renderer';
             </section>
 
             <section class="detail-section">
-              <h3><span class="section-icon"><svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="4" fill="#f59e0b" opacity="0.8"/><path d="M10 2v3M10 15v3M2 10h3M15 10h3M4.3 4.3l2.1 2.1M13.6 13.6l2.1 2.1M4.3 15.7l2.1-2.1M13.6 6.4l2.1-2.1" stroke="#f59e0b" stroke-width="1.2" stroke-linecap="round"/></svg></span> {{ 'sections.hostStar' | translate }}</h3>
-              @if (starSvg()) {
+              <h3>
+                <div class="section-title-wrap">
+                  <span class="section-icon"><svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="4" fill="#f59e0b" opacity="0.8"/><path d="M10 2v3M10 15v3M2 10h3M15 10h3M4.3 4.3l2.1 2.1M13.6 13.6l2.1 2.1M4.3 15.7l2.1-2.1M13.6 6.4l2.1-2.1" stroke="#f59e0b" stroke-width="1.2" stroke-linecap="round"/></svg></span> 
+                  {{ 'sections.hostStar' | translate }}
+                </div>
+                <div class="host-star-badges" *ngIf="p.hostStar">
+                  <span class="star-name-badge">{{ p.hostStar }}</span>
+                  <span class="star-type-badge" *ngIf="starData()?.spectralClass"
+                        [style.color]="starData()?.primaryColor"
+                        [style.borderColor]="starData()?.primaryColor"
+                        [style.backgroundColor]="starData()?.primaryColor + '15'">
+                    Type {{ starData()?.spectralClass }}
+                  </span>
+                </div>
+              </h3>
+              @if (starData()?.svg) {
                 <div class="host-star-avatar-container">
-                  <div class="host-star-avatar" [innerHTML]="starSvg()"></div>
+                  <div class="host-star-avatar" [innerHTML]="starData()?.svg"></div>
                 </div>
               }
               <app-stat-row [label]="'stats.stellarTemperature' | translate" [value]="p.stellarTempK" unit="K" />
@@ -84,10 +99,10 @@ import { renderStar } from '@exodex/planet-renderer';
 
             <section class="detail-section">
               <h3><span class="section-icon"><svg viewBox="0 0 20 20" fill="none" stroke="#22d3ee" stroke-width="1.2" stroke-linecap="round"><path d="M14 3l3 5-10 6-3-5z" fill="rgba(34,211,238,0.15)"/><path d="M7 14l-3 4"/><path d="M4 18h6"/><circle cx="16" cy="4" r="1.5" fill="rgba(34,211,238,0.3)"/></svg></span> {{ 'sections.discovery' | translate }}</h3>
-              <app-stat-row [label]="'stats.discoveryMethod' | translate" [value]="p.discoveryMethod" />
+              <app-stat-row [label]="'stats.discoveryMethod' | translate" [value]="p.discoveryMethod" [href]="getDiscoveryMethodLink(p.discoveryMethod)" [isExternalLink]="false" />
               <app-stat-row [label]="'stats.discoveryYear' | translate" [value]="p.discoveryYear" />
               <app-stat-row [label]="'stats.discoveryFacility' | translate" [value]="p.discoveryFacility" />
-              <app-stat-row [label]="'stats.telescope' | translate" [value]="p.telescope" />
+              <app-stat-row [label]="'stats.telescope' | translate" [value]="p.telescope" [href]="getTelescopeWikiLink(p.telescope)" [isExternalLink]="true" />
             </section>
           </div>
         </div>
@@ -307,7 +322,40 @@ import { renderStar } from '@exodex/planet-renderer';
       border-bottom: 1px solid rgba(77, 138, 255, 0.1);
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 8px;
+    }
+
+    .section-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .host-star-badges {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .star-name-badge {
+      color: #e8eeff;
+      font-family: 'Inter', sans-serif;
+      text-transform: none;
+      letter-spacing: normal;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .star-type-badge {
+      font-family: 'JetBrains Mono', monospace;
+      border: 1px solid;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      text-transform: none;
+      letter-spacing: 0;
+      font-weight: 600;
     }
 
     .host-star-avatar-container {
@@ -428,7 +476,7 @@ export class PlanetDetailPageComponent {
     )
   );
 
-  starSvg = computed(() => {
+  starData = computed(() => {
     const p = this.planet();
     if (!p || (!p.stellarTempK && !p.stellarMassSun && !p.stellarRadiusSun)) return null;
     
@@ -441,8 +489,19 @@ export class PlanetDetailPageComponent {
       animationsEnabled: true
     }, p.hostStar);
     
-    return this.sanitizer.bypassSecurityTrustHtml(result.svgString);
+    return {
+      svg: this.sanitizer.bypassSecurityTrustHtml(result.svgString),
+      primaryColor: result.primaryColor,
+      spectralClass: result.spectralClass
+    };
   });
+
+  getTelescopeWikiLink = getTelescopeWikiLink;
+
+  getDiscoveryMethodLink(method: string | null): string | null {
+    if (!method) return null;
+    return '/method/' + method.toLowerCase().replace(/\s+/g, '-');
+  }
 
   goBack(): void {
     this.router.navigate(['/']);
