@@ -52,15 +52,15 @@ function createMockPlanet(partial: Partial<Exoplanet>): Exoplanet {
   };
 }
 
-// Datos base de exoplanetas
-const MOCK_PLANETS_BASE: Partial<Exoplanet>[] = [
+// Datos base de exoplanetas (usando tipo que permite strings literales)
+const MOCK_PLANETS_BASE: Array<Partial<Exoplanet> & { habitabilityClass: string; planetType: string; discoveryMethod: string }> = [
   {
     id: 'kepler-186f',
     name: 'Kepler-186 f',
     index: 1,
     hostStar: 'Kepler-186',
     planetType: 'super-earth',
-    habitabilityClass: 'habitable',
+    habitabilityClass: 'potentially-habitable',
     discoveryYear: 2014,
     discoveryMethod: 'Transit',
     discoveryFacility: 'Kepler',
@@ -111,8 +111,8 @@ const MOCK_PLANETS_BASE: Partial<Exoplanet>[] = [
     name: 'TRAPPIST-1 e',
     index: 3,
     hostStar: 'TRAPPIST-1',
-    planetType: 'earth-like',
-    habitabilityClass: 'habitable',
+    planetType: 'super-earth',
+    habitabilityClass: 'potentially-habitable',
     discoveryYear: 2017,
     discoveryMethod: 'Transit',
     discoveryFacility: 'Spitzer Space Telescope',
@@ -345,8 +345,8 @@ const MOCK_PLANETS_BASE: Partial<Exoplanet>[] = [
     name: 'TOI-700 d',
     index: 12,
     hostStar: 'TOI-700',
-    planetType: 'earth-like',
-    habitabilityClass: 'habitable',
+    planetType: 'super-earth',
+    habitabilityClass: 'potentially-habitable',
     discoveryYear: 2020,
     discoveryMethod: 'Transit',
     discoveryFacility: 'TESS',
@@ -527,7 +527,7 @@ const MOCK_PLANETS_BASE: Partial<Exoplanet>[] = [
     name: 'LHS 1140 b',
     index: 19,
     hostStar: 'LHS 1140',
-    planetType: 'super-earth',
+    planetType: 'rocky-terrestrial',
     habitabilityClass: 'potentially-habitable',
     discoveryYear: 2017,
     discoveryMethod: 'Transit',
