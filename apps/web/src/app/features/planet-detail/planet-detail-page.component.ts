@@ -1,11 +1,13 @@
-import { Component, inject, ChangeDetectionStrategy, signal } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { switchMap, catchError, of, startWith } from 'rxjs';
 import { ExoplanetApiService } from '../../core/services/exoplanet-api.service';
 import { PlanetAvatarComponent, StatBadgeComponent, StatRowComponent } from '@exodex/ui-components';
+import { renderStar } from '@exodex/planet-renderer';
 
 @Component({
   selector: 'app-planet-detail-page',
@@ -68,6 +70,11 @@ import { PlanetAvatarComponent, StatBadgeComponent, StatRowComponent } from '@ex
 
             <section class="detail-section">
               <h3><span class="section-icon"><svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="4" fill="#f59e0b" opacity="0.8"/><path d="M10 2v3M10 15v3M2 10h3M15 10h3M4.3 4.3l2.1 2.1M13.6 13.6l2.1 2.1M4.3 15.7l2.1-2.1M13.6 6.4l2.1-2.1" stroke="#f59e0b" stroke-width="1.2" stroke-linecap="round"/></svg></span> {{ 'sections.hostStar' | translate }}</h3>
+              @if (starSvg()) {
+                <div class="host-star-avatar-container">
+                  <div class="host-star-avatar" [innerHTML]="starSvg()"></div>
+                </div>
+              }
               <app-stat-row [label]="'stats.stellarTemperature' | translate" [value]="p.stellarTempK" unit="K" />
               <app-stat-row [label]="'stats.stellarRadius' | translate" [value]="p.stellarRadiusSun" unit="R☉" />
               <app-stat-row [label]="'stats.stellarMass' | translate" [value]="p.stellarMassSun" unit="M☉" />
@@ -303,6 +310,25 @@ import { PlanetAvatarComponent, StatBadgeComponent, StatRowComponent } from '@ex
       gap: 8px;
     }
 
+    .host-star-avatar-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 24px;
+      margin-top: 8px;
+    }
+
+    .host-star-avatar {
+      width: 140px;
+      height: 140px;
+      filter: drop-shadow(0 0 20px rgba(245, 158, 11, 0.15));
+      animation: floatPlanet 8s ease-in-out infinite reverse;
+    }
+
+    .host-star-avatar :deep(svg) {
+      width: 100%;
+      height: 100%;
+    }
+
     .section-icon {
       width: 18px;
       height: 18px;
@@ -384,6 +410,7 @@ export class PlanetDetailPageComponent {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private apiService = inject(ExoplanetApiService);
+  private sanitizer = inject(DomSanitizer);
 
   error = signal(false);
 
@@ -400,6 +427,21 @@ export class PlanetDetailPageComponent {
       startWith(null)
     )
   );
+
+  starSvg = computed(() => {
+    const p = this.planet();
+    if (!p || (!p.stellarTempK && !p.stellarMassSun && !p.stellarRadiusSun)) return null;
+    
+    const result = renderStar({
+      stellarTempK: p.stellarTempK,
+      stellarRadiusSun: p.stellarRadiusSun,
+      stellarMassSun: p.stellarMassSun,
+      size: 'card', 
+      animationsEnabled: true
+    }, p.hostStar);
+    
+    return this.sanitizer.bypassSecurityTrustHtml(result.svgString);
+  });
 
   goBack(): void {
     this.router.navigate(['/']);

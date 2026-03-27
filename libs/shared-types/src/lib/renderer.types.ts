@@ -22,3 +22,17 @@ export interface PlanetRenderOutput {
   secondaryColor: string;
   description: string; // descripción auto-generada del aspecto
 }
+
+export interface StarRenderParams {
+  stellarTempK: number | null;
+  stellarRadiusSun: number | null;
+  stellarMassSun: number | null;
+  size: 'card' | 'detail' | 'micro';
+  animationsEnabled: boolean;
+}
+
+export interface StarRenderOutput {
+  svgString: string;
+  primaryColor: string;
+  spectralClass: string;
+}
