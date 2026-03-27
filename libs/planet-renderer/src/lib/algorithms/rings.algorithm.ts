@@ -62,7 +62,7 @@ export function buildRings(
   return `
     <defs>
       <clipPath id="${clipId}">
-        <rect x="0" y="0" width="${vb}" height="${center}"
+        <rect x="-${vb}" y="-${vb}" width="${vb * 3}" height="${vb + center}"
               transform="rotate(${rotation} ${center} ${center})"/>
       </clipPath>
     </defs>
@@ -98,7 +98,7 @@ export function buildFrontRings(
     <defs>
       <clipPath id="${clipId}">
         <!-- Bottom half rect, rotated to follow ring tilt → reveals only front portion -->
-        <rect x="0" y="${center}" width="${vb}" height="${center}"
+        <rect x="-${vb}" y="${center}" width="${vb * 3}" height="${vb * 2}"
               transform="rotate(${rotation} ${center} ${center})"/>
       </clipPath>
     </defs>
