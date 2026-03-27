@@ -36,7 +36,10 @@ import { PlanetAvatarComponent, StatBadgeComponent, StatRowComponent } from '@ex
             <div class="planet-meta">
               <span class="planet-index">#{{ p.index | number:'4.0-0' }}</span>
               <span class="meta-divider">·</span>
-              <span class="planet-star">⭐ {{ p.hostStar }}</span>
+              <span class="planet-star">
+                <svg class="star-svg" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 1l2.1 4.3 4.7.7-3.4 3.3.8 4.7L8 11.8 3.8 14l.8-4.7L1.2 6l4.7-.7L8 1z" fill="#f59e0b" stroke="#f59e0b" stroke-width="0.5" opacity="0.9"/></svg>
+                {{ p.hostStar }}
+              </span>
             </div>
             <div class="planet-badges">
               <app-stat-badge type="type" [value]="p.planetType" />
@@ -47,7 +50,7 @@ import { PlanetAvatarComponent, StatBadgeComponent, StatRowComponent } from '@ex
 
           <div class="detail-right">
             <section class="detail-section">
-              <h3><span class="section-icon">◎</span> {{ 'sections.orbitalProperties' | translate }}</h3>
+              <h3><span class="section-icon"><svg viewBox="0 0 20 20" fill="none" stroke="#4d8aff" stroke-width="1.2"><circle cx="10" cy="10" r="7"/><circle cx="10" cy="10" r="3"/><circle cx="10" cy="10" r="1" fill="#4d8aff"/></svg></span> {{ 'sections.orbitalProperties' | translate }}</h3>
               <app-stat-row [label]="'stats.orbitalPeriod' | translate" [value]="p.orbitalPeriodDays" [unit]="'units.days' | translate" />
               <app-stat-row [label]="'stats.semiMajorAxis' | translate" [value]="p.semiMajorAxisAU" [unit]="'units.au' | translate" />
               <app-stat-row [label]="'stats.eccentricity' | translate" [value]="p.eccentricity" />
@@ -55,7 +58,7 @@ import { PlanetAvatarComponent, StatBadgeComponent, StatRowComponent } from '@ex
             </section>
 
             <section class="detail-section">
-              <h3><span class="section-icon">◉</span> {{ 'sections.physicalProperties' | translate }}</h3>
+              <h3><span class="section-icon"><svg viewBox="0 0 20 20" fill="none" stroke="#a855f7" stroke-width="1.2"><circle cx="10" cy="10" r="8"/><path d="M10 2v16M2 10h16" opacity="0.3"/><circle cx="10" cy="10" r="4" fill="rgba(168,85,247,0.2)"/></svg></span> {{ 'sections.physicalProperties' | translate }}</h3>
               <app-stat-row [label]="'stats.radius' | translate" [value]="p.radiusEarth" unit="R⊕" />
               <app-stat-row [label]="'stats.mass' | translate" [value]="p.massEarth" unit="M⊕" />
               <app-stat-row [label]="'stats.density' | translate" [value]="p.densityGCC" [unit]="'units.density' | translate" />
@@ -64,7 +67,7 @@ import { PlanetAvatarComponent, StatBadgeComponent, StatRowComponent } from '@ex
             </section>
 
             <section class="detail-section">
-              <h3><span class="section-icon">☀</span> {{ 'sections.hostStar' | translate }}</h3>
+              <h3><span class="section-icon"><svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="4" fill="#f59e0b" opacity="0.8"/><path d="M10 2v3M10 15v3M2 10h3M15 10h3M4.3 4.3l2.1 2.1M13.6 13.6l2.1 2.1M4.3 15.7l2.1-2.1M13.6 6.4l2.1-2.1" stroke="#f59e0b" stroke-width="1.2" stroke-linecap="round"/></svg></span> {{ 'sections.hostStar' | translate }}</h3>
               <app-stat-row [label]="'stats.stellarTemperature' | translate" [value]="p.stellarTempK" unit="K" />
               <app-stat-row [label]="'stats.stellarRadius' | translate" [value]="p.stellarRadiusSun" unit="R☉" />
               <app-stat-row [label]="'stats.stellarMass' | translate" [value]="p.stellarMassSun" unit="M☉" />
@@ -73,7 +76,7 @@ import { PlanetAvatarComponent, StatBadgeComponent, StatRowComponent } from '@ex
             </section>
 
             <section class="detail-section">
-              <h3><span class="section-icon">🔭</span> {{ 'sections.discovery' | translate }}</h3>
+              <h3><span class="section-icon"><svg viewBox="0 0 20 20" fill="none" stroke="#22d3ee" stroke-width="1.2" stroke-linecap="round"><path d="M14 3l3 5-10 6-3-5z" fill="rgba(34,211,238,0.15)"/><path d="M7 14l-3 4"/><path d="M4 18h6"/><circle cx="16" cy="4" r="1.5" fill="rgba(34,211,238,0.3)"/></svg></span> {{ 'sections.discovery' | translate }}</h3>
               <app-stat-row [label]="'stats.discoveryMethod' | translate" [value]="p.discoveryMethod" />
               <app-stat-row [label]="'stats.discoveryYear' | translate" [value]="p.discoveryYear" />
               <app-stat-row [label]="'stats.discoveryFacility' | translate" [value]="p.discoveryFacility" />
@@ -301,8 +304,30 @@ import { PlanetAvatarComponent, StatBadgeComponent, StatRowComponent } from '@ex
     }
 
     .section-icon {
-      font-size: 14px;
-      opacity: 0.7;
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .section-icon :deep(svg) {
+      width: 100%;
+      height: 100%;
+    }
+
+    .star-svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+      filter: drop-shadow(0 0 4px rgba(245, 158, 11, 0.5));
+    }
+
+    .planet-star {
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     .error-state {

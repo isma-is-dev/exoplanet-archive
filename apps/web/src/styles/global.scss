@@ -36,49 +36,119 @@ body::after {
   z-index: 0;
 }
 
-// Capa 1: Estrellas pequeñas
+// Capa 1: Estrellas densas con twinkle
 body::before {
   background-image:
-    radial-gradient(1px 1px at 10% 20%, rgba(255, 255, 255, 0.8) 0%, transparent 100%),
-    radial-gradient(1px 1px at 20% 80%, rgba(255, 255, 255, 0.6) 0%, transparent 100%),
-    radial-gradient(1.5px 1.5px at 30% 10%, rgba(255, 255, 255, 0.7) 0%, transparent 100%),
-    radial-gradient(1px 1px at 40% 60%, rgba(255, 255, 255, 0.5) 0%, transparent 100%),
-    radial-gradient(1px 1px at 50% 40%, rgba(255, 255, 255, 0.6) 0%, transparent 100%),
-    radial-gradient(1.5px 1.5px at 60% 90%, rgba(255, 255, 255, 0.8) 0%, transparent 100%),
-    radial-gradient(1px 1px at 70% 30%, rgba(255, 255, 255, 0.5) 0%, transparent 100%),
-    radial-gradient(1px 1px at 80% 70%, rgba(255, 255, 255, 0.7) 0%, transparent 100%),
-    radial-gradient(1.5px 1.5px at 90% 50%, rgba(255, 255, 255, 0.6) 0%, transparent 100%),
-    radial-gradient(1px 1px at 15% 45%, rgba(255, 255, 255, 0.5) 0%, transparent 100%),
-    radial-gradient(1px 1px at 25% 65%, rgba(255, 255, 255, 0.4) 0%, transparent 100%),
-    radial-gradient(1.5px 1.5px at 35% 85%, rgba(255, 255, 255, 0.7) 0%, transparent 100%),
-    radial-gradient(1px 1px at 45% 15%, rgba(255, 255, 255, 0.6) 0%, transparent 100%),
-    radial-gradient(1px 1px at 55% 55%, rgba(255, 255, 255, 0.5) 0%, transparent 100%),
-    radial-gradient(1.5px 1.5px at 65% 25%, rgba(255, 255, 255, 0.8) 0%, transparent 100%),
-    radial-gradient(1px 1px at 75% 75%, rgba(255, 255, 255, 0.4) 0%, transparent 100%),
-    radial-gradient(1px 1px at 85% 35%, rgba(255, 255, 255, 0.6) 0%, transparent 100%),
-    radial-gradient(1.5px 1.5px at 95% 95%, rgba(255, 255, 255, 0.7) 0%, transparent 100%),
-    radial-gradient(1px 1px at 5% 55%, rgba(255, 255, 255, 0.5) 0%, transparent 100%),
-    radial-gradient(1px 1px at 12% 72%, rgba(255, 255, 255, 0.6) 0%, transparent 100%);
-  animation: starsTwinkle 8s ease-in-out infinite alternate;
+    // Capa de estrellas brillantes
+    radial-gradient(1.5px 1.5px at 3% 15%, rgba(255, 255, 255, 0.9) 0%, transparent 100%),
+    radial-gradient(1px 1px at 7% 45%, rgba(255, 255, 255, 0.7) 0%, transparent 100%),
+    radial-gradient(2px 2px at 11% 78%, rgba(200, 220, 255, 0.8) 0%, transparent 100%),
+    radial-gradient(1px 1px at 15% 32%, rgba(255, 255, 255, 0.5) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 19% 91%, rgba(255, 255, 255, 0.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 23% 8%, rgba(255, 255, 255, 0.7) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 28% 56%, rgba(180, 200, 255, 0.8) 0%, transparent 100%),
+    radial-gradient(1px 1px at 33% 21%, rgba(255, 255, 255, 0.5) 0%, transparent 100%),
+    radial-gradient(2px 2px at 37% 69%, rgba(255, 240, 200, 0.7) 0%, transparent 100%),
+    radial-gradient(1px 1px at 42% 88%, rgba(255, 255, 255, 0.6) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 47% 3%, rgba(200, 220, 255, 0.9) 0%, transparent 100%),
+    radial-gradient(1px 1px at 52% 37%, rgba(255, 255, 255, 0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 56% 62%, rgba(255, 255, 255, 0.7) 0%, transparent 100%),
+    radial-gradient(2px 2px at 61% 14%, rgba(180, 200, 255, 0.8) 0%, transparent 100%),
+    radial-gradient(1px 1px at 66% 83%, rgba(255, 255, 255, 0.6) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 71% 47%, rgba(255, 240, 200, 0.7) 0%, transparent 100%),
+    radial-gradient(1px 1px at 76% 5%, rgba(255, 255, 255, 0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 81% 72%, rgba(200, 220, 255, 0.8) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 86% 29%, rgba(255, 255, 255, 0.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 91% 95%, rgba(255, 255, 255, 0.7) 0%, transparent 100%),
+    radial-gradient(2px 2px at 95% 53%, rgba(180, 200, 255, 0.9) 0%, transparent 100%),
+    radial-gradient(1px 1px at 2% 60%, rgba(255, 255, 255, 0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 9% 25%, rgba(255, 255, 255, 0.5) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 14% 50%, rgba(255, 240, 200, 0.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 22% 75%, rgba(255, 255, 255, 0.7) 0%, transparent 100%),
+    radial-gradient(1px 1px at 31% 40%, rgba(200, 220, 255, 0.5) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 39% 12%, rgba(255, 255, 255, 0.8) 0%, transparent 100%),
+    radial-gradient(1px 1px at 44% 55%, rgba(255, 255, 255, 0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 53% 80%, rgba(180, 200, 255, 0.6) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 59% 35%, rgba(255, 255, 255, 0.7) 0%, transparent 100%),
+    radial-gradient(1px 1px at 68% 60%, rgba(255, 240, 200, 0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 74% 18%, rgba(255, 255, 255, 0.8) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 79% 42%, rgba(200, 220, 255, 0.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 84% 90%, rgba(255, 255, 255, 0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 89% 7%, rgba(255, 255, 255, 0.7) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 93% 68%, rgba(180, 200, 255, 0.8) 0%, transparent 100%),
+    radial-gradient(1px 1px at 97% 33%, rgba(255, 255, 255, 0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 5% 85%, rgba(255, 240, 200, 0.6) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 17% 4%, rgba(255, 255, 255, 0.9) 0%, transparent 100%),
+    radial-gradient(1px 1px at 26% 52%, rgba(200, 220, 255, 0.5) 0%, transparent 100%);
+  animation: starsTwinkle 4s ease-in-out infinite alternate;
 }
 
-// Capa 2: Nebulosa sutil
+// Capa 2: Nebulosa sutil + cometa
 body::after {
   background:
-    radial-gradient(ellipse at 20% 50%, rgba(77, 138, 255, 0.04) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 20%, rgba(168, 85, 247, 0.03) 0%, transparent 50%),
-    radial-gradient(ellipse at 60% 80%, rgba(34, 211, 238, 0.02) 0%, transparent 50%);
-  animation: nebulaFlow 20s ease-in-out infinite alternate;
+    radial-gradient(ellipse at 15% 50%, rgba(77, 138, 255, 0.05) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 20%, rgba(168, 85, 247, 0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 85%, rgba(34, 211, 238, 0.03) 0%, transparent 45%),
+    radial-gradient(ellipse at 70% 60%, rgba(236, 72, 153, 0.02) 0%, transparent 40%);
+  animation: nebulaFlow 25s ease-in-out infinite alternate;
 }
 
 @keyframes starsTwinkle {
-  0% { opacity: 0.7; }
-  100% { opacity: 1; }
+  0% { opacity: 0.6; }
+  50% { opacity: 0.9; }
+  100% { opacity: 0.75; }
 }
 
 @keyframes nebulaFlow {
-  0% { opacity: 0.5; transform: scale(1); }
-  100% { opacity: 1; transform: scale(1.1); }
+  0% { opacity: 0.5; transform: scale(1) rotate(0deg); }
+  100% { opacity: 1; transform: scale(1.08) rotate(1deg); }
+}
+
+// ═══════════════════════════════════════════
+// TWINKLING STARS OVERLAY (CSS-only)
+// ═══════════════════════════════════════════
+.starfield-twinkle {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+// ═══════════════════════════════════════════
+// COMET ANIMATION
+// ═══════════════════════════════════════════
+@keyframes cometFly {
+  0% {
+    transform: translate(-100px, -50px) rotate(-35deg);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  30% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(calc(100vw + 200px), calc(60vh)) rotate(-35deg);
+    opacity: 0;
+  }
+}
+
+@keyframes cometFly2 {
+  0% {
+    transform: translate(calc(100vw + 100px), -50px) rotate(215deg);
+    opacity: 0;
+  }
+  5% {
+    opacity: 0.7;
+  }
+  30% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translate(-200px, calc(50vh)) rotate(215deg);
+    opacity: 0;
+  }
 }
 
 // Contenido por encima del fondo
@@ -176,25 +246,22 @@ textarea {
   border-width: 0;
 }
 
-// Animación float para planetas
+// Animaciones reutilizables
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-6px); }
 }
 
-// Shimmer holográfico
 @keyframes holoShimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
 
-// Pulse glow
 @keyframes pulseGlow {
   0%, 100% { opacity: 0.6; }
   50% { opacity: 1; }
 }
 
-// Scan line
 @keyframes scanLine {
   0% { transform: translateY(-100%); }
   100% { transform: translateY(100%); }

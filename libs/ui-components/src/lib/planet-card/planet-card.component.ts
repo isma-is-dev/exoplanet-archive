@@ -22,7 +22,12 @@ import { PlanetAvatarComponent } from '../planet-avatar/planet-avatar.component'
 
       <div class="card-info">
         <h2 class="planet-name">{{ planet().name }}</h2>
-        <span class="host-star">⭐ {{ planet().hostStar }}</span>
+        <span class="host-star">
+          <svg class="star-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 1l2.1 4.3 4.7.7-3.4 3.3.8 4.7L8 11.8 3.8 14l.8-4.7L1.2 6l4.7-.7L8 1z" fill="#f59e0b" stroke="#f59e0b" stroke-width="0.5" opacity="0.9"/>
+          </svg>
+          {{ planet().hostStar }}
+        </span>
 
         <div class="card-badges">
           <app-stat-badge type="type" [value]="planet().planetType" />
@@ -154,6 +159,16 @@ import { PlanetAvatarComponent } from '../planet-avatar/planet-avatar.component'
       font-size: 12px;
       color: #8892b0;
       margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .star-icon {
+      width: 12px;
+      height: 12px;
+      flex-shrink: 0;
+      filter: drop-shadow(0 0 3px rgba(245, 158, 11, 0.5));
     }
 
     .card-badges {

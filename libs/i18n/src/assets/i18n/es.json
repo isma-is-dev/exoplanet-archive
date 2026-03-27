@@ -26,10 +26,10 @@
       "cold-giant": "Gigante frío"
     },
     "habitabilityOptions": {
-      "potentially-habitable": "★ Potencialmente habitable",
-      "marginal": "◑ Marginal",
-      "uninhabitable": "✕ Inhabitable",
-      "unknown": "? Desconocido"
+      "potentially-habitable": "Potencialmente habitable",
+      "marginal": "Marginal",
+      "uninhabitable": "Inhabitable",
+      "unknown": "Desconocido"
     }
   },
   "sort": {
