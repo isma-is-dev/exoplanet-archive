@@ -34,32 +34,45 @@ import { FormsModule } from '@angular/forms';
 
     .search-icon {
       position: absolute;
-      left: 12px;
-      width: 18px;
-      height: 18px;
-      color: #8892b0;
+      left: 14px;
+      width: 16px;
+      height: 16px;
+      color: rgba(77, 138, 255, 0.5);
       pointer-events: none;
+      transition: color 300ms ease;
     }
 
     input {
       width: 100%;
-      padding: 10px 36px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 8px;
-      font-size: 14px;
-      color: #f0f4ff;
-      transition: all 150ms ease;
+      padding: 10px 36px 10px 40px;
+      background: rgba(15, 20, 40, 0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(77, 138, 255, 0.1);
+      border-radius: 12px;
+      font-size: 13px;
+      color: #e8eeff;
+      transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     input:focus {
       outline: none;
-      border-color: #5e8eff;
-      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(77, 138, 255, 0.4);
+      background: rgba(15, 20, 40, 0.8);
+      box-shadow:
+        0 0 20px rgba(77, 138, 255, 0.15),
+        0 0 40px rgba(77, 138, 255, 0.05),
+        inset 0 0 20px rgba(77, 138, 255, 0.03);
+    }
+
+    input:focus ~ .search-icon,
+    .search-input:focus-within .search-icon {
+      color: #4d8aff;
     }
 
     input::placeholder {
       color: #4a5568;
+      font-size: 12px;
     }
 
     .clear-btn {
@@ -70,11 +83,11 @@ import { FormsModule } from '@angular/forms';
       justify-content: center;
       width: 24px;
       height: 24px;
-      border-radius: 4px;
-      background: rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
+      background: rgba(77, 138, 255, 0.08);
       color: #8892b0;
       opacity: 0;
-      transition: opacity 150ms ease;
+      transition: all 200ms ease;
     }
 
     .search-input:hover .clear-btn,
@@ -89,7 +102,7 @@ import { FormsModule } from '@angular/forms';
     }
 
     .clear-btn:hover {
-      background: rgba(239, 68, 68, 0.2);
+      background: rgba(239, 68, 68, 0.15);
       color: #ef4444;
     }
   `,

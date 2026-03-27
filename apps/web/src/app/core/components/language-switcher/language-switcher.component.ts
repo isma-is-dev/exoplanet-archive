@@ -33,34 +33,44 @@ import { LanguageService, Language } from '@exodex/i18n';
     .language-switcher {
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 2px;
+      background: rgba(15, 20, 40, 0.5);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      padding: 3px;
     }
 
     .lang-btn {
-      padding: 4px 8px;
+      padding: 5px 10px;
       background: transparent;
       border: 1px solid transparent;
-      border-radius: 4px;
+      border-radius: 7px;
       color: #8892b0;
-      font-size: 12px;
-      font-weight: 500;
+      font-size: 11px;
+      font-weight: 700;
+      font-family: 'Orbitron', sans-serif;
+      letter-spacing: 1px;
       cursor: pointer;
-      transition: all 150ms ease;
+      transition: all 300ms ease;
     }
 
     .lang-btn:hover {
-      color: #f0f4ff;
-      background: rgba(255, 255, 255, 0.05);
+      color: #e8eeff;
+      background: rgba(77, 138, 255, 0.08);
     }
 
     .lang-btn.active {
-      color: #5e8eff;
-      border-color: rgba(94, 142, 255, 0.4);
-      background: rgba(94, 142, 255, 0.1);
+      color: #4d8aff;
+      border-color: rgba(77, 138, 255, 0.3);
+      background: rgba(77, 138, 255, 0.1);
+      box-shadow: 0 0 10px rgba(77, 138, 255, 0.15);
+      text-shadow: 0 0 6px rgba(77, 138, 255, 0.3);
     }
 
     .divider {
-      color: #4a5568;
+      color: rgba(77, 138, 255, 0.15);
       font-size: 12px;
     }
   `,

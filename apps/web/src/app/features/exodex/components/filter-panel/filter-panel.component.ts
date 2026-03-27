@@ -23,7 +23,7 @@ import { SearchInputComponent, FilterChipComponent } from '@exodex/ui-components
       </div>
 
       <div class="filter-section">
-        <h3>{{ 'filters.planetType' | translate }}</h3>
+        <h3><span class="section-indicator"></span>{{ 'filters.planetType' | translate }}</h3>
         <div class="filter-chips">
           @for (type of planetTypes(); track type.value) {
             <app-filter-chip
@@ -36,7 +36,7 @@ import { SearchInputComponent, FilterChipComponent } from '@exodex/ui-components
       </div>
 
       <div class="filter-section">
-        <h3>{{ 'filters.habitability' | translate }}</h3>
+        <h3><span class="section-indicator"></span>{{ 'filters.habitability' | translate }}</h3>
         <div class="filter-chips">
           @for (h of habitabilityOptions(); track h.value) {
             <app-filter-chip
@@ -50,7 +50,7 @@ import { SearchInputComponent, FilterChipComponent } from '@exodex/ui-components
 
       @if (stats(); as s) {
         <div class="filter-section">
-          <h3>{{ 'filters.discoveryYear' | translate }}</h3>
+          <h3><span class="section-indicator"></span>{{ 'filters.discoveryYear' | translate }}</h3>
           <div class="range-inputs">
             <input
               type="number"
@@ -59,7 +59,7 @@ import { SearchInputComponent, FilterChipComponent } from '@exodex/ui-components
               [value]="filters().discoveryYearRange?.[0] ?? s.yearRange[0]"
               (change)="updateYearRange($event, 0)"
             />
-            <span>-</span>
+            <span class="range-separator">→</span>
             <input
               type="number"
               [min]="s.yearRange[0]"
@@ -76,26 +76,39 @@ import { SearchInputComponent, FilterChipComponent } from '@exodex/ui-components
           class="clear-btn"
           (click)="filterState.resetFilters()"
         >
-          {{ 'common.clearFilters' | translate }}
+          ✕ {{ 'common.clearFilters' | translate }}
         </button>
       }
     </div>
   `,
   styles: `
     .filter-panel {
-      padding: 20px;
+      padding: 24px 20px;
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: 28px;
     }
 
     .filter-section h3 {
-      font-size: 12px;
-      font-weight: 600;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: #8892b0;
-      margin-bottom: 12px;
+      letter-spacing: 2px;
+      color: rgba(77, 138, 255, 0.6);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-indicator {
+      display: inline-block;
+      width: 3px;
+      height: 12px;
+      background: linear-gradient(180deg, #4d8aff, #a855f7);
+      border-radius: 2px;
+      box-shadow: 0 0 6px rgba(77, 138, 255, 0.4);
     }
 
     .filter-chips {
@@ -107,34 +120,43 @@ import { SearchInputComponent, FilterChipComponent } from '@exodex/ui-components
     .range-inputs {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
 
     .range-inputs input {
       width: 80px;
-      padding: 8px;
+      padding: 8px 10px;
       font-size: 13px;
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(15, 20, 40, 0.6);
+      border: 1px solid rgba(77, 138, 255, 0.1);
+      border-radius: 10px;
+      color: #e8eeff;
+      text-align: center;
     }
 
-    .range-inputs span {
-      color: #8892b0;
+    .range-separator {
+      color: rgba(77, 138, 255, 0.4);
+      font-size: 14px;
     }
 
     .clear-btn {
       padding: 10px 16px;
-      background: rgba(239, 68, 68, 0.15);
-      border: 1px solid rgba(239, 68, 68, 0.4);
-      border-radius: 8px;
+      background: rgba(239, 68, 68, 0.08);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-radius: 10px;
       color: #ef4444;
-      font-size: 13px;
-      font-weight: 500;
+      font-size: 12px;
+      font-weight: 600;
       cursor: pointer;
-      transition: all 150ms ease;
-      margin-top: 8px;
+      transition: all 300ms ease;
+      font-family: 'Inter', sans-serif;
+      letter-spacing: 0.5px;
     }
 
     .clear-btn:hover {
-      background: rgba(239, 68, 68, 0.25);
+      background: rgba(239, 68, 68, 0.15);
+      box-shadow: 0 0 15px rgba(239, 68, 68, 0.15);
     }
   `,
 })

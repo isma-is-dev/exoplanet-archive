@@ -16,18 +16,27 @@ import { PlanetAvatarComponent, StatBadgeComponent, StatRowComponent } from '@ex
     @if (planet(); as p) {
       <div class="planet-detail">
         <button class="back-btn" (click)="goBack()">
-          ← {{ 'common.backToList' | translate }}
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+          {{ 'common.backToList' | translate }}
         </button>
 
         <div class="detail-layout">
           <div class="detail-left">
-            <div class="planet-avatar-container">
-              <app-planet-avatar [planet]="p" size="detail" />
+            <div class="planet-hero">
+              <div class="hero-glow"></div>
+              <div class="orbital-ring ring-1"></div>
+              <div class="orbital-ring ring-2"></div>
+              <div class="planet-avatar-container">
+                <app-planet-avatar [planet]="p" size="detail" />
+              </div>
             </div>
             <h1 class="planet-name">{{ p.name }}</h1>
             <div class="planet-meta">
               <span class="planet-index">#{{ p.index | number:'4.0-0' }}</span>
-              <span class="planet-star">{{ p.hostStar }}</span>
+              <span class="meta-divider">·</span>
+              <span class="planet-star">⭐ {{ p.hostStar }}</span>
             </div>
             <div class="planet-badges">
               <app-stat-badge type="type" [value]="p.planetType" />
@@ -38,7 +47,7 @@ import { PlanetAvatarComponent, StatBadgeComponent, StatRowComponent } from '@ex
 
           <div class="detail-right">
             <section class="detail-section">
-              <h3>{{ 'sections.orbitalProperties' | translate }}</h3>
+              <h3><span class="section-icon">◎</span> {{ 'sections.orbitalProperties' | translate }}</h3>
               <app-stat-row [label]="'stats.orbitalPeriod' | translate" [value]="p.orbitalPeriodDays" [unit]="'units.days' | translate" />
               <app-stat-row [label]="'stats.semiMajorAxis' | translate" [value]="p.semiMajorAxisAU" [unit]="'units.au' | translate" />
               <app-stat-row [label]="'stats.eccentricity' | translate" [value]="p.eccentricity" />
@@ -46,7 +55,7 @@ import { PlanetAvatarComponent, StatBadgeComponent, StatRowComponent } from '@ex
             </section>
 
             <section class="detail-section">
-              <h3>{{ 'sections.physicalProperties' | translate }}</h3>
+              <h3><span class="section-icon">◉</span> {{ 'sections.physicalProperties' | translate }}</h3>
               <app-stat-row [label]="'stats.radius' | translate" [value]="p.radiusEarth" unit="R⊕" />
               <app-stat-row [label]="'stats.mass' | translate" [value]="p.massEarth" unit="M⊕" />
               <app-stat-row [label]="'stats.density' | translate" [value]="p.densityGCC" [unit]="'units.density' | translate" />
@@ -55,7 +64,7 @@ import { PlanetAvatarComponent, StatBadgeComponent, StatRowComponent } from '@ex
             </section>
 
             <section class="detail-section">
-              <h3>{{ 'sections.hostStar' | translate }}</h3>
+              <h3><span class="section-icon">☀</span> {{ 'sections.hostStar' | translate }}</h3>
               <app-stat-row [label]="'stats.stellarTemperature' | translate" [value]="p.stellarTempK" unit="K" />
               <app-stat-row [label]="'stats.stellarRadius' | translate" [value]="p.stellarRadiusSun" unit="R☉" />
               <app-stat-row [label]="'stats.stellarMass' | translate" [value]="p.stellarMassSun" unit="M☉" />
@@ -64,7 +73,7 @@ import { PlanetAvatarComponent, StatBadgeComponent, StatRowComponent } from '@ex
             </section>
 
             <section class="detail-section">
-              <h3>{{ 'sections.discovery' | translate }}</h3>
+              <h3><span class="section-icon">🔭</span> {{ 'sections.discovery' | translate }}</h3>
               <app-stat-row [label]="'stats.discoveryMethod' | translate" [value]="p.discoveryMethod" />
               <app-stat-row [label]="'stats.discoveryYear' | translate" [value]="p.discoveryYear" />
               <app-stat-row [label]="'stats.discoveryFacility' | translate" [value]="p.discoveryFacility" />
@@ -79,35 +88,62 @@ import { PlanetAvatarComponent, StatBadgeComponent, StatRowComponent } from '@ex
       <div class="error-state">
         <h2>{{ 'common.notFound' | translate }}</h2>
         <p>{{ 'common.notFoundDescription' | translate }}</p>
-        <button (click)="goBack()">{{ 'common.backToList' | translate }}</button>
+        <button class="error-btn" (click)="goBack()">{{ 'common.backToList' | translate }}</button>
       </div>
     }
   `,
   styles: `
+    @keyframes floatPlanet {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+    }
+
+    @keyframes orbitSpin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes heroGlow {
+      0%, 100% { opacity: 0.4; transform: scale(1); }
+      50% { opacity: 0.7; transform: scale(1.05); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     .planet-detail {
       padding: 24px;
       max-width: 1200px;
       margin: 0 auto;
+      animation: fadeInUp 600ms cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .back-btn {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      margin-bottom: 24px;
-      padding: 8px 16px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 8px;
+      margin-bottom: 32px;
+      padding: 10px 20px;
+      background: rgba(15, 20, 40, 0.6);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(77, 138, 255, 0.15);
+      border-radius: 12px;
       color: #8892b0;
       font-size: 14px;
       cursor: pointer;
-      transition: all 150ms ease;
+      transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+      font-family: 'Inter', sans-serif;
     }
 
     .back-btn:hover {
-      background: rgba(255, 255, 255, 0.08);
-      color: #f0f4ff;
+      background: rgba(77, 138, 255, 0.1);
+      color: #e8eeff;
+      border-color: rgba(77, 138, 255, 0.3);
+      box-shadow: 0 0 20px rgba(77, 138, 255, 0.15);
+      transform: translateX(-4px);
     }
 
     .detail-layout {
@@ -123,16 +159,69 @@ import { PlanetAvatarComponent, StatBadgeComponent, StatRowComponent } from '@ex
       text-align: center;
     }
 
+    /* Hero planet with orbital rings */
+    .planet-hero {
+      position: relative;
+      width: 320px;
+      height: 320px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 32px;
+    }
+
+    .hero-glow {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(77, 138, 255, 0.15) 0%, transparent 70%);
+      animation: heroGlow 4s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    .orbital-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid rgba(77, 138, 255, 0.1);
+      pointer-events: none;
+    }
+
+    .ring-1 {
+      width: 110%;
+      height: 110%;
+      animation: orbitSpin 20s linear infinite;
+    }
+
+    .ring-2 {
+      width: 130%;
+      height: 130%;
+      border-color: rgba(168, 85, 247, 0.08);
+      animation: orbitSpin 30s linear infinite reverse;
+    }
+
     .planet-avatar-container {
-      margin-bottom: 24px;
+      animation: floatPlanet 6s ease-in-out infinite;
+      filter: drop-shadow(0 0 20px rgba(77, 138, 255, 0.2));
     }
 
     .planet-name {
-      font-family: 'Space Grotesk', sans-serif;
+      font-family: 'Orbitron', sans-serif;
       font-size: 2rem;
-      font-weight: 700;
-      color: #f0f4ff;
-      margin-bottom: 8px;
+      font-weight: 900;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #e8eeff 0%, #4d8aff 50%, #a855f7 100%);
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: gradientShift 6s ease infinite;
+      margin-bottom: 12px;
+    }
+
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
     }
 
     .planet-meta {
@@ -143,12 +232,19 @@ import { PlanetAvatarComponent, StatBadgeComponent, StatRowComponent } from '@ex
     }
 
     .planet-index {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 14px;
-      color: #5e8eff;
-      background: rgba(94, 142, 255, 0.1);
-      padding: 4px 10px;
-      border-radius: 6px;
+      font-family: 'Orbitron', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      color: #4d8aff;
+      background: rgba(77, 138, 255, 0.1);
+      padding: 5px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(77, 138, 255, 0.15);
+      letter-spacing: 1px;
+    }
+
+    .meta-divider {
+      color: #4a5568;
     }
 
     .planet-star {
@@ -165,39 +261,58 @@ import { PlanetAvatarComponent, StatBadgeComponent, StatRowComponent } from '@ex
     .discovery-year {
       font-size: 13px;
       color: #4a5568;
+      font-family: 'Inter', sans-serif;
     }
 
     .detail-right {
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: 20px;
     }
 
     .detail-section {
-      background: rgba(255, 255, 255, 0.03);
+      background: rgba(15, 20, 40, 0.5);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       border: 1px solid rgba(255, 255, 255, 0.06);
-      border-radius: 12px;
-      padding: 20px;
+      border-radius: 16px;
+      padding: 24px;
+      transition: border-color 300ms ease, box-shadow 300ms ease;
+    }
+
+    .detail-section:hover {
+      border-color: rgba(77, 138, 255, 0.12);
+      box-shadow: 0 0 20px rgba(77, 138, 255, 0.05);
     }
 
     .detail-section h3 {
-      font-size: 14px;
-      font-weight: 600;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: #8892b0;
+      letter-spacing: 2px;
+      color: #4d8aff;
       margin-bottom: 16px;
       padding-bottom: 12px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      border-bottom: 1px solid rgba(77, 138, 255, 0.1);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-icon {
+      font-size: 14px;
+      opacity: 0.7;
     }
 
     .error-state {
       text-align: center;
       padding: 48px;
+      animation: fadeInUp 600ms ease;
     }
 
     .error-state h2 {
-      color: #f0f4ff;
+      color: #e8eeff;
       margin-bottom: 8px;
     }
 
@@ -206,10 +321,36 @@ import { PlanetAvatarComponent, StatBadgeComponent, StatRowComponent } from '@ex
       margin-bottom: 24px;
     }
 
+    .error-btn {
+      padding: 12px 24px;
+      background: rgba(77, 138, 255, 0.15);
+      border: 1px solid rgba(77, 138, 255, 0.3);
+      border-radius: 12px;
+      color: #4d8aff;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 300ms ease;
+    }
+
+    .error-btn:hover {
+      background: rgba(77, 138, 255, 0.25);
+      box-shadow: 0 0 20px rgba(77, 138, 255, 0.2);
+    }
+
     @media (max-width: 768px) {
       .detail-layout {
         grid-template-columns: 1fr;
         gap: 24px;
+      }
+
+      .planet-hero {
+        width: 240px;
+        height: 240px;
+      }
+
+      .planet-name {
+        font-size: 1.5rem;
       }
     }
   `,

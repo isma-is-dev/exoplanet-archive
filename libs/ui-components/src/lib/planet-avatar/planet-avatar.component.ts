@@ -16,6 +16,8 @@ import { renderPlanet } from '@exodex/planet-renderer';
       display: flex;
       align-items: center;
       justify-content: center;
+      border-radius: 50%;
+      position: relative;
     }
 
     .planet-avatar--micro {
@@ -26,11 +28,13 @@ import { renderPlanet } from '@exodex/planet-renderer';
     .planet-avatar--card {
       width: 120px;
       height: 120px;
+      filter: drop-shadow(0 0 8px rgba(77, 138, 255, 0.15));
     }
 
     .planet-avatar--detail {
       width: 320px;
       height: 320px;
+      filter: drop-shadow(0 0 30px rgba(77, 138, 255, 0.2)) drop-shadow(0 0 60px rgba(168, 85, 247, 0.1));
     }
 
     .planet-avatar :deep(svg) {

@@ -38,15 +38,19 @@ import { SortField } from '@exodex/shared-types';
     .sort-bar {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 12px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(77, 138, 255, 0.06);
     }
 
     .sort-label {
-      font-size: 13px;
-      color: #8892b0;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      color: rgba(77, 138, 255, 0.5);
       white-space: nowrap;
+      text-transform: uppercase;
+      letter-spacing: 2px;
     }
 
     .sort-options {
@@ -56,33 +60,36 @@ import { SortField } from '@exodex/shared-types';
     }
 
     .sort-btn {
-      padding: 6px 12px;
-      border-radius: 6px;
+      padding: 6px 14px;
+      border-radius: 8px;
       font-size: 12px;
       font-weight: 500;
       background: transparent;
       border: 1px solid transparent;
       color: #8892b0;
       cursor: pointer;
-      transition: all 150ms ease;
+      transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
       display: flex;
       align-items: center;
       gap: 4px;
     }
 
     .sort-btn:hover {
-      background: rgba(255, 255, 255, 0.05);
-      color: #f0f4ff;
+      background: rgba(77, 138, 255, 0.06);
+      color: #e8eeff;
     }
 
     .sort-btn.active {
-      background: rgba(94, 142, 255, 0.1);
-      border-color: rgba(94, 142, 255, 0.3);
-      color: #5e8eff;
+      background: rgba(77, 138, 255, 0.1);
+      border-color: rgba(77, 138, 255, 0.25);
+      color: #4d8aff;
+      box-shadow: 0 0 10px rgba(77, 138, 255, 0.1);
+      text-shadow: 0 0 6px rgba(77, 138, 255, 0.3);
     }
 
     .sort-arrow {
       font-size: 10px;
+      color: #4d8aff;
     }
   `,
 })

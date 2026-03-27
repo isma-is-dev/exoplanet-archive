@@ -9,7 +9,7 @@ import { CommonModule } from '@angular/common';
     @if (totalPages() > 1) {
       <div class="pagination">
         <button
-          class="page-btn"
+          class="page-btn nav-btn"
           [disabled]="currentPage() === 1"
           (click)="goToPage(currentPage() - 1)"
         >
@@ -18,7 +18,7 @@ import { CommonModule } from '@angular/common';
 
         @for (page of visiblePages(); track page) {
           @if (page === -1) {
-            <span class="ellipsis">...</span>
+            <span class="ellipsis">···</span>
           } @else {
             <button
               class="page-btn"
@@ -31,7 +31,7 @@ import { CommonModule } from '@angular/common';
         }
 
         <button
-          class="page-btn"
+          class="page-btn nav-btn"
           [disabled]="currentPage() === totalPages()"
           (click)="goToPage(currentPage() + 1)"
         >
@@ -45,47 +45,60 @@ import { CommonModule } from '@angular/common';
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 4px;
-      padding: 16px 0;
+      gap: 6px;
+      padding: 24px 0;
     }
 
     .page-btn {
       display: flex;
       align-items: center;
       justify-content: center;
-      min-width: 36px;
-      height: 36px;
+      min-width: 38px;
+      height: 38px;
       padding: 0 12px;
-      border-radius: 8px;
-      font-size: 14px;
+      border-radius: 10px;
+      font-size: 13px;
       font-weight: 500;
-      background: transparent;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(15, 20, 40, 0.4);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
       color: #8892b0;
-      transition: all 150ms ease;
+      transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
       cursor: pointer;
+      font-family: 'JetBrains Mono', monospace;
     }
 
     .page-btn:hover:not(:disabled) {
-      background: rgba(255, 255, 255, 0.05);
-      border-color: rgba(255, 255, 255, 0.16);
-      color: #f0f4ff;
+      background: rgba(77, 138, 255, 0.1);
+      border-color: rgba(77, 138, 255, 0.2);
+      color: #e8eeff;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     }
 
     .page-btn.active {
-      background: rgba(94, 142, 255, 0.15);
-      border-color: rgba(94, 142, 255, 0.4);
-      color: #5e8eff;
+      background: rgba(77, 138, 255, 0.15);
+      border-color: rgba(77, 138, 255, 0.4);
+      color: #4d8aff;
+      box-shadow: 0 0 15px rgba(77, 138, 255, 0.2);
+      text-shadow: 0 0 8px rgba(77, 138, 255, 0.4);
     }
 
     .page-btn:disabled {
-      opacity: 0.4;
+      opacity: 0.3;
       cursor: not-allowed;
     }
 
+    .nav-btn {
+      font-size: 16px;
+    }
+
     .ellipsis {
-      color: #4a5568;
+      color: rgba(77, 138, 255, 0.3);
       padding: 0 4px;
+      font-size: 14px;
+      letter-spacing: 2px;
     }
   `,
 })

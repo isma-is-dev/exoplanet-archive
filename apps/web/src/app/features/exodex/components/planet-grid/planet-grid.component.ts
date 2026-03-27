@@ -55,6 +55,8 @@ interface ExoplanetResponse {
             <app-planet-card
               [planet]="planet"
               (click)="navigateToDetail(planet)"
+              [style.animation-delay]="($index * 50) + 'ms'"
+              class="grid-item"
             />
           }
         </div>
@@ -71,24 +73,40 @@ interface ExoplanetResponse {
     </div>
   `,
   styles: `
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
     .planet-grid-container {
       padding: 16px 0;
     }
 
     .skeleton-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 20px;
     }
 
     .planet-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 20px;
     }
 
     .planet-grid--list {
       grid-template-columns: 1fr;
+    }
+
+    .grid-item {
+      display: block;
+      animation: fadeInUp 500ms cubic-bezier(0.4, 0, 0.2, 1) both;
     }
 
     app-planet-card {

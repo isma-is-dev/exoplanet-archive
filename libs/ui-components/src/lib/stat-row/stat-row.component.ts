@@ -8,6 +8,7 @@ import { CommonModule } from '@angular/common';
   template: `
     <div class="stat-row">
       <span class="stat-label">{{ label() }}</span>
+      <span class="stat-dots"></span>
       <span class="stat-value">
         {{ formattedValue() }}
         <span class="stat-unit" *ngIf="unit()">{{ unit() }}</span>
@@ -17,32 +18,52 @@ import { CommonModule } from '@angular/common';
   styles: `
     .stat-row {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      padding: 6px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(77, 138, 255, 0.04);
+      gap: 8px;
     }
 
     .stat-row:last-child {
       border-bottom: none;
     }
 
+    .stat-row:hover {
+      background: rgba(77, 138, 255, 0.02);
+      border-radius: 6px;
+      padding-left: 4px;
+      padding-right: 4px;
+    }
+
     .stat-label {
       font-size: 12px;
       color: #8892b0;
+      white-space: nowrap;
+    }
+
+    .stat-dots {
+      flex: 1;
+      border-bottom: 1px dotted rgba(255, 255, 255, 0.06);
+      min-width: 20px;
+      height: 1px;
+      margin: 0 4px;
+      align-self: flex-end;
+      margin-bottom: 5px;
     }
 
     .stat-value {
       font-size: 13px;
       font-weight: 500;
-      color: #f0f4ff;
+      color: #e8eeff;
       font-family: 'JetBrains Mono', monospace;
+      white-space: nowrap;
+      text-shadow: 0 0 6px rgba(232, 238, 255, 0.1);
     }
 
     .stat-unit {
-      color: #4a5568;
+      color: rgba(77, 138, 255, 0.5);
       font-size: 11px;
-      margin-left: 2px;
+      margin-left: 3px;
     }
   `,
 })
