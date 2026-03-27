@@ -1,0 +1,96 @@
+{
+  "app": {
+    "title": "Exodex"
+  },
+  "common": {
+    "search": "Search...",
+    "searchPlanet": "Search planet or star...",
+    "clearFilters": "Clear filters",
+    "backToList": "Back to list",
+    "discoveredIn": "Discovered in {{year}}",
+    "notFound": "Planet not found",
+    "notFoundDescription": "The planet you are looking for does not exist in our database."
+  },
+  "filters": {
+    "title": "Filters",
+    "planetType": "Planet Type",
+    "habitability": "Habitability",
+    "discoveryYear": "Discovery Year",
+    "planetTypes": {
+      "rocky-terrestrial": "Rocky Terrestrial",
+      "super-earth": "Super-Earth",
+      "mini-neptune": "Mini-Neptune",
+      "neptunian": "Neptunian",
+      "jovian": "Jovian",
+      "hot-jupiter": "Hot Jupiter",
+      "cold-giant": "Cold Giant"
+    },
+    "habitabilityOptions": {
+      "potentially-habitable": "★ Potentially Habitable",
+      "marginal": "◑ Marginal",
+      "uninhabitable": "✕ Uninhabitable",
+      "unknown": "? Unknown"
+    }
+  },
+  "sort": {
+    "label": "Sort by:",
+    "index": "Index",
+    "name": "Name",
+    "year": "Year",
+    "radius": "Radius",
+    "mass": "Mass",
+    "temperature": "Temperature",
+    "habitability": "Habitability"
+  },
+  "stats": {
+    "exoplanets": "exoplanets",
+    "radius": "Radius",
+    "mass": "Mass",
+    "temperature": "Eq. temp.",
+    "period": "Period",
+    "days": "days",
+    "orbitalPeriod": "Orbital Period",
+    "semiMajorAxis": "Semi-major Axis",
+    "eccentricity": "Eccentricity",
+    "inclination": "Inclination",
+    "density": "Density",
+    "gravity": "Gravity",
+    "stellarTemperature": "Temperature",
+    "stellarRadius": "Radius",
+    "stellarMass": "Mass",
+    "stellarMetallicity": "Metallicity",
+    "stellarAge": "Age",
+    "discoveryMethod": "Method",
+    "discoveryYear": "Year",
+    "discoveryFacility": "Facility",
+    "telescope": "Telescope"
+  },
+  "sections": {
+    "orbitalProperties": "Orbital Properties",
+    "physicalProperties": "Physical Properties",
+    "hostStar": "Host Star",
+    "discovery": "Discovery"
+  },
+  "emptyState": {
+    "title": "No planets found",
+    "message": "Try adjusting filters or performing a new search"
+  },
+  "units": {
+    "radiusEarth": "R⊕",
+    "massEarth": "M⊕",
+    "tempK": "K",
+    "days": "days",
+    "au": "AU",
+    "deg": "°",
+    "density": "g/cm³",
+    "gravity": "m/s²",
+    "radiusSun": "R☉",
+    "massSun": "M☉",
+    "gyr": "Gyr"
+  },
+  "language": {
+    "select": "Language",
+    "es": "Español",
+    "en": "English"
+  }
+}

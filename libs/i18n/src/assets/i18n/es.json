@@ -1,0 +1,96 @@
+{
+  "app": {
+    "title": "Exodex"
+  },
+  "common": {
+    "search": "Buscar...",
+    "searchPlanet": "Buscar planeta o estrella...",
+    "clearFilters": "Limpiar filtros",
+    "backToList": "Volver al listado",
+    "discoveredIn": "Descubierto en {{year}}",
+    "notFound": "No se encontró el planeta",
+    "notFoundDescription": "El planeta que buscas no existe en nuestra base de datos."
+  },
+  "filters": {
+    "title": "Filtros",
+    "planetType": "Tipo de planeta",
+    "habitability": "Habitabilidad",
+    "discoveryYear": "Año de descubrimiento",
+    "planetTypes": {
+      "rocky-terrestrial": "Terrestre rocoso",
+      "super-earth": "Super-Tierra",
+      "mini-neptune": "Mini-Neptuno",
+      "neptunian": "Neptuniano",
+      "jovian": "Joviano",
+      "hot-jupiter": "Júpiter caliente",
+      "cold-giant": "Gigante frío"
+    },
+    "habitabilityOptions": {
+      "potentially-habitable": "★ Potencialmente habitable",
+      "marginal": "◑ Marginal",
+      "uninhabitable": "✕ Inhabitable",
+      "unknown": "? Desconocido"
+    }
+  },
+  "sort": {
+    "label": "Ordenar por:",
+    "index": "Índice",
+    "name": "Nombre",
+    "year": "Año",
+    "radius": "Radio",
+    "mass": "Masa",
+    "temperature": "Temperatura",
+    "habitability": "Habitabilidad"
+  },
+  "stats": {
+    "exoplanets": "exoplanetas",
+    "radius": "Radio",
+    "mass": "Masa",
+    "temperature": "Temp. eq.",
+    "period": "Período",
+    "days": "días",
+    "orbitalPeriod": "Período orbital",
+    "semiMajorAxis": "Semieje mayor",
+    "eccentricity": "Excentricidad",
+    "inclination": "Inclinación",
+    "density": "Densidad",
+    "gravity": "Gravedad",
+    "stellarTemperature": "Temperatura",
+    "stellarRadius": "Radio",
+    "stellarMass": "Masa",
+    "stellarMetallicity": "Metalicidad",
+    "stellarAge": "Edad",
+    "discoveryMethod": "Método",
+    "discoveryYear": "Año",
+    "discoveryFacility": "Facilidad",
+    "telescope": "Telescopio"
+  },
+  "sections": {
+    "orbitalProperties": "Propiedades orbitales",
+    "physicalProperties": "Propiedades físicas",
+    "hostStar": "Estrella huésped",
+    "discovery": "Descubrimiento"
+  },
+  "emptyState": {
+    "title": "No se encontraron planetas",
+    "message": "Intenta ajustar los filtros o realizar una nueva búsqueda"
+  },
+  "units": {
+    "radiusEarth": "R⊕",
+    "massEarth": "M⊕",
+    "tempK": "K",
+    "days": "días",
+    "au": "UA",
+    "deg": "°",
+    "density": "g/cm³",
+    "gravity": "m/s²",
+    "radiusSun": "R☉",
+    "massSun": "M☉",
+    "gyr": "Gyr"
+  },
+  "language": {
+    "select": "Idioma",
+    "es": "Español",
+    "en": "English"
+  }
+}

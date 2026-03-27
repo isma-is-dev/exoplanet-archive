@@ -1,6 +1,7 @@
 import { Component, inject, ChangeDetectionStrategy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { switchMap, catchError, of, startWith } from 'rxjs';
 import { ExoplanetApiService } from '../../core/services/exoplanet-api.service';
@@ -9,13 +10,13 @@ import { PlanetAvatarComponent, StatBadgeComponent, StatRowComponent } from '@ex
 @Component({
   selector: 'app-planet-detail-page',
   standalone: true,
-  imports: [CommonModule, PlanetAvatarComponent, StatBadgeComponent, StatRowComponent],
+  imports: [CommonModule, TranslateModule, PlanetAvatarComponent, StatBadgeComponent, StatRowComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (planet(); as p) {
       <div class="planet-detail">
         <button class="back-btn" (click)="goBack()">
-          ← Volver al listado
+          ← {{ 'common.backToList' | translate }}
         </button>
 
         <div class="detail-layout">
@@ -32,42 +33,42 @@ import { PlanetAvatarComponent, StatBadgeComponent, StatRowComponent } from '@ex
               <app-stat-badge type="type" [value]="p.planetType" />
               <app-stat-badge type="habitability" [value]="p.habitabilityClass" />
             </div>
-            <div class="discovery-year">Descubierto en {{ p.discoveryYear }}</div>
+            <div class="discovery-year">{{ 'common.discoveredIn' | translate: { year: p.discoveryYear } }}</div>
           </div>
 
           <div class="detail-right">
             <section class="detail-section">
-              <h3>Propiedades orbitales</h3>
-              <app-stat-row label="Período orbital" [value]="p.orbitalPeriodDays" unit="días" />
-              <app-stat-row label="Semieje mayor" [value]="p.semiMajorAxisAU" unit="UA" />
-              <app-stat-row label="Excentricidad" [value]="p.eccentricity" />
-              <app-stat-row label="Inclinación" [value]="p.inclinationDeg" unit="°" />
+              <h3>{{ 'sections.orbitalProperties' | translate }}</h3>
+              <app-stat-row [label]="'stats.orbitalPeriod' | translate" [value]="p.orbitalPeriodDays" [unit]="'units.days' | translate" />
+              <app-stat-row [label]="'stats.semiMajorAxis' | translate" [value]="p.semiMajorAxisAU" [unit]="'units.au' | translate" />
+              <app-stat-row [label]="'stats.eccentricity' | translate" [value]="p.eccentricity" />
+              <app-stat-row [label]="'stats.inclination' | translate" [value]="p.inclinationDeg" [unit]="'units.deg' | translate" />
             </section>
 
             <section class="detail-section">
-              <h3>Propiedades físicas</h3>
-              <app-stat-row label="Radio" [value]="p.radiusEarth" unit="R⊕" />
-              <app-stat-row label="Masa" [value]="p.massEarth" unit="M⊕" />
-              <app-stat-row label="Densidad" [value]="p.densityGCC" unit="g/cm³" />
-              <app-stat-row label="Gravedad" [value]="p.gravityMS2" unit="m/s²" />
-              <app-stat-row label="Temperatura de equilibrio" [value]="p.equilibriumTempK" unit="K" />
+              <h3>{{ 'sections.physicalProperties' | translate }}</h3>
+              <app-stat-row [label]="'stats.radius' | translate" [value]="p.radiusEarth" unit="R⊕" />
+              <app-stat-row [label]="'stats.mass' | translate" [value]="p.massEarth" unit="M⊕" />
+              <app-stat-row [label]="'stats.density' | translate" [value]="p.densityGCC" [unit]="'units.density' | translate" />
+              <app-stat-row [label]="'stats.gravity' | translate" [value]="p.gravityMS2" [unit]="'units.gravity' | translate" />
+              <app-stat-row [label]="'stats.temperature' | translate" [value]="p.equilibriumTempK" unit="K" />
             </section>
 
             <section class="detail-section">
-              <h3>Estrella huésped</h3>
-              <app-stat-row label="Temperatura" [value]="p.stellarTempK" unit="K" />
-              <app-stat-row label="Radio" [value]="p.stellarRadiusSun" unit="R☉" />
-              <app-stat-row label="Masa" [value]="p.stellarMassSun" unit="M☉" />
-              <app-stat-row label="Metalicidad" [value]="p.stellarMetallicity" />
-              <app-stat-row label="Edad" [value]="p.stellarAge" unit="Gyr" />
+              <h3>{{ 'sections.hostStar' | translate }}</h3>
+              <app-stat-row [label]="'stats.stellarTemperature' | translate" [value]="p.stellarTempK" unit="K" />
+              <app-stat-row [label]="'stats.stellarRadius' | translate" [value]="p.stellarRadiusSun" unit="R☉" />
+              <app-stat-row [label]="'stats.stellarMass' | translate" [value]="p.stellarMassSun" unit="M☉" />
+              <app-stat-row [label]="'stats.stellarMetallicity' | translate" [value]="p.stellarMetallicity" />
+              <app-stat-row [label]="'stats.stellarAge' | translate" [value]="p.stellarAge" [unit]="'units.gyr' | translate" />
             </section>
 
             <section class="detail-section">
-              <h3>Descubrimiento</h3>
-              <app-stat-row label="Método" [value]="p.discoveryMethod" />
-              <app-stat-row label="Año" [value]="p.discoveryYear" />
-              <app-stat-row label="Facilidad" [value]="p.discoveryFacility" />
-              <app-stat-row label="Telescopio" [value]="p.telescope" />
+              <h3>{{ 'sections.discovery' | translate }}</h3>
+              <app-stat-row [label]="'stats.discoveryMethod' | translate" [value]="p.discoveryMethod" />
+              <app-stat-row [label]="'stats.discoveryYear' | translate" [value]="p.discoveryYear" />
+              <app-stat-row [label]="'stats.discoveryFacility' | translate" [value]="p.discoveryFacility" />
+              <app-stat-row [label]="'stats.telescope' | translate" [value]="p.telescope" />
             </section>
           </div>
         </div>
@@ -76,9 +77,9 @@ import { PlanetAvatarComponent, StatBadgeComponent, StatRowComponent } from '@ex
 
     @if (error()) {
       <div class="error-state">
-        <h2>No se encontró el planeta</h2>
-        <p>El planeta que buscas no existe en nuestra base de datos.</p>
-        <button (click)="goBack()">Volver al listado</button>
+        <h2>{{ 'common.notFound' | translate }}</h2>
+        <p>{{ 'common.notFoundDescription' | translate }}</p>
+        <button (click)="goBack()">{{ 'common.backToList' | translate }}</button>
       </div>
     }
   `,

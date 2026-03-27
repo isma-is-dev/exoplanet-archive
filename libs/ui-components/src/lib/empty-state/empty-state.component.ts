@@ -1,10 +1,11 @@
 import { Component, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-empty-state',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
   template: `
     <div class="empty-state">
       <div class="empty-illustration">
@@ -33,12 +34,12 @@ import { CommonModule } from '@angular/common';
           </defs>
         </svg>
       </div>
-      <h3 class="empty-title">No se encontraron planetas</h3>
+      <h3 class="empty-title">{{ 'emptyState.title' | translate }}</h3>
       <p class="empty-message">
-        Intenta ajustar los filtros o realizar una nueva búsqueda
+        {{ 'emptyState.message' | translate }}
       </p>
       <button class="empty-action" (click)="clearFilters.emit()">
-        Limpiar filtros
+        {{ 'common.clearFilters' | translate }}
       </button>
     </div>
   `,

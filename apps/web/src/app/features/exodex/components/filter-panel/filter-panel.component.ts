@@ -1,30 +1,31 @@
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { startWith, map } from 'rxjs';
 import { FilterStateService } from '../../../../core/services/filter-state.service';
 import { ExoplanetApiService } from '../../../../core/services/exoplanet-api.service';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { startWith } from 'rxjs';
 import { SearchInputComponent, FilterChipComponent } from '@exodex/ui-components';
 
 @Component({
   selector: 'app-filter-panel',
   standalone: true,
-  imports: [CommonModule, FormsModule, SearchInputComponent, FilterChipComponent],
+  imports: [CommonModule, FormsModule, TranslateModule, SearchInputComponent, FilterChipComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="filter-panel">
       <div class="filter-section">
         <app-search-input
-          placeholder="Buscar planeta o estrella..."
+          [placeholder]="'common.searchPlanet' | translate"
           (search)="onSearch($event)"
         />
       </div>
 
       <div class="filter-section">
-        <h3>Tipo de planeta</h3>
+        <h3>{{ 'filters.planetType' | translate }}</h3>
         <div class="filter-chips">
-          @for (type of planetTypes; track type.value) {
+          @for (type of planetTypes(); track type.value) {
             <app-filter-chip
               [label]="type.label"
               [selected]="isTypeSelected(type.value)"
@@ -35,9 +36,9 @@ import { SearchInputComponent, FilterChipComponent } from '@exodex/ui-components
       </div>
 
       <div class="filter-section">
-        <h3>Habitabilidad</h3>
+        <h3>{{ 'filters.habitability' | translate }}</h3>
         <div class="filter-chips">
-          @for (h of habitabilityOptions; track h.value) {
+          @for (h of habitabilityOptions(); track h.value) {
             <app-filter-chip
               [label]="h.label"
               [selected]="isHabitabilitySelected(h.value)"
@@ -49,7 +50,7 @@ import { SearchInputComponent, FilterChipComponent } from '@exodex/ui-components
 
       @if (stats(); as s) {
         <div class="filter-section">
-          <h3>Año de descubrimiento</h3>
+          <h3>{{ 'filters.discoveryYear' | translate }}</h3>
           <div class="range-inputs">
             <input
               type="number"
@@ -75,7 +76,7 @@ import { SearchInputComponent, FilterChipComponent } from '@exodex/ui-components
           class="clear-btn"
           (click)="filterState.resetFilters()"
         >
-          Limpiar filtros
+          {{ 'common.clearFilters' | translate }}
         </button>
       }
     </div>
@@ -140,26 +141,39 @@ import { SearchInputComponent, FilterChipComponent } from '@exodex/ui-components
 export class FilterPanelComponent {
   protected filterState = inject(FilterStateService);
   private apiService = inject(ExoplanetApiService);
+  private translate = inject(TranslateService);
 
   filters = this.filterState.filters;
   stats = toSignal(this.apiService.getStats$().pipe(startWith(null)));
 
-  planetTypes = [
-    { value: 'rocky-terrestrial', label: 'Terrestre rocoso' },
-    { value: 'super-earth', label: 'Super-Tierra' },
-    { value: 'mini-neptune', label: 'Mini-Neptuno' },
-    { value: 'neptunian', label: 'Neptuniano' },
-    { value: 'jovian', label: 'Joviano' },
-    { value: 'hot-jupiter', label: 'Júpiter caliente' },
-    { value: 'cold-giant', label: 'Gigante frío' },
-  ];
+  planetTypes = toSignal(
+    this.translate.onLangChange.pipe(
+      startWith(null),
+      map(() => [
+        { value: 'rocky-terrestrial', label: this.translate.instant('filters.planetTypes.rocky-terrestrial') },
+        { value: 'super-earth', label: this.translate.instant('filters.planetTypes.super-earth') },
+        { value: 'mini-neptune', label: this.translate.instant('filters.planetTypes.mini-neptune') },
+        { value: 'neptunian', label: this.translate.instant('filters.planetTypes.neptunian') },
+        { value: 'jovian', label: this.translate.instant('filters.planetTypes.jovian') },
+        { value: 'hot-jupiter', label: this.translate.instant('filters.planetTypes.hot-jupiter') },
+        { value: 'cold-giant', label: this.translate.instant('filters.planetTypes.cold-giant') },
+      ])
+    ),
+    { requireSync: true }
+  );
 
-  habitabilityOptions = [
-    { value: 'potentially-habitable', label: '★ Potencialmente habitable' },
-    { value: 'marginal', label: '◑ Marginal' },
-    { value: 'uninhabitable', label: '✕ Inhabitable' },
-    { value: 'unknown', label: '? Desconocido' },
-  ];
+  habitabilityOptions = toSignal(
+    this.translate.onLangChange.pipe(
+      startWith(null),
+      map(() => [
+        { value: 'potentially-habitable', label: this.translate.instant('filters.habitabilityOptions.potentially-habitable') },
+        { value: 'marginal', label: this.translate.instant('filters.habitabilityOptions.marginal') },
+        { value: 'uninhabitable', label: this.translate.instant('filters.habitabilityOptions.uninhabitable') },
+        { value: 'unknown', label: this.translate.instant('filters.habitabilityOptions.unknown') },
+      ])
+    ),
+    { requireSync: true }
+  );
 
   onSearch(query: string): void {
     this.filterState.updateFilter('searchQuery', query);

@@ -1,5 +1,6 @@
-import { Component, input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Exoplanet } from '@exodex/shared-types';
 import { StatBadgeComponent } from '../stat-badge/stat-badge.component';
 import { StatRowComponent } from '../stat-row/stat-row.component';
@@ -8,7 +9,7 @@ import { PlanetAvatarComponent } from '../planet-avatar/planet-avatar.component'
 @Component({
   selector: 'app-planet-card',
   standalone: true,
-  imports: [CommonModule, StatBadgeComponent, StatRowComponent, PlanetAvatarComponent],
+  imports: [CommonModule, TranslateModule, StatBadgeComponent, StatRowComponent, PlanetAvatarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <article class="planet-card" [class]="'planet-card--' + planet().planetType">
@@ -28,10 +29,10 @@ import { PlanetAvatarComponent } from '../planet-avatar/planet-avatar.component'
         </div>
 
         <div class="card-stats">
-          <app-stat-row label="Radio" [value]="planet().radiusEarth" unit="R⊕" />
-          <app-stat-row label="Masa" [value]="planet().massEarth" unit="M⊕" />
-          <app-stat-row label="Temp. eq." [value]="planet().equilibriumTempK" unit="K" />
-          <app-stat-row label="Período" [value]="planet().orbitalPeriodDays" unit="días" />
+          <app-stat-row [label]="'stats.radius' | translate" [value]="planet().radiusEarth" unit="R⊕" />
+          <app-stat-row [label]="'stats.mass' | translate" [value]="planet().massEarth" unit="M⊕" />
+          <app-stat-row [label]="'stats.temperature' | translate" [value]="planet().equilibriumTempK" unit="K" />
+          <app-stat-row [label]="'stats.period' | translate" [value]="planet().orbitalPeriodDays" [unit]="'units.days' | translate" />
         </div>
       </div>
 
@@ -149,4 +150,5 @@ import { PlanetAvatarComponent } from '../planet-avatar/planet-avatar.component'
 })
 export class PlanetCardComponent {
   planet = input.required<Exoplanet>();
+  private translate = inject(TranslateService);
 }

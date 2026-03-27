@@ -1,5 +1,6 @@
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { startWith } from 'rxjs';
 import { FilterStateService } from '../../core/services/filter-state.service';
@@ -8,16 +9,19 @@ import { FilterPanelComponent } from './components/filter-panel/filter-panel.com
 import { SortBarComponent } from './components/sort-bar/sort-bar.component';
 import { PlanetGridComponent } from './components/planet-grid/planet-grid.component';
 import { SearchInputComponent } from '@exodex/ui-components';
+import { LanguageSwitcherComponent } from '../../core/components/language-switcher/language-switcher.component';
 
 @Component({
   selector: 'app-exodex-page',
   standalone: true,
   imports: [
     CommonModule,
+    TranslateModule,
     FilterPanelComponent,
     SortBarComponent,
     PlanetGridComponent,
     SearchInputComponent,
+    LanguageSwitcherComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -27,14 +31,15 @@ import { SearchInputComponent } from '@exodex/ui-components';
           <h1>Exodex</h1>
           @if (stats(); as s) {
             <span class="planet-count">
-              {{ s.totalCount | number }} exoplanetas
+              {{ s.totalCount | number }} {{ 'stats.exoplanets' | translate }}
             </span>
           }
         </div>
         <div class="header-right">
+          <app-language-switcher />
           <app-search-input
             class="header-search"
-            placeholder="Buscar..."
+            [placeholder]="'common.search' | translate"
             (search)="onSearch($event)"
           />
           <button
