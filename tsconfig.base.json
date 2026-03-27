@@ -15,9 +15,9 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "shared-types": ["libs/shared-types/src/index.ts"],
-      "planet-renderer": ["libs/planet-renderer/src/index.ts"],
-      "ui-components": ["libs/ui-components/src/index.ts"]
+      "@exodex/shared-types": ["libs/shared-types/src/index.ts"],
+      "@exodex/planet-renderer": ["libs/planet-renderer/src/index.ts"],
+      "@exodex/ui-components": ["libs/ui-components/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
