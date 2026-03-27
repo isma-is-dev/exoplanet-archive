@@ -1,0 +1,94 @@
+@use 'variables' as *;
+@use 'typography' as *;
+
+// Reset básico
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+// Scrollbar personalizada
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: $color-space-dark;
+}
+
+::-webkit-scrollbar-thumb {
+  background: $color-space-surface;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: $color-space-elevated;
+}
+
+// Enlaces
+a {
+  color: $color-accent-primary;
+  text-decoration: none;
+  transition: color $transition-fast;
+
+  &:hover {
+    color: lighten($color-accent-primary, 10%);
+  }
+}
+
+// Botones base
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+}
+
+// Inputs
+input,
+select,
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  background: $color-space-surface;
+  border: 1px solid $color-space-border;
+  border-radius: 6px;
+  padding: 8px 12px;
+  transition: border-color $transition-fast;
+
+  &:focus {
+    outline: none;
+    border-color: $color-accent-primary;
+  }
+
+  &::placeholder {
+    color: $color-text-tertiary;
+  }
+}
+
+// Utilidades
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
