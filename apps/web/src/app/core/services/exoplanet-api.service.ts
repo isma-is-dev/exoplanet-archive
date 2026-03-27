@@ -36,7 +36,7 @@ export class ExoplanetApiService {
   private http = inject(HttpClient);
   private mockService = inject(ExoplanetMockService);
   private cache = new Map<string, { data: unknown; timestamp: number }>();
-  private useMock = signal(false);
+  private useMock = signal(true); // TODO: cambiar a false cuando el backend esté disponible
 
   getExoplanets$(
     filters: ExoplanetFilters,
