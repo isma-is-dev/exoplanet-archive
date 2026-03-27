@@ -1,0 +1,506 @@
+import { Component, inject, computed, ChangeDetectionStrategy } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+
+interface MethodInfo {
+  name: string;
+  title: string;
+  description: string;
+  howItWorks: string;
+  advantages: string[];
+  limitations: string[];
+  accentColor: string;
+  iconSvg: string;
+  diagramSvg: string;
+  examplePlanets: string[];
+}
+
+const METHODS: Record<string, MethodInfo> = {
+  'transit': {
+    name: 'transit',
+    title: 'Transit Photometry',
+    description: 'Detects planets by measuring the tiny dimming of a star\'s light as a planet passes (transits) in front of it from our perspective.',
+    howItWorks: 'When a planet crosses between its host star and Earth, it blocks a small fraction of the star\'s light. By precisely measuring the brightness of the star over time, astronomers can detect the periodic dips that indicate a planet is orbiting. The depth of the dip reveals the planet\'s size relative to its star, while the period between dips gives the orbital period.',
+    advantages: [
+      'Can determine planet radius directly',
+      'Can detect atmospheric composition during transit',
+      'Efficient for surveying many stars simultaneously',
+      'Has discovered the most exoplanets to date'
+    ],
+    limitations: [
+      'Requires orbital alignment with our line of sight',
+      'Only ~1% of planetary systems are geometrically aligned',
+      'Cannot easily determine planet mass',
+      'False positives from binary stars are common'
+    ],
+    accentColor: '#4d8aff',
+    iconSvg: `<svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="100" cy="100" r="50" fill="#fbd38d" opacity="0.9"/>
+      <circle cx="100" cy="100" r="55" fill="none" stroke="#fbd38d" stroke-width="0.5" opacity="0.4"/>
+      <circle cx="100" cy="100" r="65" fill="none" stroke="#fbd38d" stroke-width="0.3" opacity="0.2"/>
+      <circle cx="85" cy="90" r="10" fill="#1a1a2e"/>
+      <circle cx="85" cy="90" r="11" fill="none" stroke="rgba(77,138,255,0.6)" stroke-width="1"/>
+      <line x1="0" y1="90" x2="200" y2="90" stroke="rgba(77,138,255,0.15)" stroke-width="0.5" stroke-dasharray="4 4"/>
+    </svg>`,
+    diagramSvg: `<svg viewBox="0 0 400 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="20" y1="80" x2="380" y2="80" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+      <line x1="20" y1="40" x2="380" y2="40" stroke="rgba(255,255,255,0.05)" stroke-width="0.5" stroke-dasharray="4 4"/>
+      <text x="10" y="84" fill="#5a6177" font-size="8" font-family="Inter">Brightness</text>
+      <text x="370" y="95" fill="#5a6177" font-size="8" font-family="Inter">Time</text>
+      <path d="M 20,40 L 120,40 C 135,40 140,75 155,75 C 170,75 175,40 185,40 L 380,40" stroke="#4d8aff" stroke-width="2" fill="none"/>
+      <rect x="135" y="35" width="55" height="50" fill="rgba(77,138,255,0.08)" rx="4"/>
+      <text x="148" y="30" fill="#4d8aff" font-size="9" font-family="Orbitron" opacity="0.7">Transit</text>
+    </svg>`,
+    examplePlanets: ['Kepler-186 f', 'TRAPPIST-1 e', 'HD 209458 b']
+  },
+  'radial-velocity': {
+    name: 'radial-velocity',
+    title: 'Radial Velocity (Doppler)',
+    description: 'Detects planets by measuring the tiny wobble of a star caused by the gravitational pull of an orbiting planet.',
+    howItWorks: 'A planet doesn\'t just orbit its star — the star also moves slightly in response to the planet\'s gravity. This creates a small Doppler shift in the starlight: the light is blue-shifted when the star moves toward us and red-shifted when it moves away. By measuring these shifts with extreme precision (down to 1 m/s), astronomers can infer the presence, mass, and orbit of the planet.',
+    advantages: [
+      'Can determine minimum planet mass',
+      'Works for planets in any orbital inclination',
+      'Effective for detecting massive planets close to their star',
+      'First method to confirm an exoplanet around a Sun-like star'
+    ],
+    limitations: [
+      'Biased toward massive, close-in planets',
+      'Only gives minimum mass (depends on inclination)',
+      'Stellar activity can mimic planetary signals',
+      'Requires many observations over the orbital period'
+    ],
+    accentColor: '#a855f7',
+    iconSvg: `<svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="90" cy="100" r="40" fill="#fbd38d" opacity="0.8"/>
+      <circle cx="145" cy="100" r="8" fill="#a855f7" opacity="0.8"/>
+      <ellipse cx="110" cy="100" rx="55" ry="30" fill="none" stroke="rgba(168,85,247,0.3)" stroke-width="1" stroke-dasharray="4 4"/>
+      <path d="M 50,100 L 30,100" stroke="#6366f1" stroke-width="2" marker-end="url(#arrow)"/>
+      <path d="M 130,100 L 150,100" stroke="#ef4444" stroke-width="2"/>
+      <text x="20" y="90" fill="#6366f1" font-size="10" font-family="Inter">Blue</text>
+      <text x="152" y="90" fill="#ef4444" font-size="10" font-family="Inter">Red</text>
+    </svg>`,
+    diagramSvg: `<svg viewBox="0 0 400 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="20" y1="60" x2="380" y2="60" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+      <text x="10" y="64" fill="#5a6177" font-size="8" font-family="Inter">Velocity</text>
+      <text x="370" y="95" fill="#5a6177" font-size="8" font-family="Inter">Time</text>
+      <path d="M 20,60 Q 60,20 100,60 Q 140,100 180,60 Q 220,20 260,60 Q 300,100 340,60 Q 360,40 380,60" stroke="#a855f7" stroke-width="2" fill="none"/>
+      <line x1="20" y1="20" x2="20" y2="100" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/>
+      <text x="5" y="25" fill="#6366f1" font-size="7" font-family="Inter">→ us</text>
+      <text x="5" y="105" fill="#ef4444" font-size="7" font-family="Inter">← us</text>
+    </svg>`,
+    examplePlanets: ['Proxima Centauri b', '51 Pegasi b', 'Gliese 581 g']
+  },
+  'direct-imaging': {
+    name: 'direct-imaging',
+    title: 'Direct Imaging',
+    description: 'Captures actual images of exoplanets by blocking out the overwhelming light from the host star using coronagraphs or starshades.',
+    howItWorks: 'Stars are billions of times brighter than their planets, making direct imaging extremely challenging. Using advanced instruments like coronagraphs (which block the star\'s light) and adaptive optics (which correct atmospheric distortion), telescopes can reveal faint planetary companions. This method works best for large, young, hot planets far from their stars.',
+    advantages: [
+      'Provides direct evidence of a planet\'s existence',
+      'Can study planetary atmospheres and spectra',
+      'Best for planets in wide orbits',
+      'Can image entire planetary systems'
+    ],
+    limitations: [
+      'Extremely technically challenging',
+      'Only works for young, large, distant planets',
+      'Requires advanced instrumentation',
+      'Limited to nearby stars'
+    ],
+    accentColor: '#22d3ee',
+    iconSvg: `<svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="100" cy="100" r="30" fill="#1a1a2e" stroke="rgba(34,211,238,0.3)" stroke-width="1"/>
+      <circle cx="100" cy="100" r="35" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="10" stroke-dasharray="1 10"/>
+      <circle cx="145" cy="70" r="6" fill="#22d3ee" opacity="0.9"/>
+      <circle cx="145" cy="70" r="10" fill="none" stroke="#22d3ee" stroke-width="0.5" opacity="0.4"/>
+      <text x="70" y="105" fill="#5a6177" font-size="12" font-family="Orbitron">★</text>
+      <text x="138" y="60" fill="#22d3ee" font-size="7" font-family="Inter">planet</text>
+    </svg>`,
+    diagramSvg: `<svg viewBox="0 0 400 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="200" cy="60" r="40" fill="rgba(30,30,50,0.8)" stroke="rgba(34,211,238,0.2)" stroke-width="1"/>
+      <circle cx="200" cy="60" r="15" fill="#fbd38d" opacity="0.3"/>
+      <text x="188" y="65" fill="#5a6177" font-size="10" font-family="Inter">Blocked</text>
+      <circle cx="280" cy="35" r="5" fill="#22d3ee" opacity="0.9"/>
+      <circle cx="280" cy="35" r="9" fill="none" stroke="#22d3ee" stroke-width="0.8" opacity="0.4"/>
+      <text x="295" y="38" fill="#22d3ee" font-size="8" font-family="Inter">Detected planet</text>
+    </svg>`,
+    examplePlanets: ['Jupiter Analog', 'HR 8799 b', 'Beta Pictoris b']
+  },
+  'other': {
+    name: 'other',
+    title: 'Other Detection Methods',
+    description: 'Includes gravitational microlensing, astrometry, timing variations, and other techniques used to detect exoplanets.',
+    howItWorks: 'Several additional methods exist: Gravitational microlensing uses the bending of light when a foreground star and its planet pass in front of a background star. Astrometry measures the tiny positional wobble of a star. Timing variations detect planets by changes in the timing of pulsars or eclipsing binaries.',
+    advantages: [
+      'Microlensing can detect low-mass planets at large distances',
+      'Astrometry can measure true masses',
+      'Timing methods are extremely precise',
+      'Each method probes different parameter spaces'
+    ],
+    limitations: [
+      'Microlensing events are one-time and unrepeatable',
+      'Astrometry requires extremely precise measurements',
+      'Each method has specific, narrow applicability',
+      'Often require space-based telescopes'
+    ],
+    accentColor: '#f59e0b',
+    iconSvg: `<svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="100" cy="100" r="25" fill="#f59e0b" opacity="0.3"/>
+      <circle cx="100" cy="100" r="40" fill="none" stroke="#f59e0b" stroke-width="0.5" opacity="0.3"/>
+      <path d="M 60,140 Q 100,60 140,140" stroke="rgba(245,158,11,0.6)" stroke-width="2" fill="none"/>
+      <circle cx="100" cy="80" r="4" fill="#f59e0b" opacity="0.8"/>
+    </svg>`,
+    diagramSvg: `<svg viewBox="0 0 400 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M 20,90 L 140,90 Q 200,20 260,90 L 380,90" stroke="#f59e0b" stroke-width="2" fill="none"/>
+      <text x="180" y="15" fill="#f59e0b" font-size="9" font-family="Orbitron" opacity="0.7">Lens event</text>
+      <circle cx="200" cy="55" r="3" fill="#f59e0b" opacity="0.8"/>
+    </svg>`,
+    examplePlanets: ['OGLE-2005-BLG-390L b', 'PSR B1257+12 b']
+  }
+};
+
+@Component({
+  selector: 'app-method-page',
+  standalone: true,
+  imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    @if (method(); as m) {
+      <div class="method-page">
+        <button class="back-btn" (click)="goBack()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+          Back to Exodex
+        </button>
+
+        <div class="method-hero">
+          <div class="method-icon" [innerHTML]="iconSvg()"></div>
+          <div class="method-hero-text">
+            <div class="method-label" [style.color]="m.accentColor">Detection Method</div>
+            <h1 class="method-title" [style.color]="m.accentColor">{{ m.title }}</h1>
+            <p class="method-description">{{ m.description }}</p>
+          </div>
+        </div>
+
+        <div class="method-content">
+          <section class="method-section">
+            <h2 [style.borderBottomColor]="m.accentColor + '30'">
+              <span class="section-num" [style.color]="m.accentColor">01</span>
+              How it Works
+            </h2>
+            <p class="method-body">{{ m.howItWorks }}</p>
+            <div class="method-diagram" [innerHTML]="diagramSvg()"></div>
+          </section>
+
+          <div class="method-columns">
+            <section class="method-card advantages">
+              <h3>
+                <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#22c55e" stroke-width="2"><circle cx="10" cy="10" r="8"/><path d="M7 10l2 2 4-4"/></svg>
+                Advantages
+              </h3>
+              <ul>
+                @for (adv of m.advantages; track $index) {
+                  <li>{{ adv }}</li>
+                }
+              </ul>
+            </section>
+
+            <section class="method-card limitations">
+              <h3>
+                <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#f59e0b" stroke-width="2"><circle cx="10" cy="10" r="8"/><path d="M10 7v4M10 13h.01" stroke-linecap="round"/></svg>
+                Limitations
+              </h3>
+              <ul>
+                @for (lim of m.limitations; track $index) {
+                  <li>{{ lim }}</li>
+                }
+              </ul>
+            </section>
+          </div>
+
+          <section class="method-section">
+            <h2 [style.borderBottomColor]="m.accentColor + '30'">
+              <span class="section-num" [style.color]="m.accentColor">02</span>
+              Notable Discoveries
+            </h2>
+            <div class="example-planets">
+              @for (name of m.examplePlanets; track $index) {
+                <div class="example-planet-chip" [style.borderColor]="m.accentColor + '30'">
+                  <svg viewBox="0 0 16 16" width="12" height="12" fill="none"><circle cx="8" cy="8" r="5" [attr.fill]="m.accentColor" opacity="0.6"/></svg>
+                  {{ name }}
+                </div>
+              }
+            </div>
+          </section>
+        </div>
+      </div>
+    } @else {
+      <div class="error-state">
+        <h2>Method not found</h2>
+        <p>The requested detection method could not be found.</p>
+        <button class="back-btn" (click)="goBack()">Back to Exodex</button>
+      </div>
+    }
+  `,
+  styles: `
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .method-page {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 32px 24px;
+      animation: fadeInUp 600ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 40px;
+      padding: 10px 20px;
+      background: rgba(15, 20, 40, 0.6);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(77, 138, 255, 0.15);
+      border-radius: 12px;
+      color: #8892b0;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 300ms ease;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .back-btn:hover {
+      background: rgba(77, 138, 255, 0.1);
+      color: #e8eeff;
+      border-color: rgba(77, 138, 255, 0.3);
+      transform: translateX(-4px);
+    }
+
+    .method-hero {
+      display: flex;
+      gap: 32px;
+      align-items: center;
+      margin-bottom: 48px;
+      padding: 32px;
+      background: rgba(15, 20, 40, 0.5);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 20px;
+    }
+
+    .method-icon {
+      width: 160px;
+      height: 160px;
+      flex-shrink: 0;
+    }
+
+    .method-icon :deep(svg) {
+      width: 100%;
+      height: 100%;
+    }
+
+    .method-label {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+      opacity: 0.8;
+    }
+
+    .method-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 900;
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+    }
+
+    .method-description {
+      color: #8892b0;
+      font-size: 15px;
+      line-height: 1.7;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .method-content {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .method-section {
+      background: rgba(15, 20, 40, 0.5);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 16px;
+      padding: 28px;
+    }
+
+    .method-section h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #e8eeff;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid;
+    }
+
+    .section-num {
+      font-size: 24px;
+      font-weight: 900;
+      opacity: 0.3;
+    }
+
+    .method-body {
+      color: #8892b0;
+      font-size: 14px;
+      line-height: 1.8;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .method-diagram {
+      margin-top: 24px;
+      padding: 20px;
+      background: rgba(10, 14, 28, 0.5);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .method-diagram :deep(svg) {
+      width: 100%;
+      height: auto;
+    }
+
+    .method-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .method-card {
+      background: rgba(15, 20, 40, 0.5);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 16px;
+      padding: 24px;
+    }
+
+    .method-card h3 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #e8eeff;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .method-card ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .method-card li {
+      color: #8892b0;
+      font-size: 13px;
+      font-family: 'Inter', sans-serif;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      line-height: 1.5;
+    }
+
+    .method-card li:last-child {
+      border-bottom: none;
+    }
+
+    .advantages li::before { content: '✓ '; color: #22c55e; font-weight: bold; }
+    .limitations li::before { content: '⚠ '; color: #f59e0b; }
+
+    .example-planets {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .example-planet-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      background: rgba(10, 14, 28, 0.5);
+      border: 1px solid;
+      border-radius: 10px;
+      color: #e8eeff;
+      font-size: 13px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .error-state {
+      text-align: center;
+      padding: 80px;
+      animation: fadeInUp 600ms ease;
+    }
+
+    .error-state h2 { color: #e8eeff; margin-bottom: 8px; }
+    .error-state p { color: #8892b0; margin-bottom: 24px; }
+
+    @media (max-width: 768px) {
+      .method-hero {
+        flex-direction: column;
+        text-align: center;
+      }
+      .method-columns {
+        grid-template-columns: 1fr;
+      }
+      .method-icon { width: 120px; height: 120px; }
+      .method-title { font-size: 1.3rem; }
+    }
+  `
+})
+export class MethodPageComponent {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private sanitizer = inject(DomSanitizer);
+
+  private slug = toSignal(
+    this.route.params.pipe(map(p => p['name'] as string)),
+    { initialValue: '' }
+  );
+
+  method = computed(() => {
+    const s = this.slug();
+    if (!s) return null;
+    return METHODS[s] || null;
+  });
+
+  iconSvg = computed<SafeHtml>(() => {
+    const m = this.method();
+    return m ? this.sanitizer.bypassSecurityTrustHtml(m.iconSvg) : '';
+  });
+
+  diagramSvg = computed<SafeHtml>(() => {
+    const m = this.method();
+    return m ? this.sanitizer.bypassSecurityTrustHtml(m.diagramSvg) : '';
+  });
+
+  goBack(): void {
+    this.router.navigate(['/']);
+  }
+}

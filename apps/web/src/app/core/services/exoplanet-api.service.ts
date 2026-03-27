@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, of, catchError, shareReplay, tap } from 'rxjs';
+import { Observable, of, catchError, shareReplay, tap, map } from 'rxjs';
 import { Exoplanet, ExoplanetFilters, SortState } from '@exodex/shared-types';
 import { ExoplanetMockService } from './exoplanet-mock.service';
 
@@ -111,6 +111,21 @@ export class ExoplanetApiService {
         return this.mockService.getById$(id);
       })
     );
+  }
+
+  getSystemPlanets$(hostStar: string): Observable<Exoplanet[]> {
+    if (this.useMock()) {
+      return this.mockService.getSystemPlanets$(hostStar);
+    }
+    return this.http.get<PaginatedResponse<Exoplanet>>(`${API_BASE_URL}/exoplanets`, { params: { q: hostStar, pageSize: '50' } })
+      .pipe(
+        map((res) => res.data),
+        shareReplay(1),
+        catchError(() => {
+          this.useMock.set(true);
+          return this.mockService.getSystemPlanets$(hostStar);
+        })
+      );
   }
 
   getStats$(): Observable<StatsResponse> {

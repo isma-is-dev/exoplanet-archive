@@ -7,3 +7,4 @@ export * from './lib/skeleton-card/skeleton-card.component';
 export * from './lib/search-input/search-input.component';
 export * from './lib/pagination/pagination.component';
 export * from './lib/empty-state/empty-state.component';
+export * from './lib/system-orbit-preview/system-orbit-preview.component';

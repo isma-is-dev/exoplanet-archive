@@ -4,16 +4,16 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { switchMap, catchError, of, startWith } from 'rxjs';
+import { switchMap, catchError, of, shareReplay } from 'rxjs';
 import { ExoplanetApiService } from '../../core/services/exoplanet-api.service';
-import { PlanetAvatarComponent, StatBadgeComponent, StatRowComponent } from '@exodex/ui-components';
+import { PlanetAvatarComponent, StatBadgeComponent, StatRowComponent, SystemOrbitPreviewComponent } from '@exodex/ui-components';
 import { renderStar } from '@exodex/planet-renderer';
 import { getTelescopeWikiLink } from '../../core/constants/telescopes';
 
 @Component({
   selector: 'app-planet-detail-page',
   standalone: true,
-  imports: [CommonModule, TranslateModule, PlanetAvatarComponent, StatBadgeComponent, StatRowComponent],
+  imports: [CommonModule, TranslateModule, PlanetAvatarComponent, StatBadgeComponent, StatRowComponent, SystemOrbitPreviewComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (planet(); as p) {
@@ -54,6 +54,14 @@ import { getTelescopeWikiLink } from '../../core/constants/telescopes';
           <div class="detail-right">
             <section class="detail-section">
               <h3><span class="section-icon"><svg viewBox="0 0 20 20" fill="none" stroke="#4d8aff" stroke-width="1.2"><circle cx="10" cy="10" r="7"/><circle cx="10" cy="10" r="3"/><circle cx="10" cy="10" r="1" fill="#4d8aff"/></svg></span> {{ 'sections.orbitalProperties' | translate }}</h3>
+              
+              @if (systemPlanets().length > 0) {
+                <app-system-orbit-preview 
+                  [planets]="systemPlanets()" 
+                  [currentPlanetId]="p.id"
+                  [systemName]="p.hostStar" />
+              }
+
               <app-stat-row [label]="'stats.orbitalPeriod' | translate" [value]="p.orbitalPeriodDays" [unit]="'units.days' | translate" />
               <app-stat-row [label]="'stats.semiMajorAxis' | translate" [value]="p.semiMajorAxisAU" [unit]="'units.au' | translate" />
               <app-stat-row [label]="'stats.eccentricity' | translate" [value]="p.eccentricity" />
@@ -104,6 +112,20 @@ import { getTelescopeWikiLink } from '../../core/constants/telescopes';
               <app-stat-row [label]="'stats.discoveryFacility' | translate" [value]="p.discoveryFacility" />
               <app-stat-row [label]="'stats.telescope' | translate" [value]="p.telescope" [href]="getTelescopeWikiLink(p.telescope)" [isExternalLink]="true" />
             </section>
+
+            <div class="data-attribution">
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14">
+                <circle cx="10" cy="10" r="8" />
+                <path d="M10 6v4M10 13h.01" stroke-linecap="round" />
+              </svg>
+              <span>
+                Data sourced from the
+                <a href="https://exoplanetarchive.ipac.caltech.edu/" target="_blank" rel="noopener noreferrer" class="nasa-link">
+                  NASA Exoplanet Archive
+                  <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                </a>
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -437,6 +459,34 @@ import { getTelescopeWikiLink } from '../../core/constants/telescopes';
       box-shadow: 0 0 20px rgba(77, 138, 255, 0.2);
     }
 
+    .data-attribution {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 16px;
+      margin-top: 8px;
+      background: rgba(10, 14, 35, 0.4);
+      border: 1px solid rgba(77, 138, 255, 0.06);
+      border-radius: 12px;
+      font-size: 11px;
+      color: #5a6177;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .nasa-link {
+      color: #6da5ff;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      transition: all 200ms ease;
+    }
+
+    .nasa-link:hover {
+      color: #9ac2ff;
+      text-shadow: 0 0 8px rgba(154, 194, 255, 0.3);
+    }
+
     @media (max-width: 768px) {
       .detail-layout {
         grid-template-columns: 1fr;
@@ -462,18 +512,28 @@ export class PlanetDetailPageComponent {
 
   error = signal(false);
 
-  planet = toSignal(
-    this.route.params.pipe(
-      switchMap((params) =>
-        this.apiService.getExoplanetById$(params['id']).pipe(
-          catchError(() => {
-            this.error.set(true);
-            return of(null);
-          })
-        )
-      ),
-      startWith(null)
-    )
+  planet$ = this.route.params.pipe(
+    switchMap((params) =>
+      this.apiService.getExoplanetById$(params['id']).pipe(
+        catchError(() => {
+          this.error.set(true);
+          return of(null);
+        })
+      )
+    ),
+    shareReplay(1)
+  );
+
+  planet = toSignal(this.planet$, { initialValue: null });
+
+  systemPlanets = toSignal(
+    this.planet$.pipe(
+      switchMap((p) => {
+        if (!p || !p.hostStar) return of([]);
+        return this.apiService.getSystemPlanets$(p.hostStar);
+      })
+    ),
+    { initialValue: [] }
   );
 
   starData = computed(() => {
