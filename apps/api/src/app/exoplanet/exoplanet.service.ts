@@ -5,7 +5,6 @@ import {
   DiscoveryMethod,
   Exoplanet,
   ExoplanetFilters,
-  HabitabilityClass,
   PlanetType,
   SortState,
 } from '@exodex/shared-types';
@@ -122,7 +121,10 @@ export class ExoplanetService implements OnModuleInit {
     if (!this.searchIndex.has(word)) {
       this.searchIndex.set(word, new Set());
     }
-    this.searchIndex.get(word)!.add(planetId);
+    const ids = this.searchIndex.get(word);
+    if (ids) {
+      ids.add(planetId);
+    }
   }
 
   getAll(

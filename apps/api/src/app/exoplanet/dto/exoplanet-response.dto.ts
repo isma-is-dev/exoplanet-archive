@@ -1,6 +1,6 @@
 import { Exoplanet } from '@exodex/shared-types';
 
-export interface PaginatedResponse<T> {
+export type PaginatedResponse<T> = {
   data: T[];
   total: number;
   page: number;
@@ -8,9 +8,9 @@ export interface PaginatedResponse<T> {
   totalPages: number;
 }
 
-export interface ExoplanetResponseDto extends Exoplanet {}
+export type ExoplanetResponseDto = Exoplanet;
 
-export interface ExoplanetListResponseDto {
+export type ExoplanetListResponseDto = {
   exoplanets: ExoplanetResponseDto[];
   total: number;
   page: number;
