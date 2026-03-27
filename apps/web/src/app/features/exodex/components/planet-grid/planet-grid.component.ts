@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { toSignal, toObservable } from '@angular/core/rxjs-interop';
 import { switchMap, startWith } from 'rxjs';
+import { Exoplanet } from '@exodex/shared-types';
 import { FilterStateService } from '../../../../core/services/filter-state.service';
 import { ExoplanetApiService } from '../../../../core/services/exoplanet-api.service';
 import { combineLatest } from 'rxjs';
@@ -14,7 +15,7 @@ import {
 } from '@exodex/ui-components';
 
 interface ExoplanetResponse {
-  data: unknown[];
+  data: Exoplanet[];
   total: number;
   page: number;
   pageSize: number;
@@ -107,7 +108,7 @@ export class PlanetGridComponent {
   viewMode = this.filterState.viewMode;
 
   isLoading = signal(true);
-  exoplanets = signal<unknown[]>([]);
+  exoplanets = signal<Exoplanet[]>([]);
   totalPages = signal(0);
   skeletonArray = signal(Array(12).fill(0));
 

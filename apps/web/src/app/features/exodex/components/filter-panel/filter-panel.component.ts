@@ -1,8 +1,8 @@
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { FilterStateService } from '../../../core/services/filter-state.service';
-import { ExoplanetApiService } from '../../../core/services/exoplanet-api.service';
+import { FilterStateService } from '../../../../core/services/filter-state.service';
+import { ExoplanetApiService } from '../../../../core/services/exoplanet-api.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { startWith } from 'rxjs';
 import { SearchInputComponent, FilterChipComponent } from '@exodex/ui-components';

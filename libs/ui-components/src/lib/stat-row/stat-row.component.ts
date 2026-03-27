@@ -48,12 +48,15 @@ import { CommonModule } from '@angular/common';
 })
 export class StatRowComponent {
   label = input.required<string>();
-  value = input<number | null>();
+  value = input<number | string | null>();
   unit = input<string>('');
 
   formattedValue(): string {
     const val = this.value();
     if (val === null || val === undefined) return '—';
+
+    // Si es string, devolver directamente
+    if (typeof val === 'string') return val;
 
     // Formatear números grandes
     if (val >= 1000) {

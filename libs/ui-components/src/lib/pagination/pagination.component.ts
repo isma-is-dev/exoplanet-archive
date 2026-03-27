@@ -6,37 +6,39 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="pagination" *ngIf="totalPages() > 1">
-      <button
-        class="page-btn"
-        [disabled]="currentPage() === 1"
-        (click)="goToPage(currentPage() - 1)"
-      >
-        ←
-      </button>
-
-      <ng-container *ngFor="let page of visiblePages()">
+    @if (totalPages() > 1) {
+      <div class="pagination">
         <button
-          *ngIf="page !== '...'; else ellipsis"
           class="page-btn"
-          [class.active]="page === currentPage()"
-          (click)="goToPage(page as number)"
+          [disabled]="currentPage() === 1"
+          (click)="goToPage(currentPage() - 1)"
         >
-          {{ page }}
+          ←
         </button>
-        <ng-template #ellipsis>
-          <span class="ellipsis">...</span>
-        </ng-template>
-      </ng-container>
 
-      <button
-        class="page-btn"
-        [disabled]="currentPage() === totalPages()"
-        (click)="goToPage(currentPage() + 1)"
-      >
-        →
-      </button>
-    </div>
+        @for (page of visiblePages(); track page) {
+          @if (page === -1) {
+            <span class="ellipsis">...</span>
+          } @else {
+            <button
+              class="page-btn"
+              [class.active]="page === currentPage()"
+              (click)="goToPage(page)"
+            >
+              {{ page }}
+            </button>
+          }
+        }
+
+        <button
+          class="page-btn"
+          [disabled]="currentPage() === totalPages()"
+          (click)="goToPage(currentPage() + 1)"
+        >
+          →
+        </button>
+      </div>
+    }
   `,
   styles: `
     .pagination {
@@ -93,10 +95,10 @@ export class PaginationComponent {
 
   pageChange = output<number>();
 
-  visiblePages = computed<(number | string)[]>(() => {
+  visiblePages = computed<number[]>(() => {
     const current = this.currentPage();
     const total = this.totalPages();
-    const pages: (number | string)[] = [];
+    const pages: number[] = [];
 
     if (total <= 7) {
       for (let i = 1; i <= total; i++) {
@@ -106,7 +108,7 @@ export class PaginationComponent {
       pages.push(1);
 
       if (current > 3) {
-        pages.push('...');
+        pages.push(-1); // -1 represents ellipsis
       }
 
       const start = Math.max(2, current - 1);
@@ -117,7 +119,7 @@ export class PaginationComponent {
       }
 
       if (current < total - 2) {
-        pages.push('...');
+        pages.push(-1); // -1 represents ellipsis
       }
 
       pages.push(total);
