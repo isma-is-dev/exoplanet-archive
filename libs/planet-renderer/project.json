@@ -1,0 +1,21 @@
+{
+  "name": "planet-renderer",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/planet-renderer/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/planet-renderer",
+        "main": "libs/planet-renderer/src/index.ts",
+        "tsConfig": "libs/planet-renderer/tsconfig.lib.json",
+        "assets": ["libs/planet-renderer/*.md"],
+        "format": ["cjs"],
+        "generatePackageJson": true
+      }
+    }
+  }
+}
