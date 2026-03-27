@@ -48,6 +48,7 @@ export interface Exoplanet {
   // Metadatos
   referenceUrl: string | null; // pl_refname
   hasAtmosphereData: boolean;
+  numberOfStarsInSystem: number | null; // sy_snum
   numberOfKnownPlanetsInSystem: number | null; // sy_pnum
 }
 

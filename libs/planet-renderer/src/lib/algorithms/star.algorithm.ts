@@ -20,26 +20,26 @@ export function getStarColors(tempK: number | null): StarColors {
   let primary = '#ffffff';
   let spectralClass = 'G';
 
-  if (t < 3700) {
-    primary = '#ffb56c'; // M - Red Dwarf
+  if (t < 3500) {
+    primary = '#ff5b4f'; // M - Red
     spectralClass = 'M';
-  } else if (t < 5200) {
-    primary = '#ffd2a1'; // K - Orange Dwarf
+  } else if (t < 5000) {
+    primary = '#ff9d5c'; // K - Orange
     spectralClass = 'K';
   } else if (t < 6000) {
-    primary = '#fff4e8'; // G - Yellow Dwarf (Sun)
+    primary = '#ffda75'; // G - Yellow
     spectralClass = 'G';
   } else if (t < 7500) {
-    primary = '#f8f7ff'; // F - Yellow-White
+    primary = '#fff4e8'; // F - Yellow-white
     spectralClass = 'F';
   } else if (t < 10000) {
-    primary = '#e5e9ff'; // A - White
+    primary = '#ffffff'; // A - White
     spectralClass = 'A';
   } else if (t < 30000) {
-    primary = '#cdd6ff'; // B - Blue-White
+    primary = '#d6e5ff'; // B - Blue-white
     spectralClass = 'B';
   } else {
-    primary = '#9bbcff'; // O - Blue
+    primary = '#8ca8ff'; // O - Blue
     spectralClass = 'O';
   }
 

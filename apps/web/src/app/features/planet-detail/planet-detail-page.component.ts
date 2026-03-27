@@ -436,6 +436,7 @@ export class PlanetDetailPageComponent {
       stellarTempK: p.stellarTempK,
       stellarRadiusSun: p.stellarRadiusSun,
       stellarMassSun: p.stellarMassSun,
+      numberOfStarsInSystem: p.numberOfStarsInSystem,
       size: 'card', 
       animationsEnabled: true
     }, p.hostStar);

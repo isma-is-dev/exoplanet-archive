@@ -27,6 +27,7 @@ export interface StarRenderParams {
   stellarTempK: number | null;
   stellarRadiusSun: number | null;
   stellarMassSun: number | null;
+  numberOfStarsInSystem?: number | null;
   size: 'card' | 'detail' | 'micro';
   animationsEnabled: boolean;
 }

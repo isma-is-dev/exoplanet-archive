@@ -48,6 +48,7 @@ function createMockPlanet(partial: Partial<Exoplanet>): Exoplanet {
     habitabilityScore: partial.habitabilityScore ?? 0,
     referenceUrl: partial.referenceUrl ?? null,
     hasAtmosphereData: partial.hasAtmosphereData ?? false,
+    numberOfStarsInSystem: partial.numberOfStarsInSystem ?? 1,
     numberOfKnownPlanetsInSystem: partial.numberOfKnownPlanetsInSystem ?? null,
   };
 }
@@ -105,6 +106,7 @@ const MOCK_PLANETS_BASE: Array<Partial<Exoplanet> & { habitabilityClass: string;
     stellarMassSun: 0.12,
     stellarMetallicity: 0.21,
     stellarAge: 4.85,
+    numberOfStarsInSystem: 3,
   },
   {
     id: 'trappist-1e',
