@@ -1,7 +1,8 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, shareReplay } from 'rxjs';
+import { Observable, of, catchError, shareReplay, tap } from 'rxjs';
 import { Exoplanet, ExoplanetFilters, SortState } from '@exodex/shared-types';
+import { ExoplanetMockService } from './exoplanet-mock.service';
 
 interface PaginatedResponse<T> {
   data: T[];
@@ -33,7 +34,9 @@ const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutos
 })
 export class ExoplanetApiService {
   private http = inject(HttpClient);
+  private mockService = inject(ExoplanetMockService);
   private cache = new Map<string, { data: unknown; timestamp: number }>();
+  private useMock = signal(false);
 
   getExoplanets$(
     filters: ExoplanetFilters,
@@ -45,26 +48,31 @@ export class ExoplanetApiService {
     const cached = this.getFromCache<PaginatedResponse<Exoplanet>>(cacheKey);
 
     if (cached) {
-      return new Observable((observer) => {
-        observer.next(cached);
-        observer.complete();
-      });
+      return of(cached);
+    }
+
+    // Si ya sabemos que el backend no funciona, usar mock directamente
+    if (this.useMock()) {
+      return this.mockService.getExoplanets$(filters, sort, page, pageSize);
     }
 
     let params = new HttpParams()
       .set('page', page.toString())
       .set('pageSize', pageSize.toString())
-      .set('sort', sort.field)
-      .set('order', sort.direction);
+      .set('sortField', sort.field)
+      .set('sortDirection', sort.direction);
 
-    if (filters.planetTypes.length > 0) {
+    if (filters.searchQuery?.trim()) {
+      params = params.set('q', filters.searchQuery.trim());
+    }
+    if (filters.planetTypes?.length) {
       params = params.set('types', filters.planetTypes.join(','));
     }
-    if (filters.discoveryMethods.length > 0) {
-      params = params.set('methods', filters.discoveryMethods.join(','));
-    }
-    if (filters.habitabilityClasses.length > 0) {
+    if (filters.habitabilityClasses?.length) {
       params = params.set('habitability', filters.habitabilityClasses.join(','));
+    }
+    if (filters.discoveryMethods?.length) {
+      params = params.set('methods', filters.discoveryMethods.join(','));
     }
     if (filters.discoveryYearRange) {
       params = params.set('minYear', filters.discoveryYearRange[0].toString());
@@ -74,41 +82,85 @@ export class ExoplanetApiService {
       params = params.set('minRadius', filters.radiusEarthRange[0].toString());
       params = params.set('maxRadius', filters.radiusEarthRange[1].toString());
     }
-    if (filters.searchQuery.trim()) {
-      params = params.set('q', filters.searchQuery.trim());
-    }
 
     return this.http
       .get<PaginatedResponse<Exoplanet>>(`${API_BASE_URL}/exoplanets`, { params })
-      .pipe(shareReplay({ bufferSize: 1, refCount: true }));
+      .pipe(
+        tap((response) => {
+          this.setCache(cacheKey, response);
+        }),
+        shareReplay(1),
+        catchError(() => {
+          // Fallback a mock
+          this.useMock.set(true);
+          console.log('API no disponible, usando datos mock');
+          return this.mockService.getExoplanets$(filters, sort, page, pageSize);
+        })
+      );
   }
 
-  getExoplanetById$(id: string): Observable<Exoplanet> {
+  getExoplanetById$(id: string): Observable<Exoplanet | null> {
+    if (this.useMock()) {
+      return this.mockService.getById$(id);
+    }
+
     return this.http.get<Exoplanet>(`${API_BASE_URL}/exoplanets/${id}`).pipe(
-      shareReplay({ bufferSize: 1, refCount: true })
+      shareReplay(1),
+      catchError(() => {
+        this.useMock.set(true);
+        return this.mockService.getById$(id);
+      })
     );
   }
 
   getStats$(): Observable<StatsResponse> {
+    if (this.useMock()) {
+      return this.mockService.getStats$();
+    }
+
     const cacheKey = 'stats';
     const cached = this.getFromCache<StatsResponse>(cacheKey);
 
     if (cached) {
-      return new Observable((observer) => {
-        observer.next(cached);
-        observer.complete();
+      return of(cached);
+    }
+
+    return this.http
+      .get<StatsResponse>(`${API_BASE_URL}/exoplanets/stats`)
+      .pipe(
+        tap((response) => {
+          this.setCache(cacheKey, response);
+        }),
+        shareReplay(1),
+        catchError(() => {
+          this.useMock.set(true);
+          return this.mockService.getStats$();
+        })
+      );
+  }
+
+  getStatus$(): Observable<StatusResponse> {
+    if (this.useMock()) {
+      return of({
+        lastUpdated: new Date().toISOString(),
+        totalPlanets: 20,
+        cacheAge: 0,
       });
     }
 
     return this.http
-      .get<StatsResponse>(`${API_BASE_URL}/exoplanets/meta/stats`)
-      .pipe(shareReplay({ bufferSize: 1, refCount: true }));
-  }
-
-  getStatus$(): Observable<StatusResponse> {
-    return this.http
-      .get<StatusResponse>(`${API_BASE_URL}/exoplanets/meta/status`)
-      .pipe(shareReplay({ bufferSize: 1, refCount: true }));
+      .get<StatusResponse>(`${API_BASE_URL}/exoplanets/status`)
+      .pipe(
+        shareReplay(1),
+        catchError(() => {
+          this.useMock.set(true);
+          return of({
+            lastUpdated: new Date().toISOString(),
+            totalPlanets: 20,
+            cacheAge: 0,
+          });
+        })
+      );
   }
 
   private buildCacheKey(
@@ -137,5 +189,10 @@ export class ExoplanetApiService {
 
   clearCache(): void {
     this.cache.clear();
+    this.useMock.set(false);
+  }
+
+  isUsingMock(): boolean {
+    return this.useMock();
   }
 }

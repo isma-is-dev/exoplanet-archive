@@ -6,5 +6,5 @@
 node_modules/
 
 .angular
-
+dist/
 __screenshots__/
