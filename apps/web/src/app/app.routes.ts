@@ -22,5 +22,12 @@ export const appRoutes: Route[] = [
         (m) => m.MethodPageComponent
       ),
   },
+  {
+    path: 'system/:name',
+    loadComponent: () =>
+      import('./features/system-detail/system-detail-page.component').then(
+        (m) => m.SystemDetailPageComponent
+      ),
+  },
   { path: '**', redirectTo: '' },
 ];

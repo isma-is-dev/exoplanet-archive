@@ -1,6 +1,6 @@
 import { Component, inject, ChangeDetectionStrategy, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -13,7 +13,7 @@ import { getTelescopeWikiLink } from '../../core/constants/telescopes';
 @Component({
   selector: 'app-planet-detail-page',
   standalone: true,
-  imports: [CommonModule, TranslateModule, PlanetAvatarComponent, StatBadgeComponent, StatRowComponent, SystemOrbitPreviewComponent],
+  imports: [CommonModule, TranslateModule, PlanetAvatarComponent, StatBadgeComponent, StatRowComponent, SystemOrbitPreviewComponent, RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (planet(); as p) {
@@ -60,7 +60,14 @@ import { getTelescopeWikiLink } from '../../core/constants/telescopes';
                   [planets]="systemPlanets()" 
                   [currentPlanetId]="p.id"
                   [systemName]="p.hostStar" />
-              }
+
+                  <a [routerLink]="['/system', p.hostStar]" class="full-system-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                      <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Explore Full System
+                  </a>
+                }
 
               <app-stat-row [label]="'stats.orbitalPeriod' | translate" [value]="p.orbitalPeriodDays" [unit]="'units.days' | translate" />
               <app-stat-row [label]="'stats.semiMajorAxis' | translate" [value]="p.semiMajorAxisAU" [unit]="'units.au' | translate" />
@@ -485,6 +492,35 @@ import { getTelescopeWikiLink } from '../../core/constants/telescopes';
     .nasa-link:hover {
       color: #9ac2ff;
       text-shadow: 0 0 8px rgba(154, 194, 255, 0.3);
+    }
+
+    .full-system-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 12px;
+      margin-top: -12px;
+      margin-bottom: 24px;
+      background: rgba(77, 138, 255, 0.1);
+      border: 1px solid rgba(77, 138, 255, 0.2);
+      border-radius: 12px;
+      color: #6da5ff;
+      font-size: 13px;
+      font-weight: 500;
+      font-family: 'Inter', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-decoration: none;
+      transition: all 300ms ease;
+    }
+
+    .full-system-btn:hover {
+      background: rgba(77, 138, 255, 0.15);
+      border-color: rgba(77, 138, 255, 0.4);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(77, 138, 255, 0.15);
     }
 
     @media (max-width: 768px) {
