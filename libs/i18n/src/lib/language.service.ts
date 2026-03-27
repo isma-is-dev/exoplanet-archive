@@ -1,4 +1,5 @@
-import { Injectable, signal, effect, inject } from '@angular/core';
+import { Injectable, signal, effect, inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { TranslateService } from '@ngx-translate/core';
 
 export type Language = 'es' | 'en';
@@ -8,6 +9,7 @@ export type Language = 'es' | 'en';
 })
 export class LanguageService {
   private translate = inject(TranslateService);
+  private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   readonly currentLanguage = signal<Language>('es');
   readonly availableLanguages: Language[] = ['es', 'en'];
@@ -16,18 +18,22 @@ export class LanguageService {
     effect(() => {
       const lang = this.currentLanguage();
       this.translate.use(lang);
-      localStorage.setItem('exodex-language', lang);
+      if (this.isBrowser) {
+        localStorage.setItem('exodex-language', lang);
+      }
     });
 
-    const saved = localStorage.getItem('exodex-language') as Language | null;
-    if (saved && this.availableLanguages.includes(saved)) {
-      this.currentLanguage.set(saved);
-    } else {
-      const browserLang = this.translate.getBrowserLang() as Language;
-      if (browserLang && this.availableLanguages.includes(browserLang)) {
-        this.currentLanguage.set(browserLang);
+    if (this.isBrowser) {
+      const saved = localStorage.getItem('exodex-language') as Language | null;
+      if (saved && this.availableLanguages.includes(saved)) {
+        this.currentLanguage.set(saved);
       } else {
-        this.currentLanguage.set('es');
+        const browserLang = this.translate.getBrowserLang() as Language;
+        if (browserLang && this.availableLanguages.includes(browserLang)) {
+          this.currentLanguage.set(browserLang);
+        } else {
+          this.currentLanguage.set('es');
+        }
       }
     }
   }

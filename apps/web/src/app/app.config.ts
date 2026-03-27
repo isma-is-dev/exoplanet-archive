@@ -9,9 +9,7 @@ import { HttpClient } from '@angular/common/http';
 import { appRoutes } from './app.routes';
 import { retryInterceptor } from './core/interceptors/retry.interceptor';
 
-export function createTranslateLoader(http: HttpClient) {
-  return new TranslateHttpLoader(http, './assets/i18n/', '.json');
-}
+import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -23,10 +21,10 @@ export const appConfig: ApplicationConfig = {
     ...TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
-        useFactory: createTranslateLoader,
-        deps: [HttpClient],
+        useClass: TranslateHttpLoader,
       },
       defaultLanguage: 'es',
     }).providers!,
+    provideTranslateHttpLoader({ prefix: './assets/i18n/', suffix: '.json' }),
   ],
 };

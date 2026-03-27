@@ -1,16 +1,16 @@
 import { HttpClient } from '@angular/common/http';
 import { TranslateLoader } from '@ngx-translate/core';
-import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-
-export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
-  return new TranslateHttpLoader(http, './assets/i18n/', '.json');
-}
+import { TranslateHttpLoader, provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 
 export const translateModuleConfig = {
   loader: {
     provide: TranslateLoader,
-    useFactory: createTranslateLoader,
-    deps: [HttpClient],
+    useClass: TranslateHttpLoader,
   },
   defaultLanguage: 'es',
 };
+
+export const translateHttpLoaderProvider = provideTranslateHttpLoader({
+  prefix: './assets/i18n/',
+  suffix: '.json',
+});
