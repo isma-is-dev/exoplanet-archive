@@ -6,7 +6,7 @@ import {
 } from './algorithms/color.algorithm';
 import { getPlanetVisualRadius, getViewBoxSize, RenderSize } from './algorithms/size.algorithm';
 import { buildAtmosphereGlow } from './algorithms/atmosphere.algorithm';
-import { shouldShowRings, buildRings } from './algorithms/rings.algorithm';
+import { shouldShowRings, buildRings, buildFrontRings } from './algorithms/rings.algorithm';
 import { buildSurfaceDetails } from './algorithms/surface.algorithm';
 
 export function renderPlanet(
@@ -26,32 +26,36 @@ export function renderPlanet(
     animationsEnabled,
   } = params;
 
-  // Calcular dimensiones
+  // Calculate dimensions
   const viewBoxSize = getViewBoxSize(size);
   const visualRadius = getPlanetVisualRadius(radiusEarth, size);
   const center = viewBoxSize / 2;
 
-  // Obtener colores
+  // Get full color palette
   const colors = getPlanetColors(planetType, equilibriumTempK);
-  const { primary: primaryColor, secondary: secondaryColor } = colors;
+  const { primary: primaryColor, secondary: secondaryColor, tertiary: tertiaryColor, accent: accentColor } = colors;
 
-  // Construir gradientes
+  // Build gradients
   const highlightColor = lightenHex(secondaryColor, 0.35);
-  const shadowColor = darkenHex(primaryColor, 0.40);
+  const shadowColor = darkenHex(primaryColor, 0.45);
   const gradientId = `body-${Math.random().toString(36).substr(2, 9)}`;
+  const terminatorId = `term-${Math.random().toString(36).substr(2, 9)}`;
+  const specularId = `spec-${Math.random().toString(36).substr(2, 9)}`;
+  const aoId = `ao-${Math.random().toString(36).substr(2, 9)}`;
 
-  // Determinar si mostrar anillos
+  // Determine if showing rings
   const showRings = shouldShowRings(planetType, radiusEarth);
 
-  // Generar SVG
+  // ─── Assemble SVG layers in correct order ────────────────────
+
   let svgParts: string[] = [];
 
-  // Anillos (detrás del planeta)
+  // Layer 0: Back rings (behind everything)
   if (showRings) {
     svgParts.push(buildRings(visualRadius, center, secondaryColor));
   }
 
-  // Atmósfera/glow
+  // Layer 1: Atmosphere glow (behind planet body)
   const atmosphereSvg = buildAtmosphereGlow(
     visualRadius,
     center,
@@ -63,12 +67,14 @@ export function renderPlanet(
     svgParts.push(atmosphereSvg);
   }
 
-  // Cuerpo del planeta
+  // Layer 2: Planet body — enhanced radial gradient with more stops
   const bodySvg = `
     <defs>
-      <radialGradient id="${gradientId}" cx="35%" cy="30%" r="65%">
+      <radialGradient id="${gradientId}" cx="35%" cy="30%" r="70%">
         <stop offset="0%" stop-color="${highlightColor}"/>
-        <stop offset="45%" stop-color="${primaryColor}"/>
+        <stop offset="25%" stop-color="${lightenHex(primaryColor, 0.15)}"/>
+        <stop offset="55%" stop-color="${primaryColor}"/>
+        <stop offset="80%" stop-color="${darkenHex(primaryColor, 0.2)}"/>
         <stop offset="100%" stop-color="${shadowColor}"/>
       </radialGradient>
     </defs>
@@ -76,7 +82,7 @@ export function renderPlanet(
   `;
   svgParts.push(bodySvg);
 
-  // Detalles de superficie
+  // Layer 3: Surface details (textures, craters, bands, etc.)
   const surfaceSvg = buildSurfaceDetails(
     planetType,
     visualRadius,
@@ -84,14 +90,66 @@ export function renderPlanet(
     primaryColor,
     secondaryColor,
     equilibriumTempK,
-    planetName
+    planetName,
+    tertiaryColor,
+    accentColor
   );
   svgParts.push(surfaceSvg);
 
-  // Unir todo
+  // Layer 4: Terminator shadow — half the planet in shadow (lateral illumination)
+  const terminatorSvg = `
+    <defs>
+      <linearGradient id="${terminatorId}" x1="20%" y1="0%" x2="95%" y2="0%">
+        <stop offset="0%" stop-color="#000000" stop-opacity="0"/>
+        <stop offset="45%" stop-color="#000000" stop-opacity="0"/>
+        <stop offset="70%" stop-color="#000000" stop-opacity="0.15"/>
+        <stop offset="85%" stop-color="#000000" stop-opacity="0.30"/>
+        <stop offset="100%" stop-color="#000000" stop-opacity="0.50"/>
+      </linearGradient>
+    </defs>
+    <circle cx="${center}" cy="${center}" r="${visualRadius}" fill="url(#${terminatorId})"/>
+  `;
+  svgParts.push(terminatorSvg);
+
+  // Layer 5: Ambient occlusion — subtle vignette for 3D depth
+  const aoSvg = `
+    <defs>
+      <radialGradient id="${aoId}" cx="45%" cy="40%" r="55%">
+        <stop offset="0%" stop-color="#000000" stop-opacity="0"/>
+        <stop offset="65%" stop-color="#000000" stop-opacity="0"/>
+        <stop offset="85%" stop-color="#000000" stop-opacity="0.08"/>
+        <stop offset="100%" stop-color="#000000" stop-opacity="0.25"/>
+      </radialGradient>
+    </defs>
+    <circle cx="${center}" cy="${center}" r="${visualRadius}" fill="url(#${aoId})"/>
+  `;
+  svgParts.push(aoSvg);
+
+  // Layer 6: Specular highlight — bright spot on the lit side
+  const specSize = visualRadius * 0.35;
+  const specCx = center - visualRadius * 0.28;
+  const specCy = center - visualRadius * 0.25;
+  const specularSvg = `
+    <defs>
+      <radialGradient id="${specularId}" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.18"/>
+        <stop offset="40%" stop-color="#FFFFFF" stop-opacity="0.06"/>
+        <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+    <circle cx="${specCx}" cy="${specCy}" r="${specSize}" fill="url(#${specularId})"/>
+  `;
+  svgParts.push(specularSvg);
+
+  // Layer 7: Front rings (in front of planet)
+  if (showRings) {
+    svgParts.push(buildFrontRings(visualRadius, center, secondaryColor));
+  }
+
+  // Assemble final SVG
   const svgString = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${viewBoxSize} ${viewBoxSize}" width="${viewBoxSize}" height="${viewBoxSize}">${svgParts.join('')}</svg>`;
 
-  // Generar descripción
+  // Generate description
   const description = generateDescription(planetType, radiusEarth, equilibriumTempK);
 
   return {
@@ -135,7 +193,7 @@ function generateDescription(
   return `${typeNames[planetType] || 'planeta'} ${size}, ${temp}`;
 }
 
-// Re-exportar tipos y funciones útiles
+// Re-export types and useful functions
 export { getPlanetColors, lightenHex, darkenHex } from './algorithms/color.algorithm';
 export { getPlanetVisualRadius, getViewBoxSize } from './algorithms/size.algorithm';
 export type { RenderSize } from './algorithms/size.algorithm';
