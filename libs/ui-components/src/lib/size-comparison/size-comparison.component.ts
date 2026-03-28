@@ -1,9 +1,11 @@
-import { Component, input, computed, ChangeDetectionStrategy, inject, signal, OnInit } from '@angular/core';
-import { CommonModule, DecimalPipe } from '@angular/common';
+import { Component, input, computed, ChangeDetectionStrategy } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Exoplanet } from '@exodex/shared-types';
-import { renderPlanet } from '@exodex/planet-renderer';
+
+const JUPITER_R = 11.2;
+const MAX_PX = 140;
+const MIN_PX = 10;
 
 @Component({
   selector: 'app-size-comparison',
@@ -12,81 +14,150 @@ import { renderPlanet } from '@exodex/planet-renderer';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="size-comparison">
-      <div class="comparison-bodies">
+      <div class="comparison-stage">
         <!-- Earth -->
         <div class="body-column">
-          <div class="body-avatar" [style.width.px]="sizes().earthPx" [style.height.px]="sizes().earthPx">
-            <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
-              <defs>
-                <radialGradient id="sc-earth-rg" cx="38%" cy="38%">
-                  <stop offset="0%" stop-color="rgba(150,220,255,0.5)" />
-                  <stop offset="35%" stop-color="#3b82f6" />
-                  <stop offset="100%" stop-color="#1a3a6a" />
-                </radialGradient>
-              </defs>
-              <circle cx="60" cy="60" r="56" fill="url(#sc-earth-rg)"/>
-              <ellipse cx="48" cy="42" rx="12" ry="16" fill="rgba(34,197,94,0.35)" transform="rotate(-10 48 42)"/>
-              <ellipse cx="72" cy="50" rx="8" ry="10" fill="rgba(34,197,94,0.25)" transform="rotate(15 72 50)" />
-              <ellipse cx="55" cy="72" rx="14" ry="8" fill="rgba(34,197,94,0.3)" transform="rotate(-5 55 72)"/>
-              <ellipse cx="38" cy="58" rx="5" ry="4" fill="rgba(34,197,94,0.2)"/>
-              <circle cx="60" cy="60" r="56" fill="none" stroke="rgba(100,180,255,0.2)" stroke-width="2"/>
-              <ellipse cx="45" cy="38" rx="14" ry="10" fill="rgba(255,255,255,0.08)" transform="rotate(-20 45 38)"/>
-            </svg>
+          <div class="body-spacer" [style.height.px]="MAX_PX - sizes().earthPx"></div>
+          <div class="body-circle earth"
+               [style.width.px]="sizes().earthPx"
+               [style.height.px]="sizes().earthPx">
           </div>
-          <span class="body-name">{{ 'didactic.earth' | translate }}</span>
+          <span class="body-name">Earth</span>
           <span class="body-radius">1.00 R⊕</span>
         </div>
 
-        <!-- Scale indicator -->
-        <div class="scale-connector">
-          <div class="connector-line"></div>
-          <span class="scale-factor">{{ ratioText() }}×</span>
-          <div class="connector-line"></div>
-        </div>
+        <!-- Jupiter — only when planet radius > 3 R⊕ -->
+        @if (sizes().showJupiter) {
+          <div class="body-column">
+            <div class="body-spacer" [style.height.px]="MAX_PX - sizes().jupiterPx"></div>
+            <div class="body-circle jupiter"
+                 [style.width.px]="sizes().jupiterPx"
+                 [style.height.px]="sizes().jupiterPx">
+            </div>
+            <span class="body-name">Jupiter</span>
+            <span class="body-radius">11.2 R⊕</span>
+          </div>
+        }
 
-        <!-- Planet (rendered via same procedural renderer) -->
+        <!-- Exoplanet -->
         <div class="body-column">
-          <div class="body-avatar" [style.width.px]="sizes().planetPx" [style.height.px]="sizes().planetPx"
-               [innerHTML]="planetSvg()">
+          <div class="body-spacer" [style.height.px]="MAX_PX - sizes().planetPx"></div>
+          <div class="body-circle"
+               [class]="'planet-type--' + planet().planetType"
+               [style.width.px]="sizes().planetPx"
+               [style.height.px]="sizes().planetPx">
           </div>
           <span class="body-name planet-name-label">{{ planet().name }}</span>
-          <span class="body-radius">{{ planet().radiusEarth | number:'1.0-2' }} R⊕</span>
+          <span class="body-radius">{{ planet().radiusEarth | number:'1.2-2' }} R⊕</span>
         </div>
+      </div>
+
+      <div class="baseline"></div>
+
+      <div class="scale-note">
+        {{ planet().radiusEarth | number:'1.2-2' }}× Earth radius
+        @if (sizes().showJupiter) {
+          · {{ (planet().radiusEarth! / JUPITER_R) | number:'1.2-2' }}× Jupiter radius
+        }
       </div>
     </div>
   `,
   styles: `
     .size-comparison {
-      padding: 8px 0;
+      padding: 8px 0 4px;
     }
 
-    .comparison-bodies {
+    .comparison-stage {
       display: flex;
-      align-items: center;
+      align-items: flex-end;
       justify-content: center;
-      gap: 20px;
-      min-height: 150px;
+      gap: 32px;
+      padding-bottom: 0;
     }
 
     .body-column {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 8px;
+      gap: 0;
     }
 
-    .body-avatar {
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .body-spacer {
       flex-shrink: 0;
     }
 
-    .body-avatar svg,
-    .body-avatar ::ng-deep svg {
-      width: 100%;
-      height: 100%;
-      display: block;
+    .body-circle {
+      border-radius: 50%;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    /* Earth */
+    .earth {
+      background: radial-gradient(circle at 38% 32%,
+        rgba(180, 230, 255, 0.9) 0%,
+        #3b82f6 35%,
+        #1e40af 65%,
+        #1a3a6a 100%
+      );
+      box-shadow: 0 0 12px rgba(59, 130, 246, 0.35),
+                  inset -3px -3px 8px rgba(0,0,0,0.3);
+    }
+
+    /* Jupiter */
+    .jupiter {
+      background: radial-gradient(circle at 38% 32%,
+        rgba(255, 220, 170, 0.9) 0%,
+        #d4894a 30%,
+        #a0522d 60%,
+        #7a3a1a 100%
+      );
+      box-shadow: 0 0 16px rgba(212, 137, 74, 0.3),
+                  inset -4px -4px 10px rgba(0,0,0,0.35);
+    }
+
+    /* Exoplanet colors by type */
+    .planet-type--rocky-terrestrial {
+      background: radial-gradient(circle at 38% 32%,
+        rgba(200,190,170,0.9) 0%, #9b8e7a 40%, #6b5d4a 100%);
+      box-shadow: 0 0 12px rgba(155,142,122,0.3), inset -3px -3px 8px rgba(0,0,0,0.3);
+    }
+    .planet-type--super-earth {
+      background: radial-gradient(circle at 38% 32%,
+        rgba(160,230,200,0.9) 0%, #10b981 40%, #065f46 100%);
+      box-shadow: 0 0 14px rgba(16,185,129,0.35), inset -3px -3px 8px rgba(0,0,0,0.3);
+    }
+    .planet-type--mini-neptune,
+    .planet-type--neptunian {
+      background: radial-gradient(circle at 38% 32%,
+        rgba(150,200,255,0.9) 0%, #4a90d9 40%, #1a4a8a 100%);
+      box-shadow: 0 0 14px rgba(74,144,217,0.35), inset -3px -3px 8px rgba(0,0,0,0.3);
+    }
+    .planet-type--jovian {
+      background: radial-gradient(circle at 38% 32%,
+        rgba(255,210,150,0.9) 0%, #c8784a 40%, #8a3a10 100%);
+      box-shadow: 0 0 16px rgba(200,120,74,0.3), inset -4px -4px 10px rgba(0,0,0,0.35);
+    }
+    .planet-type--hot-jupiter {
+      background: radial-gradient(circle at 38% 32%,
+        rgba(255,180,100,0.9) 0%, #e05a10 40%, #8a2000 100%);
+      box-shadow: 0 0 20px rgba(224,90,16,0.4), inset -4px -4px 10px rgba(0,0,0,0.35);
+    }
+    .planet-type--cold-giant {
+      background: radial-gradient(circle at 38% 32%,
+        rgba(190,210,240,0.9) 0%, #8ab0d0 40%, #3a5a7a 100%);
+      box-shadow: 0 0 14px rgba(138,176,208,0.3), inset -4px -4px 10px rgba(0,0,0,0.35);
+    }
+    .planet-type--unknown {
+      background: radial-gradient(circle at 38% 32%,
+        rgba(160,160,180,0.9) 0%, #7070a0 40%, #303050 100%);
+      box-shadow: 0 0 12px rgba(112,112,160,0.3), inset -3px -3px 8px rgba(0,0,0,0.3);
+    }
+
+    .baseline {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(77,138,255,0.15), transparent);
+      margin: 0 8px;
     }
 
     .body-name {
@@ -94,10 +165,11 @@ import { renderPlanet } from '@exodex/planet-renderer';
       font-size: 11px;
       color: #8892b0;
       text-align: center;
+      margin-top: 8px;
     }
 
     .planet-name-label {
-      max-width: 130px;
+      max-width: 120px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -107,101 +179,44 @@ import { renderPlanet } from '@exodex/planet-renderer';
       font-family: 'JetBrains Mono', monospace;
       font-size: 10px;
       color: #4a5568;
+      margin-top: 2px;
     }
 
-    .scale-connector {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      padding: 0 4px;
-      flex-shrink: 0;
-    }
-
-    .connector-line {
-      width: 1px;
-      height: 20px;
-      background: linear-gradient(180deg, transparent, rgba(77, 138, 255, 0.2), transparent);
-    }
-
-    .scale-factor {
+    .scale-note {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 14px;
-      font-weight: 700;
-      color: #4d8aff;
-      background: rgba(77, 138, 255, 0.08);
-      padding: 4px 10px;
-      border-radius: 8px;
-      border: 1px solid rgba(77, 138, 255, 0.15);
-      white-space: nowrap;
+      font-size: 10px;
+      color: #4a5568;
+      text-align: center;
+      margin-top: 12px;
+      letter-spacing: 0.3px;
     }
 
     @media (max-width: 480px) {
-      .comparison-bodies {
-        gap: 12px;
-        min-height: 110px;
-      }
-
-      .scale-factor {
-        font-size: 12px;
-        padding: 3px 8px;
+      .comparison-stage {
+        gap: 20px;
       }
     }
   `,
 })
-export class SizeComparisonComponent implements OnInit {
+export class SizeComparisonComponent {
   planet = input.required<Exoplanet>();
 
-  private sanitizer = inject(DomSanitizer);
+  readonly MAX_PX = MAX_PX;
+  readonly JUPITER_R = JUPITER_R;
 
-  planetSvg = signal<SafeHtml>('');
-
-  ratioText = computed(() => {
-    const r = this.planet()?.radiusEarth;
-    if (!r) return '—';
-    return r.toFixed(2);
-  });
-
-  /**
-   * Both sizes are calculated proportionally.
-   * The BIGGER body gets max size, the smaller one scales down proportionally.
-   */
   sizes = computed(() => {
-    const r = this.planet()?.radiusEarth || 1;
-    const maxPx = 120;
-    const minPx = 14;
+    const r = this.planet()?.radiusEarth ?? 1;
+    const showJupiter = r > 3;
+    const maxR = showJupiter ? Math.max(r, JUPITER_R) : Math.max(r, 1);
 
-    if (r >= 1) {
-      // Planet is bigger → planet gets max, Earth shrinks
-      const planetPx = maxPx;
-      const earthPx = Math.max(minPx, Math.round(maxPx / r));
-      return { earthPx, planetPx };
-    } else {
-      // Earth is bigger → Earth gets max, planet shrinks
-      const earthPx = maxPx;
-      const planetPx = Math.max(minPx, Math.round(maxPx * r));
-      return { earthPx, planetPx };
-    }
+    const toPx = (radius: number) =>
+      Math.max(MIN_PX, Math.round(MAX_PX * radius / maxR));
+
+    return {
+      earthPx: toPx(1),
+      jupiterPx: toPx(JUPITER_R),
+      planetPx: toPx(r),
+      showJupiter,
+    };
   });
-
-  ngOnInit(): void {
-    const p = this.planet();
-    if (!p) return;
-
-    const result = renderPlanet({
-      radiusEarth: p.radiusEarth,
-      massEarth: p.massEarth,
-      equilibriumTempK: p.equilibriumTempK,
-      planetType: p.planetType,
-      densityGCC: p.densityGCC,
-      eccentricity: p.eccentricity,
-      insolationFlux: p.insolationFlux,
-      discoveryYear: p.discoveryYear,
-      orbitalPeriodDays: p.orbitalPeriodDays,
-      size: 'card',
-      animationsEnabled: false,
-    }, p.name);
-
-    this.planetSvg.set(this.sanitizer.bypassSecurityTrustHtml(result.svgString));
-  }
 }

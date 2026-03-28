@@ -2,7 +2,7 @@ import { Component, inject, ChangeDetectionStrategy, signal, computed } from '@a
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { DomSanitizer } from '@angular/platform-browser';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { switchMap, catchError, of, shareReplay } from 'rxjs';
 import { ExoplanetApiService } from '../../core/services/exoplanet-api.service';
