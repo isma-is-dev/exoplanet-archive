@@ -7,16 +7,17 @@ import { lightenHex, darkenHex } from './algorithms/color.algorithm';
  * Determines animation timing multiplier based on stellar temperature.
  * Hotter stars = more energetic / faster animations.
  * Cooler stars = calmer / slower animations.
+ * Values are intentionally slow for a majestic, celestial feel.
  */
 function getAnimationTimingFactor(tempK: number | null): number {
   const t = tempK ?? 5778;
-  if (t > 25000) return 0.5;   // O — very fast, violent
-  if (t > 10000) return 0.65;  // B — fast
-  if (t > 7500) return 0.8;    // A — moderate-fast
-  if (t > 6000) return 0.9;    // F — moderate
-  if (t > 5000) return 1.0;    // G — baseline (Sun)
-  if (t > 3500) return 1.2;    // K — slower
-  return 1.5;                   // M — calm, slow
+  if (t > 25000) return 2.2;   // O — energetic but still slow
+  if (t > 10000) return 2.5;   // B — moderate
+  if (t > 7500) return 2.8;    // A — calm
+  if (t > 6000) return 3.0;    // F — slow
+  if (t > 5000) return 3.2;    // G — baseline (Sun) — slow, majestic
+  if (t > 3500) return 3.8;    // K — very slow
+  return 4.5;                   // M — calm, very slow
 }
 
 export function renderStar(
