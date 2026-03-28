@@ -387,9 +387,17 @@ import { SearchInputComponent } from '@exodex/ui-components';
 
     /* ═══ Discovery Method Grid ═══ */
     .method-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
+      display: flex;
+      flex-wrap: wrap;
       gap: 6px;
+    }
+
+    .method-chip-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex: 1 1 calc(50% - 3px);
+      min-width: 140px;
     }
 
     .method-chip {
