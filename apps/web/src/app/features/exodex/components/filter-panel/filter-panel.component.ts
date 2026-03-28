@@ -721,6 +721,13 @@ export class FilterPanelComponent {
     { initialValue: 0 }
   );
 
+  /** Maps raw discovery method names from data to i18n translation keys */
+  private methodToI18nKey: Record<string, string> = {
+    'Direct Imaging': 'Imaging',
+    'Imaging': 'Imaging',
+    'Other': 'Other',
+  };
+
   /** Maps discovery method names to route slugs for method pages */
   private methodToRoute: Record<string, string> = {
     'Transit': '/metodo/transit',
