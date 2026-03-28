@@ -97,11 +97,11 @@ import { getTelescopeWikiLink } from '../../core/constants/telescopes';
           <!-- Physical -->
           <section class="bento-tile section--physical">
             <h3><span class="section-icon"><svg viewBox="0 0 20 20" fill="none" stroke="#a855f7" stroke-width="1.2"><circle cx="10" cy="10" r="8"/><path d="M10 2v16M2 10h16" opacity="0.3"/><circle cx="10" cy="10" r="4" fill="rgba(168,85,247,0.2)"/></svg></span> {{ 'sections.physicalProperties' | translate }}</h3>
-            <app-stat-row [label]="'stats.radius' | translate" [value]="p.radiusEarth" unit="R⊕" [errPlus]="p.radiusEarthErr1" [errMinus]="p.radiusEarthErr2" />
-            <app-stat-row [label]="'stats.mass' | translate" [value]="p.massEarth" unit="M⊕" [errPlus]="p.massEarthErr1" [errMinus]="p.massEarthErr2" />
+            <app-stat-row [label]="'stats.radius' | translate" [value]="p.radiusEarth" [unit]="'units.radiusEarth' | translate" [errPlus]="p.radiusEarthErr1" [errMinus]="p.radiusEarthErr2" />
+            <app-stat-row [label]="'stats.mass' | translate" [value]="p.massEarth" [unit]="'units.massEarth' | translate" [errPlus]="p.massEarthErr1" [errMinus]="p.massEarthErr2" />
             <app-stat-row [label]="'stats.density' | translate" [value]="p.densityGCC" [unit]="'units.density' | translate" />
             <app-stat-row [label]="'stats.gravity' | translate" [value]="p.gravityMS2" [unit]="'units.gravity' | translate" />
-            <app-stat-row [label]="'stats.temperature' | translate" [value]="p.equilibriumTempK" unit="K" [errPlus]="p.equilibriumTempErr1" [errMinus]="p.equilibriumTempErr2" />
+            <app-stat-row [label]="'stats.temperature' | translate" [value]="p.equilibriumTempK" [unit]="'units.tempK' | translate" [errPlus]="p.equilibriumTempErr1" [errMinus]="p.equilibriumTempErr2" />
             <app-stat-row [label]="'stats.distance' | translate" [value]="p.distanceParsec" [unit]="'units.pc' | translate" />
           </section>
 
@@ -146,9 +146,9 @@ import { getTelescopeWikiLink } from '../../core/constants/telescopes';
               </div>
             }
             <app-stat-row [label]="'stats.spectralType' | translate" [value]="p.spectralType" />
-            <app-stat-row [label]="'stats.stellarTemperature' | translate" [value]="p.stellarTempK" unit="K" />
-            <app-stat-row [label]="'stats.stellarRadius' | translate" [value]="p.stellarRadiusSun" unit="R☉" />
-            <app-stat-row [label]="'stats.stellarMass' | translate" [value]="p.stellarMassSun" unit="M☉" />
+            <app-stat-row [label]="'stats.stellarTemperature' | translate" [value]="p.stellarTempK" [unit]="'units.tempK' | translate" />
+            <app-stat-row [label]="'stats.stellarRadius' | translate" [value]="p.stellarRadiusSun" [unit]="'units.radiusSun' | translate" />
+            <app-stat-row [label]="'stats.stellarMass' | translate" [value]="p.stellarMassSun" [unit]="'units.massSun' | translate" />
             <app-stat-row [label]="'stats.stellarMetallicity' | translate" [value]="p.stellarMetallicity" />
             <app-stat-row [label]="'stats.stellarGravity' | translate" [value]="p.stellarSurfaceGravity" [unit]="'units.logg' | translate" />
             <app-stat-row [label]="'stats.stellarAge' | translate" [value]="p.stellarAge" [unit]="'units.gyr' | translate" />
@@ -158,7 +158,7 @@ import { getTelescopeWikiLink } from '../../core/constants/telescopes';
           <!-- Discovery (col 1, row 3) -->
           <section class="bento-tile section--discovery">
             <h3><span class="section-icon"><svg viewBox="0 0 20 20" fill="none" stroke="#22d3ee" stroke-width="1.2" stroke-linecap="round"><path d="M14 3l3 5-10 6-3-5z" fill="rgba(34,211,238,0.15)"/><path d="M7 14l-3 4"/><path d="M4 18h6"/><circle cx="16" cy="4" r="1.5" fill="rgba(34,211,238,0.3)"/></svg></span> {{ 'sections.discovery' | translate }}</h3>
-            <app-stat-row [label]="'stats.discoveryMethod' | translate" [value]="p.discoveryMethod" [href]="getDiscoveryMethodLink(p.discoveryMethod)" [isExternalLink]="false" />
+            <app-stat-row [label]="'stats.discoveryMethod' | translate" [value]="p.discoveryMethod ? ('stats.methodNames.' + p.discoveryMethod | translate) : '—'" [href]="getDiscoveryMethodLink(p.discoveryMethod)" [isExternalLink]="false" />
             <app-stat-row [label]="'stats.discoveryYear' | translate" [value]="p.discoveryYear" />
             <app-stat-row [label]="'stats.discoveryFacility' | translate" [value]="p.discoveryFacility" />
             <app-stat-row [label]="'stats.telescope' | translate" [value]="p.telescope" [href]="getTelescopeWikiLink(p.telescope)" [isExternalLink]="true" />

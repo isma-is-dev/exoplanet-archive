@@ -1,6 +1,8 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
+import * as fs from 'node:fs/promises';
+import * as path from 'node:path';
 import {
   DiscoveryMethod,
   Exoplanet,
@@ -21,6 +23,12 @@ export class ExoplanetService implements OnModuleInit {
 
   constructor(private configService: ConfigService) {}
 
+  private getDiskCachePath(): string {
+    const configured = this.configService.get<string>('DISK_CACHE_PATH', '');
+    if (configured) return path.resolve(configured);
+    return path.resolve(process.cwd(), 'data', 'exoplanets-cache.json');
+  }
+
   async onModuleInit(): Promise<void> {
     // Carga inicial en background sin bloquear
     this.loadData().catch((err) => {
@@ -37,8 +45,36 @@ export class ExoplanetService implements OnModuleInit {
   }
 
   private async loadData(): Promise<void> {
-    this.logger.log('Loading exoplanet data from NASA TAP API...');
     const startTime = Date.now();
+    const cacheFile = this.getDiskCachePath();
+    const cacheTtlMs =
+      this.configService.get<number>('DISK_CACHE_TTL_HOURS', 24) * 3_600_000;
+
+    // Try disk cache first
+    try {
+      const stat = await fs.stat(cacheFile);
+      const ageMs = Date.now() - stat.mtimeMs;
+      if (ageMs < cacheTtlMs) {
+        this.logger.log(
+          `Loading from disk cache (age: ${Math.round(ageMs / 3_600_000)}h < ${cacheTtlMs / 3_600_000}h TTL)...`
+        );
+        const raw = await fs.readFile(cacheFile, 'utf8');
+        this.exoplanets = JSON.parse(raw) as Exoplanet[];
+        this.exoplanetMap.clear();
+        for (const planet of this.exoplanets) {
+          this.exoplanetMap.set(planet.id, planet);
+        }
+        this.buildSearchIndex();
+        this.lastUpdated = stat.mtime;
+        this.logger.log(`Loaded ${this.exoplanets.length} exoplanets from cache in ${Date.now() - startTime}ms`);
+        return;
+      }
+      this.logger.log('Disk cache expired, fetching from NASA...');
+    } catch {
+      this.logger.log('No disk cache found, fetching from NASA...');
+    }
+
+    this.logger.log('Loading exoplanet data from NASA TAP API...');
 
     const baseUrl = this.configService.get<string>(
       'NASA_TAP_BASE_URL',
@@ -96,6 +132,15 @@ export class ExoplanetService implements OnModuleInit {
       this.lastUpdated = new Date();
       const duration = Date.now() - startTime;
       this.logger.log(`Data processed in ${duration}ms`);
+
+      // Persist to disk
+      try {
+        await fs.mkdir(path.dirname(cacheFile), { recursive: true });
+        await fs.writeFile(cacheFile, JSON.stringify(this.exoplanets), 'utf8');
+        this.logger.log(`Cache written to ${cacheFile}`);
+      } catch (writeErr) {
+        this.logger.warn('Failed to write disk cache', writeErr);
+      }
     } catch (error) {
       this.logger.error('Failed to fetch data from NASA API', error);
       throw error;

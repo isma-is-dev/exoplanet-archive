@@ -65,13 +65,30 @@
     "discoveryMethod": "Method",
     "discoveryYear": "Year",
     "discoveryFacility": "Facility",
-    "telescope": "Telescope"
+    "telescope": "Telescope",
+    "publicationDate": "Publication Date",
+    "lastUpdated": "Last Update",
+    "distance": "Distance",
+    "methodNames": {
+      "Transit": "Transit",
+      "Radial Velocity": "Radial Velocity",
+      "Imaging": "Direct Imaging",
+      "Microlensing": "Microlensing",
+      "Astrometry": "Astrometry",
+      "Transit Timing Variations": "Transit Timing Variations",
+      "Orbital Brightness Modulation": "Orbital Brightness Modulation",
+      "Pulsar Timing": "Pulsar Timing",
+      "Eclipse Timing Variations": "Eclipse Timing Variations",
+      "Pulsation Timing Variations": "Pulsation Timing Variations",
+      "Disk Kinematics": "Disk Kinematics"
+    }
   },
   "sections": {
     "orbitalProperties": "Orbital Properties",
     "physicalProperties": "Physical Properties",
     "hostStar": "Host Star",
-    "discovery": "Discovery"
+    "discovery": "Discovery",
+    "metadata": "Data & References"
   },
   "emptyState": {
     "title": "No planets found",
@@ -88,7 +105,9 @@
     "gravity": "m/s²",
     "radiusSun": "R☉",
     "massSun": "M☉",
-    "gyr": "Gyr"
+    "gyr": "Gyr",
+    "pc": "pc",
+    "logg": "log(g)"
   },
   "language": {
     "select": "Language",
@@ -241,6 +260,13 @@
     "detectedElements": "Detected elements",
     "sizeComparisonTitle": "Size Comparison",
     "earth": "Earth",
-    "timesEarth": "× Earth's radius"
+    "jupiter": "Jupiter",
+    "timesEarth": "× Earth's radius",
+    "timesJupiter": "× Jupiter's radius",
+    "noSizeData": "No dimension data exists to compare with Earth."
+  },
+  "badges": {
+    "controversial": "Disputed",
+    "nakedEye": "Naked Eye"
   }
 }

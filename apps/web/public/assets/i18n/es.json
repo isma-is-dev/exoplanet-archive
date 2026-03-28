@@ -65,13 +65,30 @@
     "discoveryMethod": "Método",
     "discoveryYear": "Año",
     "discoveryFacility": "Facilidad",
-    "telescope": "Telescopio"
+    "telescope": "Telescopio",
+    "publicationDate": "Fecha de Publicación",
+    "lastUpdated": "Última Actualización",
+    "distance": "Distancia",
+    "methodNames": {
+      "Transit": "Tránsito",
+      "Radial Velocity": "Velocidad Radial",
+      "Imaging": "Imagen Directa",
+      "Microlensing": "Microlente",
+      "Astrometry": "Astrometría",
+      "Transit Timing Variations": "Variaciones de Tiempo de Tránsito",
+      "Orbital Brightness Modulation": "Modulación de Brillo Orbital",
+      "Pulsar Timing": "Tiempo de Púlsares",
+      "Eclipse Timing Variations": "Variaciones de Tiempo de Eclipse",
+      "Pulsation Timing Variations": "Variaciones de Tiempo de Pulsación",
+      "Disk Kinematics": "Cinemática de Disco"
+    }
   },
   "sections": {
     "orbitalProperties": "Propiedades orbitales",
     "physicalProperties": "Propiedades físicas",
     "hostStar": "Estrella huésped",
-    "discovery": "Descubrimiento"
+    "discovery": "Descubrimiento",
+    "metadata": "Datos y Referencias"
   },
   "emptyState": {
     "title": "No se encontraron planetas",
@@ -88,7 +105,9 @@
     "gravity": "m/s²",
     "radiusSun": "R☉",
     "massSun": "M☉",
-    "gyr": "Gyr"
+    "gyr": "Gyr",
+    "pc": "pc",
+    "logg": "log(g)"
   },
   "language": {
     "select": "Idioma",
@@ -241,6 +260,13 @@
     "detectedElements": "Elementos detectados",
     "sizeComparisonTitle": "Comparación de Tamaño",
     "earth": "Tierra",
-    "timesEarth": "× el radio de la Tierra"
+    "jupiter": "Júpiter",
+    "timesEarth": "× el radio de la Tierra",
+    "timesJupiter": "× el radio de Júpiter",
+    "noSizeData": "No hay datos de dimensiones para comparar con la Tierra."
+  },
+  "badges": {
+    "controversial": "En Disputa",
+    "nakedEye": "A Simple Vista"
   }
 }

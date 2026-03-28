@@ -22,8 +22,8 @@ const MIN_PX = 10;
                [style.width.px]="sizes().earthPx"
                [style.height.px]="sizes().earthPx">
           </div>
-          <span class="body-name">Earth</span>
-          <span class="body-radius">1.00 R⊕</span>
+          <span class="body-name">{{ 'didactic.earth' | translate }}</span>
+          <span class="body-radius">1.00 {{ 'units.radiusEarth' | translate }}</span>
         </div>
 
         <!-- Jupiter — only when planet radius > 3 R⊕ -->
@@ -34,8 +34,8 @@ const MIN_PX = 10;
                  [style.width.px]="sizes().jupiterPx"
                  [style.height.px]="sizes().jupiterPx">
             </div>
-            <span class="body-name">Jupiter</span>
-            <span class="body-radius">11.2 R⊕</span>
+            <span class="body-name">{{ 'didactic.jupiter' | translate }}</span>
+            <span class="body-radius">11.2 {{ 'units.radiusEarth' | translate }}</span>
           </div>
         }
 
@@ -48,16 +48,16 @@ const MIN_PX = 10;
                [style.height.px]="sizes().planetPx">
           </div>
           <span class="body-name planet-name-label">{{ planet().name }}</span>
-          <span class="body-radius">{{ planet().radiusEarth | number:'1.2-2' }} R⊕</span>
+          <span class="body-radius">{{ planet().radiusEarth | number:'1.2-2' }} {{ 'units.radiusEarth' | translate }}</span>
         </div>
       </div>
 
       <div class="baseline"></div>
 
       <div class="scale-note">
-        {{ planet().radiusEarth | number:'1.2-2' }}× Earth radius
+        {{ planet().radiusEarth | number:'1.2-2' }}{{ 'didactic.timesEarth' | translate }}
         @if (sizes().showJupiter) {
-          · {{ (planet().radiusEarth! / JUPITER_R) | number:'1.2-2' }}× Jupiter radius
+          · {{ (planet().radiusEarth! / JUPITER_R) | number:'1.2-2' }}{{ 'didactic.timesJupiter' | translate }}
         }
       </div>
     </div>

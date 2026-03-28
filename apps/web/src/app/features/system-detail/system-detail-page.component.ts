@@ -70,19 +70,19 @@ import { Exoplanet } from '@exodex/shared-types';
                 <div class="star-stats-grid">
                   <div class="star-stat-item">
                     <span class="stat-label">{{ 'systemDetail.temp' | translate }}</span>
-                    <span class="stat-val">{{ planets()[0].stellarTempK || '—' }} <small>K</small></span>
+                    <span class="stat-val">{{ planets()[0].stellarTempK || '—' }} <small>{{ 'units.tempK' | translate }}</small></span>
                   </div>
                   <div class="star-stat-item">
                     <span class="stat-label">{{ 'systemDetail.mass' | translate }}</span>
-                    <span class="stat-val">{{ planets()[0].stellarMassSun || '—' }} <small>M☉</small></span>
+                    <span class="stat-val">{{ planets()[0].stellarMassSun || '—' }} <small>{{ 'units.massSun' | translate }}</small></span>
                   </div>
                   <div class="star-stat-item">
                     <span class="stat-label">{{ 'systemDetail.radius' | translate }}</span>
-                    <span class="stat-val">{{ planets()[0].stellarRadiusSun || '—' }} <small>R☉</small></span>
+                    <span class="stat-val">{{ planets()[0].stellarRadiusSun || '—' }} <small>{{ 'units.radiusSun' | translate }}</small></span>
                   </div>
                   <div class="star-stat-item">
                     <span class="stat-label">{{ 'systemDetail.age' | translate }}</span>
-                    <span class="stat-val">{{ planets()[0].stellarAge || '—' }} <small>Gyr</small></span>
+                    <span class="stat-val">{{ planets()[0].stellarAge || '—' }} <small>{{ 'units.gyr' | translate }}</small></span>
                   </div>
                 </div>
               </div>
@@ -112,7 +112,7 @@ import { Exoplanet } from '@exodex/shared-types';
                     <div class="card-accent-line" [style.background]="'linear-gradient(90deg, ' + planet.color + ', transparent)'"></div>
                     <h4>{{ planet.planet.name }}</h4>
                     <div class="planet-type-tag" [style.color]="planet.color" [style.borderColor]="planet.color + '40'" [style.background]="planet.color + '10'">
-                      {{ planet.planet.planetType.replace('-', ' ') }}
+                      {{ 'filters.planetTypes.' + planet.planet.planetType | translate }}
                     </div>
 
                     <div class="mini-stats">
@@ -124,23 +124,23 @@ import { Exoplanet } from '@exodex/shared-types';
                       <div class="mini-stat">
                         <span class="mini-icon">⟷</span>
                         <span class="mini-val">{{ planet.planet.semiMajorAxisAU | number:'1.0-3' }}</span>
-                        <span class="mini-unit">AU</span>
+                        <span class="mini-unit">{{ 'units.au' | translate }}</span>
                       </div>
                       <div class="mini-stat">
                         <span class="mini-icon">◎</span>
                         <span class="mini-val">{{ planet.planet.radiusEarth | number:'1.0-2' }}</span>
-                        <span class="mini-unit">R⊕</span>
+                        <span class="mini-unit">{{ 'units.radiusEarth' | translate }}</span>
                       </div>
                       <div class="mini-stat">
                         <span class="mini-icon">🌡</span>
                         <span class="mini-val">{{ planet.planet.equilibriumTempK || '—' }}</span>
-                        <span class="mini-unit">K</span>
+                        <span class="mini-unit">{{ 'units.tempK' | translate }}</span>
                       </div>
                     </div>
 
                     <div class="card-footer">
                       <span class="hab-indicator" [class]="'hab-' + planet.planet.habitabilityClass">
-                        {{ planet.planet.habitabilityClass.replace('-', ' ') }}
+                        {{ 'filters.habitabilityOptions.' + planet.planet.habitabilityClass | translate }}
                       </span>
                       <span class="view-link">
                         {{ 'systemDetail.view' | translate }}
