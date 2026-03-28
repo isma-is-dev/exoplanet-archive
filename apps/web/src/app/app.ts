@@ -1,6 +1,24 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { FooterComponent } from './core/components/footer/footer.component';
+
+interface MeteorEmber {
+  offsetY: number;
+  offsetX: number;
+  delay: number;
+  duration: number;
+}
+
+interface MeteorConfig {
+  id: number;
+  top: number;
+  left: number;
+  angle: number;
+  speed: number;
+  delay: number;
+  scale: number;
+  embers: MeteorEmber[];
+}
 
 @Component({
   selector: 'app-root',
@@ -26,9 +44,22 @@ import { FooterComponent } from './core/components/footer/footer.component';
       <div class="twinkle-star big b3"></div>
     </div>
 
-    <!-- Comets -->
-    <div class="comet comet-1"></div>
-    <div class="comet comet-2"></div>
+    <!-- Realistic Meteorites (random positions) -->
+    @for (m of meteors; track m.id) {
+      <div class="meteor"
+           [attr.style]="getMeteorStyle(m)">
+        <div class="meteor-core"></div>
+        <div class="meteor-trail"></div>
+        <div class="meteor-trail trail-inner"></div>
+        @for (e of m.embers; track $index) {
+          <div class="ember"
+               [style.top.px]="e.offsetY"
+               [style.right.px]="e.offsetX"
+               [style.animation-delay]="e.delay + 's'"
+               [style.animation-duration]="e.duration + 's'"></div>
+        }
+      </div>
+    }
 
     <router-outlet />
     <app-footer />
@@ -90,71 +121,150 @@ import { FooterComponent } from './core/components/footer/footer.component';
     .b2  { top: 65%;  left: 55%;  animation-delay: 2.2s; }
     .b3  { top: 45%;  left: 85%;  animation-delay: 1.0s; }
 
-    /* ═══════ COMETS ═══════ */
-    @keyframes cometFly1 {
-      0% {
-        transform: translate(-100px, -50px) rotate(-35deg);
-        opacity: 0;
-      }
-      3% { opacity: 1; }
-      25% { opacity: 0.6; }
-      100% {
-        transform: translate(calc(100vw + 200px), calc(50vh)) rotate(-35deg);
-        opacity: 0;
-      }
-    }
+    /* ═══════ REALISTIC METEORITES ═══════ */
 
-    @keyframes cometFly2 {
-      0% {
-        transform: translate(calc(100vw + 100px), -30px) rotate(210deg);
-        opacity: 0;
-      }
-      3% { opacity: 0.7; }
-      25% { opacity: 0.4; }
-      100% {
-        transform: translate(-200px, calc(40vh)) rotate(210deg);
-        opacity: 0;
-      }
-    }
-
-    .comet {
+    .meteor {
       position: fixed;
       pointer-events: none;
       z-index: 0;
-      width: 2px;
-      height: 2px;
-      background: white;
-      border-radius: 50%;
-      box-shadow:
-        0 0 4px 1px rgba(255, 255, 255, 0.8),
-        0 0 12px 2px rgba(180, 200, 255, 0.5);
+      opacity: 0;
+      will-change: transform, opacity;
+      animation: meteorFly var(--m-speed, 4s) linear infinite;
+      animation-delay: var(--m-delay, 0s);
+      animation-fill-mode: backwards;
     }
 
-    .comet::after {
-      content: '';
+    /*
+     * The meteor moves along its LOCAL X axis via translateX.
+     * rotate() is applied first, orienting that axis diagonally.
+     * The trail sits at right:100% (local LEFT = BEHIND the movement).
+     */
+    @keyframes meteorFly {
+      0% {
+        transform: rotate(var(--m-angle, 30deg)) translateX(-5vw) scale(var(--m-scale, 1));
+        opacity: 0;
+      }
+      2%  { opacity: 1; }
+      70% { opacity: 0.7; }
+      100% {
+        transform: rotate(var(--m-angle, 30deg)) translateX(160vw) scale(var(--m-scale, 1));
+        opacity: 0;
+      }
+    }
+
+    /* Rocky irregular core with hot surface glow */
+    .meteor-core {
+      position: relative;
+      width: 6px;
+      height: 5px;
+      background:
+        radial-gradient(ellipse at 30% 40%, #d4a574 0%, #8b5e3c 30%, #4a3020 60%, #2a1a10 100%);
+      border-radius: 40% 55% 45% 50% / 50% 40% 60% 45%;
+      box-shadow:
+        0 0 3px 1px rgba(255, 160, 50, 0.9),
+        0 0 8px 3px rgba(255, 100, 20, 0.6),
+        0 0 16px 5px rgba(255, 60, 0, 0.3),
+        0 0 30px 8px rgba(255, 40, 0, 0.15),
+        inset 0 0 3px 1px rgba(255, 200, 120, 0.5);
+      z-index: 2;
+    }
+
+    /* Outer fiery trail — extends LEFT in local space (behind movement) */
+    .meteor-trail {
       position: absolute;
       top: 50%;
       right: 100%;
-      width: 80px;
-      height: 1px;
+      width: 120px;
+      height: 6px;
       transform: translateY(-50%);
-      background: linear-gradient(90deg, transparent, rgba(180, 200, 255, 0.4), rgba(255, 255, 255, 0.8));
-      border-radius: 1px;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 80, 0, 0.02) 10%,
+        rgba(255, 100, 20, 0.08) 25%,
+        rgba(255, 140, 40, 0.2) 45%,
+        rgba(255, 170, 60, 0.45) 65%,
+        rgba(255, 180, 80, 0.7) 80%,
+        rgba(255, 200, 120, 0.9) 92%,
+        rgba(255, 220, 160, 1) 100%
+      );
+      border-radius: 2px 0 0 2px;
+      filter: blur(1.5px);
+      z-index: 1;
     }
 
-    .comet-1 {
-      top: 15%;
-      left: 0;
-      animation: cometFly1 12s linear infinite;
-      animation-delay: 3s;
+    /* Inner white-hot core streak */
+    .meteor-trail.trail-inner {
+      width: 70px;
+      height: 2px;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 200, 150, 0.1) 20%,
+        rgba(255, 230, 180, 0.4) 50%,
+        rgba(255, 245, 220, 0.8) 75%,
+        rgba(255, 255, 240, 1) 100%
+      );
+      filter: blur(0.5px);
+      z-index: 3;
     }
 
-    .comet-2 {
-      top: 30%;
-      right: 0;
-      animation: cometFly2 18s linear infinite;
-      animation-delay: 10s;
+    /* Spark embers drifting off behind */
+    .ember {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: rgba(255, 180, 60, 0.9);
+      border-radius: 50%;
+      box-shadow: 0 0 3px 1px rgba(255, 120, 20, 0.6);
+      animation: emberDrift 0.6s ease-out infinite;
+      will-change: transform, opacity;
+      z-index: 1;
+    }
+
+    @keyframes emberDrift {
+      0%   { opacity: 1; transform: translate(0, 0) scale(1); }
+      100% { opacity: 0; transform: translate(-6px, -7px) scale(0.2); }
     }
   `,
 })
-export class App {}
+export class App implements OnInit {
+  meteors: MeteorConfig[] = [];
+
+  ngOnInit(): void {
+    this.generateMeteors();
+  }
+
+  /** Build inline style string with CSS custom properties for each meteor */
+  getMeteorStyle(m: MeteorConfig): string {
+    return `top:${m.top}vh;left:${m.left}vw;--m-angle:${m.angle}deg;--m-speed:${m.speed}s;--m-delay:${m.delay}s;--m-scale:${m.scale}`;
+  }
+
+  private generateMeteors(): void {
+    const count = 10;
+    this.meteors = [];
+
+    for (let i = 0; i < count; i++) {
+      const scale = 0.35 + Math.random() * 1.6;
+      const emberCount = 2 + Math.floor(Math.random() * 5);
+
+      this.meteors.push({
+        id: i,
+        // Random spawn spread across the viewport
+        top: -10 + Math.random() * 80,
+        left: -20 + Math.random() * 60,
+        // Positive angle = clockwise = moves down-right
+        angle: 15 + Math.random() * 50,
+        speed: 2 + Math.random() * 5,
+        delay: Math.random() * 50,
+        scale,
+        embers: Array.from({ length: emberCount }, (_, j) => ({
+          offsetY: -6 + Math.random() * 12,
+          offsetX: 5 + j * 12 + Math.random() * 8,
+          delay: Math.random() * 0.5,
+          duration: 0.4 + Math.random() * 0.4,
+        })),
+      });
+    }
+  }
+}

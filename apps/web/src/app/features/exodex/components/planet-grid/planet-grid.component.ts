@@ -2,7 +2,7 @@ import { Component, inject, ChangeDetectionStrategy, signal, effect } from '@ang
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { toSignal, toObservable } from '@angular/core/rxjs-interop';
-import { switchMap, startWith } from 'rxjs';
+import { switchMap, startWith, tap, observeOn, asyncScheduler } from 'rxjs';
 import { Exoplanet } from '@exodex/shared-types';
 import { FilterStateService } from '../../../../core/services/filter-state.service';
 import { ExoplanetApiService } from '../../../../core/services/exoplanet-api.service';
@@ -55,7 +55,7 @@ interface ExoplanetResponse {
             <app-planet-card
               [planet]="planet"
               (click)="navigateToDetail(planet)"
-              [style.animation-delay]="($index * 50) + 'ms'"
+              [style.animation-delay]="getAnimationDelay($index)"
               class="grid-item"
             />
           }
@@ -76,11 +76,11 @@ interface ExoplanetResponse {
     @keyframes fadeInUp {
       from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(24px) scale(0.97);
       }
       to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
       }
     }
 
@@ -106,7 +106,7 @@ interface ExoplanetResponse {
 
     .grid-item {
       display: block;
-      animation: fadeInUp 500ms cubic-bezier(0.4, 0, 0.2, 1) both;
+      animation: fadeInUp 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
     }
 
     app-planet-card {
@@ -144,8 +144,11 @@ export class PlanetGridComponent {
 
   private response = toSignal(
     combineLatest([this.filters$, this.sort$, this.page$, this.pageSize$]).pipe(
+      tap(() => this.isLoading.set(true)),
       switchMap(([filters, sort, page, pageSize]) =>
-        this.apiService.getExoplanets$(filters, sort, page, pageSize)
+        this.apiService.getExoplanets$(filters, sort, page, pageSize).pipe(
+          observeOn(asyncScheduler)
+        )
       ),
       startWith(null)
     )
@@ -175,6 +178,11 @@ export class PlanetGridComponent {
 
   goToPage(pageNum: number): void {
     this.filterState.setPage(pageNum);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  protected getAnimationDelay(index: number): string {
+    return `${Math.min(index, 7) * 60}ms`;
   }
 
   clearFilters(): void {

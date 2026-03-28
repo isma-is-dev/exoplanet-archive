@@ -1,18 +1,27 @@
 import { Component, inject, computed, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { map } from 'rxjs';
+import { map, switchMap, of } from 'rxjs';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { ExoplanetApiService } from '../../core/services/exoplanet-api.service';
+import { Exoplanet } from '@exodex/shared-types';
 
 interface MethodInfo {
   name: string;
   accentColor: string;
   iconSvg: string;
   diagramSvg: string;
-  examplePlanets: string[];
 }
+
+/** Maps route slug → discoveryMethod value stored in planet data */
+const SLUG_TO_METHOD: Record<string, string> = {
+  'transit': 'Transit',
+  'radial-velocity': 'Radial Velocity',
+  'direct-imaging': 'Direct Imaging',
+  'other': 'Other',
+};
 
 const METHODS: Record<string, MethodInfo> = {
   'transit': {
@@ -35,7 +44,7 @@ const METHODS: Record<string, MethodInfo> = {
       <rect x="135" y="35" width="55" height="50" fill="rgba(77,138,255,0.08)" rx="4"/>
       <text x="148" y="30" fill="#4d8aff" font-size="9" font-family="Orbitron" opacity="0.7">Transit</text>
     </svg>`,
-    examplePlanets: ['Kepler-186 f', 'TRAPPIST-1 e', 'HD 209458 b']
+
   },
   'radial-velocity': {
     name: 'radial-velocity',
@@ -58,7 +67,7 @@ const METHODS: Record<string, MethodInfo> = {
       <text x="5" y="25" fill="#6366f1" font-size="7" font-family="Inter">→ us</text>
       <text x="5" y="105" fill="#ef4444" font-size="7" font-family="Inter">← us</text>
     </svg>`,
-    examplePlanets: ['Proxima Centauri b', '51 Pegasi b', 'Gliese 581 g']
+
   },
   'direct-imaging': {
     name: 'direct-imaging',
@@ -79,7 +88,7 @@ const METHODS: Record<string, MethodInfo> = {
       <circle cx="280" cy="35" r="9" fill="none" stroke="#22d3ee" stroke-width="0.8" opacity="0.4"/>
       <text x="295" y="38" fill="#22d3ee" font-size="8" font-family="Inter">Detected planet</text>
     </svg>`,
-    examplePlanets: ['Jupiter Analog', 'HR 8799 b', 'Beta Pictoris b']
+
   },
   'other': {
     name: 'other',
@@ -95,14 +104,14 @@ const METHODS: Record<string, MethodInfo> = {
       <text x="180" y="15" fill="#f59e0b" font-size="9" font-family="Orbitron" opacity="0.7">Lens event</text>
       <circle cx="200" cy="55" r="3" fill="#f59e0b" opacity="0.8"/>
     </svg>`,
-    examplePlanets: ['OGLE-2005-BLG-390L b', 'PSR B1257+12 b']
+
   }
 };
 
 @Component({
   selector: 'app-method-page',
   standalone: true,
-  imports: [CommonModule, TranslateModule],
+  imports: [CommonModule, TranslateModule, RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (method(); as m) {
@@ -165,11 +174,12 @@ const METHODS: Record<string, MethodInfo> = {
               {{ 'methodsData.notableDiscoveries' | translate }}
             </h2>
             <div class="example-planets">
-              @for (name of m.examplePlanets; track $index) {
-                <div class="example-planet-chip" [style.borderColor]="m.accentColor + '30'">
+              @for (planet of examplePlanets(); track planet.id) {
+                <a class="example-planet-chip" [routerLink]="['/planeta', planet.id]" [style.borderColor]="m.accentColor + '30'">
                   <svg viewBox="0 0 16 16" width="12" height="12" fill="none"><circle cx="8" cy="8" r="5" [attr.fill]="m.accentColor" opacity="0.6"/></svg>
-                  {{ name }}
-                </div>
+                  {{ planet.name }}
+                  <svg class="chip-arrow" viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4l4 4-4 4"/></svg>
+                </a>
               }
             </div>
           </section>
@@ -386,6 +396,25 @@ const METHODS: Record<string, MethodInfo> = {
       color: #e8eeff;
       font-size: 13px;
       font-family: 'Inter', sans-serif;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 300ms ease;
+    }
+
+    .example-planet-chip:hover {
+      background: rgba(77, 138, 255, 0.1);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .chip-arrow {
+      opacity: 0.3;
+      transition: all 300ms ease;
+    }
+
+    .example-planet-chip:hover .chip-arrow {
+      opacity: 0.8;
+      transform: translateX(2px);
     }
 
     .error-state {
@@ -415,6 +444,7 @@ export class MethodPageComponent {
   private router = inject(Router);
   private sanitizer = inject(DomSanitizer);
   private translateService = inject(TranslateService);
+  private apiService = inject(ExoplanetApiService);
 
   private langChange = toSignal(
     this.translateService.onLangChange,
@@ -447,6 +477,25 @@ export class MethodPageComponent {
     if (!s) return null;
     return METHODS[s] || null;
   });
+
+  /** Real planets discovered with this method, fetched from the data service */
+  private examplePlanets$ = this.route.params.pipe(
+    map(p => p['name'] as string),
+    switchMap(slug => {
+      const discoveryMethod = SLUG_TO_METHOD[slug];
+      if (!discoveryMethod) return of([]);
+      return this.apiService.getExoplanets$(
+        { discoveryMethods: [discoveryMethod] } as any,
+        { field: 'discoveryYear', direction: 'asc' },
+        1,
+        6
+      ).pipe(
+        map(res => res.data)
+      );
+    })
+  );
+
+  examplePlanets = toSignal(this.examplePlanets$, { initialValue: [] as Exoplanet[] });
 
   iconSvg = computed<SafeHtml>(() => {
     const m = this.method();

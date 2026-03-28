@@ -114,42 +114,8 @@ body::after {
   z-index: 0;
 }
 
-// ═══════════════════════════════════════════
-// COMET ANIMATION
-// ═══════════════════════════════════════════
-@keyframes cometFly {
-  0% {
-    transform: translate(-100px, -50px) rotate(-35deg);
-    opacity: 0;
-  }
-  5% {
-    opacity: 1;
-  }
-  30% {
-    opacity: 0.8;
-  }
-  100% {
-    transform: translate(calc(100vw + 200px), calc(60vh)) rotate(-35deg);
-    opacity: 0;
-  }
-}
 
-@keyframes cometFly2 {
-  0% {
-    transform: translate(calc(100vw + 100px), -50px) rotate(215deg);
-    opacity: 0;
-  }
-  5% {
-    opacity: 0.7;
-  }
-  30% {
-    opacity: 0.5;
-  }
-  100% {
-    transform: translate(-200px, calc(50vh)) rotate(215deg);
-    opacity: 0;
-  }
-}
+
 
 // Contenido por encima del fondo
 app-root {
