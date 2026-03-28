@@ -3,6 +3,16 @@ import { getViewBoxSize } from './algorithms/size.algorithm';
 import { getStarColors, getStarVisualRadius } from './algorithms/star.algorithm';
 import { lightenHex, darkenHex } from './algorithms/color.algorithm';
 
+function hashString(str: string): number {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash;
+  }
+  return Math.abs(hash);
+}
+
 /**
  * Determines animation timing multiplier based on stellar temperature.
  * Hotter stars = more energetic / faster animations.
@@ -44,8 +54,8 @@ export function renderStar(
   // Animation timing
   const tf = getAnimationTimingFactor(stellarTempK);
 
-  // Unique IDs for gradients and filters
-  const idSuffix = Math.random().toString(36).substr(2, 6);
+  // Unique IDs for gradients and filters - deterministic based on star name for SSR/hydration compatibility
+  const idSuffix = hashString(starName + (stellarTempK || 0)).toString(36);
   const coreGradId = `star-core-${idSuffix}`;
   const coronaGradId = `star-corona-${idSuffix}`;
   const filterId = `star-turb-${idSuffix}`;

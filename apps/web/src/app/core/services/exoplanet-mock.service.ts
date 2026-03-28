@@ -1018,8 +1018,8 @@ export class ExoplanetMockService {
           valueB = b.equilibriumTempK || 0;
           break;
         case 'distanceParsec':
-          valueA = a.semiMajorAxisAU || 0;
-          valueB = b.semiMajorAxisAU || 0;
+          valueA = a.distanceParsec || 0;
+          valueB = b.distanceParsec || 0;
           break;
         default:
           valueA = a.index;

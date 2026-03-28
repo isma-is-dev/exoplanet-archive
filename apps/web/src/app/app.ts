@@ -121,18 +121,20 @@ interface MeteorConfig {
     .b2  { top: 65%;  left: 55%;  animation-delay: 2.2s; }
     .b3  { top: 45%;  left: 85%;  animation-delay: 1.0s; }
 
-    /* ═══════ REALISTIC METEORITES ═══════ */
+    /* ═══════ REALISTIC METEORITES - Optimized ═══════ */
 
-    .meteor {
-      position: fixed;
-      pointer-events: none;
-      z-index: 0;
-      opacity: 0;
-      will-change: transform, opacity;
-      animation: meteorFly var(--m-speed, 4s) linear infinite;
-      animation-delay: var(--m-delay, 0s);
-      animation-fill-mode: backwards;
-    }
+  .meteor {
+    position: fixed;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0;
+    /* Removed will-change - transform animations are GPU accelerated by default */
+    animation: meteorFly var(--m-speed, 4s) linear infinite;
+    animation-delay: var(--m-delay, 0s);
+    animation-fill-mode: backwards;
+    /* Pause animation when tab is not visible to save resources */
+    animation-play-state: var(--m-play-state, running);
+  }
 
     /*
      * The meteor moves along its LOCAL X axis via translateX.
@@ -189,7 +191,7 @@ interface MeteorConfig {
         rgba(255, 220, 160, 1) 100%
       );
       border-radius: 2px 0 0 2px;
-      filter: blur(1.5px);
+      filter: blur(1px); /* Reduced blur for better performance */
       z-index: 1;
     }
 
@@ -209,7 +211,7 @@ interface MeteorConfig {
       z-index: 3;
     }
 
-    /* Spark embers drifting off behind */
+    /* Spark embers drifting off behind - optimized */
     .ember {
       position: absolute;
       width: 2px;
@@ -218,7 +220,7 @@ interface MeteorConfig {
       border-radius: 50%;
       box-shadow: 0 0 3px 1px rgba(255, 120, 20, 0.6);
       animation: emberDrift 0.6s ease-out infinite;
-      will-change: transform, opacity;
+      /* Removed will-change - not needed for small elements */
       z-index: 1;
     }
 
@@ -231,17 +233,28 @@ interface MeteorConfig {
 export class App implements OnInit {
   meteors: MeteorConfig[] = [];
 
+  private animationPaused = false;
+
   ngOnInit(): void {
     this.generateMeteors();
+    this.setupVisibilityListener();
   }
 
   /** Build inline style string with CSS custom properties for each meteor */
   getMeteorStyle(m: MeteorConfig): string {
-    return `top:${m.top}vh;left:${m.left}vw;--m-angle:${m.angle}deg;--m-speed:${m.speed}s;--m-delay:${m.delay}s;--m-scale:${m.scale}`;
+    return `top:${m.top}vh;left:${m.left}vw;--m-angle:${m.angle}deg;--m-speed:${m.speed}s;--m-delay:${m.delay}s;--m-scale:${m.scale};--m-play-state:${this.animationPaused ? 'paused' : 'running'}`;
+  }
+
+  private setupVisibilityListener(): void {
+    if (typeof document !== 'undefined') {
+      document.addEventListener('visibilitychange', () => {
+        this.animationPaused = document.hidden;
+      });
+    }
   }
 
   private generateMeteors(): void {
-    const count = 10;
+    const count = 4; /* Reduced from 10 to 4 for better performance */
     this.meteors = [];
 
     for (let i = 0; i < count; i++) {

@@ -1,7 +1,7 @@
-import { Component, input, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { Exoplanet } from '@exodex/shared-types';
 import { StatBadgeComponent } from '../stat-badge/stat-badge.component';
 import { StatRowComponent } from '../stat-row/stat-row.component';
@@ -13,7 +13,11 @@ import { PlanetAvatarComponent } from '../planet-avatar/planet-avatar.component'
   imports: [CommonModule, RouterLink, TranslateModule, StatBadgeComponent, StatRowComponent, PlanetAvatarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <article class="planet-card" [class]="'planet-card--' + planet().planetType">
+    <article class="planet-card"
+             role="article"
+             [attr.aria-label]="planet().name + ' exoplanet card'"
+             tabindex="0"
+             [class]="'planet-card--' + planet().planetType">
       <div class="card-glow"></div>
       <div class="card-index">#{{ planet().index | number:'4.0-0' }}</div>
 
@@ -101,9 +105,8 @@ import { PlanetAvatarComponent } from '../planet-avatar/planet-avatar.component'
       flex-direction: column;
       height: 100%;
       padding: 20px;
-      background: rgba(15, 20, 40, 0.5);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      /* Replaced backdrop-filter with solid background for better performance in grids */
+      background: rgba(15, 20, 40, 0.85);
       border: 1px solid rgba(255, 255, 255, 0.06);
       border-radius: 20px;
       transition: all 400ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -355,5 +358,4 @@ import { PlanetAvatarComponent } from '../planet-avatar/planet-avatar.component'
 })
 export class PlanetCardComponent {
   planet = input.required<Exoplanet>();
-  private translate = inject(TranslateService);
 }

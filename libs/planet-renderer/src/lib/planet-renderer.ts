@@ -9,6 +9,16 @@ import { buildAtmosphereGlow } from './algorithms/atmosphere.algorithm';
 import { shouldShowRings, buildRings, buildFrontRings } from './algorithms/rings.algorithm';
 import { buildSurfaceDetails } from './algorithms/surface.algorithm';
 
+function hashString(str: string): number {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32bit integer
+  }
+  return Math.abs(hash);
+}
+
 export function renderPlanet(
   params: PlanetRenderParams,
   planetName: string = 'unknown'
@@ -36,13 +46,14 @@ export function renderPlanet(
   const colors = getPlanetColors(planetType, equilibriumTempK);
   const { primary: primaryColor, secondary: secondaryColor, tertiary: tertiaryColor, accent: accentColor } = colors;
 
-  // Build gradients
+  // Build gradients - use deterministic IDs based on planet name for SSR/hydration compatibility
   const highlightColor = lightenHex(secondaryColor, 0.35);
   const shadowColor = darkenHex(primaryColor, 0.45);
-  const gradientId = `body-${Math.random().toString(36).substr(2, 9)}`;
-  const terminatorId = `term-${Math.random().toString(36).substr(2, 9)}`;
-  const specularId = `spec-${Math.random().toString(36).substr(2, 9)}`;
-  const aoId = `ao-${Math.random().toString(36).substr(2, 9)}`;
+  const idSuffix = hashString(planetName + planetType).toString(36);
+  const gradientId = `body-${idSuffix}`;
+  const terminatorId = `term-${idSuffix}`;
+  const specularId = `spec-${idSuffix}`;
+  const aoId = `ao-${idSuffix}`;
 
   // Determine if showing rings
   const showRings = shouldShowRings(planetType, radiusEarth);

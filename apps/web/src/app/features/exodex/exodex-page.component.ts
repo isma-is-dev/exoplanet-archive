@@ -31,22 +31,22 @@ import { LanguageSwitcherComponent } from '../../core/components/language-switch
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="exodex-layout">
-      <header class="exodex-header">
+      <header class="exodex-header" role="banner" aria-label="Exodex header">
         <div class="header-left">
           <h1 class="logo">
             <span class="logo-icon">◈</span>
             <span class="logo-text">Exodex</span>
           </h1>
           @if (stats(); as s) {
-            <span class="planet-count">
+            <span class="planet-count" aria-live="polite">
               <span class="count-number">{{ s.totalCount | number }}</span>
               {{ 'stats.exoplanets' | translate }}
             </span>
           }
         </div>
         <div class="header-right">
-          <a routerLink="/about" class="about-link" title="About Exodex">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+          <a routerLink="/about" class="about-link" title="About Exodex" aria-label="About Exodex">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" aria-hidden="true">
               <circle cx="12" cy="12" r="10" />
               <path d="M12 16v-4M12 8h.01" stroke-linecap="round" />
             </svg>
@@ -56,26 +56,30 @@ import { LanguageSwitcherComponent } from '../../core/components/language-switch
             class="header-search"
             [placeholder]="'common.search' | translate"
             (search)="onSearch($event)"
+            role="searchbox"
+            aria-label="Search exoplanets"
           />
           <button
             class="sidebar-toggle"
             (click)="filterState.toggleSidebar()"
+            [attr.aria-expanded]="sidebarOpen()"
+            aria-label="Toggle filter sidebar"
           >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
               <path d="M3 12h18M3 6h18M3 18h18" />
             </svg>
           </button>
         </div>
       </header>
 
-      <aside class="filter-sidebar" [class.open]="sidebarOpen()" #sidebarEl>
+      <aside class="filter-sidebar" [class.open]="sidebarOpen()" #sidebarEl role="navigation" aria-label="Filter options">
         <div class="filter-sidebar-inner">
           <app-filter-panel />
         </div>
       </aside>
-      <div class="sidebar-overlay" [class.visible]="sidebarOpen()" (click)="filterState.toggleSidebar()"></div>
+      <div class="sidebar-overlay" [class.visible]="sidebarOpen()" (click)="filterState.toggleSidebar()" role="presentation"></div>
 
-      <main class="exodex-main">
+      <main class="exodex-main" role="main" aria-label="Exoplanet grid">
         <app-sort-bar />
         <app-planet-grid />
       </main>

@@ -1,8 +1,8 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, inject, signal, Injector, runInInjectionContext } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, of, catchError, shareReplay, tap, map } from 'rxjs';
+import { Observable, of, catchError, shareReplay, tap, map, switchMap, from } from 'rxjs';
 import { Exoplanet, ExoplanetFilters, SortState } from '@exodex/shared-types';
-import { ExoplanetMockService } from './exoplanet-mock.service';
+import { environment } from '../../../environments/environment';
 
 interface PaginatedResponse<T> {
   data: T[];
@@ -26,17 +26,26 @@ interface StatusResponse {
   cacheAge: number;
 }
 
-const API_BASE_URL = 'http://localhost:3000/api';
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutos
+const MAX_CACHE_SIZE = 20;
 
 @Injectable({
   providedIn: 'root',
 })
 export class ExoplanetApiService {
   private http = inject(HttpClient);
-  private mockService = inject(ExoplanetMockService);
+  private injector = inject(Injector);
   private cache = new Map<string, { data: unknown; timestamp: number }>();
   private useMock = signal(false);
+  private mockService: import('./exoplanet-mock.service').ExoplanetMockService | null = null;
+
+  private async getMockService(): Promise<import('./exoplanet-mock.service').ExoplanetMockService> {
+    if (!this.mockService) {
+      const { ExoplanetMockService } = await import('./exoplanet-mock.service');
+      this.mockService = runInInjectionContext(this.injector, () => new ExoplanetMockService());
+    }
+    return this.mockService;
+  }
 
   getExoplanets$(
     filters: ExoplanetFilters,
@@ -53,7 +62,9 @@ export class ExoplanetApiService {
 
     // Si ya sabemos que el backend no funciona, usar mock directamente
     if (this.useMock()) {
-      return this.mockService.getExoplanets$(filters, sort, page, pageSize);
+      return from(this.getMockService()).pipe(
+        switchMap(service => service.getExoplanets$(filters, sort, page, pageSize))
+      );
     }
 
     let params = new HttpParams()
@@ -87,53 +98,65 @@ export class ExoplanetApiService {
     }
 
     return this.http
-      .get<PaginatedResponse<Exoplanet>>(`${API_BASE_URL}/exoplanets`, { params })
+      .get<PaginatedResponse<Exoplanet>>(`${environment.apiBaseUrl}/exoplanets`, { params })
       .pipe(
         tap((response) => {
           this.setCache(cacheKey, response);
         }),
-        shareReplay(1),
         catchError(() => {
           // Fallback a mock
           this.useMock.set(true);
           console.log('API no disponible, usando datos mock');
-          return this.mockService.getExoplanets$(filters, sort, page, pageSize);
-        })
+          return from(this.getMockService()).pipe(
+            switchMap(service => service.getExoplanets$(filters, sort, page, pageSize))
+          );
+        }),
+        shareReplay(1)
       );
   }
 
   getExoplanetById$(id: string): Observable<Exoplanet | null> {
     if (this.useMock()) {
-      return this.mockService.getById$(id);
+      return from(this.getMockService()).pipe(
+        switchMap(service => service.getById$(id))
+      );
     }
 
-    return this.http.get<Exoplanet>(`${API_BASE_URL}/exoplanets/${id}`).pipe(
-      shareReplay(1),
+    return this.http.get<Exoplanet>(`${environment.apiBaseUrl}/exoplanets/${id}`).pipe(
       catchError(() => {
         this.useMock.set(true);
-        return this.mockService.getById$(id);
-      })
+        return from(this.getMockService()).pipe(
+          switchMap(service => service.getById$(id))
+        );
+      }),
+      shareReplay(1)
     );
   }
 
   getSystemPlanets$(hostStar: string): Observable<Exoplanet[]> {
     if (this.useMock()) {
-      return this.mockService.getSystemPlanets$(hostStar);
+      return from(this.getMockService()).pipe(
+        switchMap(service => service.getSystemPlanets$(hostStar))
+      );
     }
-    return this.http.get<PaginatedResponse<Exoplanet>>(`${API_BASE_URL}/exoplanets`, { params: { q: hostStar, pageSize: '50' } })
+    return this.http.get<PaginatedResponse<Exoplanet>>(`${environment.apiBaseUrl}/exoplanets`, { params: { q: hostStar, pageSize: '50' } })
       .pipe(
         map((res) => res.data),
-        shareReplay(1),
         catchError(() => {
           this.useMock.set(true);
-          return this.mockService.getSystemPlanets$(hostStar);
-        })
+          return from(this.getMockService()).pipe(
+            switchMap(service => service.getSystemPlanets$(hostStar))
+          );
+        }),
+        shareReplay(1)
       );
   }
 
   getStats$(): Observable<StatsResponse> {
     if (this.useMock()) {
-      return this.mockService.getStats$();
+      return from(this.getMockService()).pipe(
+        switchMap(service => service.getStats$())
+      );
     }
 
     const cacheKey = 'stats';
@@ -144,16 +167,18 @@ export class ExoplanetApiService {
     }
 
     return this.http
-      .get<StatsResponse>(`${API_BASE_URL}/exoplanets/meta/stats`)
+      .get<StatsResponse>(`${environment.apiBaseUrl}/exoplanets/meta/stats`)
       .pipe(
         tap((response) => {
           this.setCache(cacheKey, response);
         }),
-        shareReplay(1),
         catchError(() => {
           this.useMock.set(true);
-          return this.mockService.getStats$();
-        })
+          return from(this.getMockService()).pipe(
+            switchMap(service => service.getStats$())
+          );
+        }),
+        shareReplay(1)
       );
   }
 
@@ -167,9 +192,8 @@ export class ExoplanetApiService {
     }
 
     return this.http
-      .get<StatusResponse>(`${API_BASE_URL}/exoplanets/meta/status`)
+      .get<StatusResponse>(`${environment.apiBaseUrl}/exoplanets/meta/status`)
       .pipe(
-        shareReplay(1),
         catchError(() => {
           this.useMock.set(true);
           return of({
@@ -177,7 +201,8 @@ export class ExoplanetApiService {
             totalPlanets: 20,
             cacheAge: 0,
           });
-        })
+        }),
+        shareReplay(1)
       );
   }
 
@@ -202,6 +227,13 @@ export class ExoplanetApiService {
   }
 
   private setCache<T>(key: string, data: T): void {
+    if (this.cache.size >= MAX_CACHE_SIZE) {
+      // Eliminar la entrada más antigua (primera del Map)
+      const oldestKey = this.cache.keys().next().value;
+      if (oldestKey !== undefined) {
+        this.cache.delete(oldestKey);
+      }
+    }
     this.cache.set(key, { data, timestamp: Date.now() });
   }
 

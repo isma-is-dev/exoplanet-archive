@@ -1,4 +1,4 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import * as fs from 'node:fs/promises';
@@ -13,13 +13,18 @@ import {
 import { NasaExoplanetRaw, transformNasaData } from './exoplanet.transformer';
 
 @Injectable()
-export class ExoplanetService implements OnModuleInit {
+export class ExoplanetService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(ExoplanetService.name);
   private exoplanets: Exoplanet[] = [];
   private exoplanetMap: Map<string, Exoplanet> = new Map();
   private searchIndex: Map<string, Set<string>> = new Map();
   private lastUpdated: Date | null = null;
   private refreshTimer: NodeJS.Timeout | null = null;
+  
+  // Filter result cache for O(1) lookups of common filter combinations
+  private filterResultCache: Map<string, { data: Exoplanet[]; total: number; timestamp: number }> = new Map();
+  private readonly FILTER_CACHE_TTL_MS = 30_000; // 30 seconds
+  private readonly MAX_FILTER_CACHE_SIZE = 50;
 
   constructor(private configService: ConfigService) {}
 
@@ -42,6 +47,13 @@ export class ExoplanetService implements OnModuleInit {
         this.logger.error('Failed to refresh data', err);
       });
     }, ttlSeconds * 1000);
+  }
+
+  onModuleDestroy(): void {
+    if (this.refreshTimer) {
+      clearInterval(this.refreshTimer);
+      this.refreshTimer = null;
+    }
   }
 
   private async loadData(): Promise<void> {
@@ -185,6 +197,21 @@ export class ExoplanetService implements OnModuleInit {
     page: number,
     pageSize: number
   ): { data: Exoplanet[]; total: number } {
+    // Build cache key from filters and sort (excluding pagination)
+    const cacheKey = this.buildFilterCacheKey(filters, sort);
+    
+    // Check cache first
+    const cached = this.getFromFilterCache(cacheKey);
+    if (cached) {
+      // Apply pagination to cached results
+      const start = (page - 1) * pageSize;
+      const end = start + pageSize;
+      return { 
+        data: cached.data.slice(start, end), 
+        total: cached.total 
+      };
+    }
+
     // Aplicar filtros
     let filtered = this.exoplanets.filter((planet) =>
       this.matchesFilters(planet, filters)
@@ -193,6 +220,9 @@ export class ExoplanetService implements OnModuleInit {
     // Aplicar ordenamiento
     filtered = this.applySort(filtered, sort);
 
+    // Cache the filtered+sorted results before pagination
+    this.setFilterCache(cacheKey, filtered);
+
     // Aplicar paginación
     const total = filtered.length;
     const start = (page - 1) * pageSize;
@@ -200,6 +230,49 @@ export class ExoplanetService implements OnModuleInit {
     const paginated = filtered.slice(start, end);
 
     return { data: paginated, total };
+  }
+
+  private buildFilterCacheKey(filters: ExoplanetFilters, sort: SortState): string {
+    // Create deterministic cache key
+    return JSON.stringify({
+      types: filters.planetTypes.sort().join(','),
+      stellar: filters.stellarClasses.sort().join(','),
+      methods: filters.discoveryMethods.sort().join(','),
+      habitability: filters.habitabilityClasses.sort().join(','),
+      yearMin: filters.discoveryYearRange?.[0],
+      yearMax: filters.discoveryYearRange?.[1],
+      radiusMin: filters.radiusEarthRange?.[0],
+      radiusMax: filters.radiusEarthRange?.[1],
+      massMin: filters.massEarthRange?.[0],
+      massMax: filters.massEarthRange?.[1],
+      tempMin: filters.equilibriumTempKRange?.[0],
+      tempMax: filters.equilibriumTempKRange?.[1],
+      search: filters.searchQuery?.toLowerCase()?.trim(),
+      sortField: sort.field,
+      sortDir: sort.direction,
+    });
+  }
+
+  private getFromFilterCache(key: string): { data: Exoplanet[]; total: number; timestamp: number } | null {
+    const cached = this.filterResultCache.get(key);
+    if (cached && Date.now() - cached.timestamp < this.FILTER_CACHE_TTL_MS) {
+      return cached;
+    }
+    if (cached) {
+      this.filterResultCache.delete(key);
+    }
+    return null;
+  }
+
+  private setFilterCache(key: string, data: Exoplanet[]): void {
+    // Evict oldest if at capacity
+    if (this.filterResultCache.size >= this.MAX_FILTER_CACHE_SIZE) {
+      const oldestKey = this.filterResultCache.keys().next().value;
+      if (oldestKey !== undefined) {
+        this.filterResultCache.delete(oldestKey);
+      }
+    }
+    this.filterResultCache.set(key, { data, total: data.length, timestamp: Date.now() });
   }
 
   getById(id: string): Exoplanet | undefined {
@@ -388,10 +461,12 @@ export class ExoplanetService implements OnModuleInit {
         if (matchingIds === null) {
           matchingIds = new Set(idsForWord);
         } else {
-          // Intersección
-          matchingIds = new Set(
-            [...matchingIds].filter((id) => idsForWord.has(id))
-          );
+          // Intersección eficiente sin spread
+          const intersection = new Set<string>();
+          for (const id of matchingIds) {
+            if (idsForWord.has(id)) intersection.add(id);
+          }
+          matchingIds = intersection;
         }
         if (matchingIds.size === 0) {
           return false;
@@ -462,7 +537,7 @@ export class ExoplanetService implements OnModuleInit {
       // Manejar nulls - nulls al final
       if (aVal === null && bVal === null) return 0;
       if (aVal === null) return 1;
-      if (bVal === null) return 1;
+      if (bVal === null) return -1;
 
       if (typeof aVal === 'string' && typeof bVal === 'string') {
         return aVal.localeCompare(bVal) * multiplier;
