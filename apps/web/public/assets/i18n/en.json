@@ -208,19 +208,70 @@
       },
       "other": {
         "title": "Other Detection Methods",
-        "description": "Includes gravitational microlensing, astrometry, timing variations, and other techniques used to detect exoplanets.",
-        "howItWorks": "Several additional methods exist: Gravitational microlensing uses the bending of light when a foreground star and its planet pass in front of a background star. Astrometry measures the tiny positional wobble of a star. Timing variations detect planets by changes in the timing of pulsars or eclipsing binaries.",
+        "description": "Includes orbital brightness modulation, eclipse timing variations, pulsar timing, and other specialized techniques used to detect exoplanets.",
+        "howItWorks": "Several additional methods exist: Orbital Brightness Modulation detects planets by measuring small changes in a star's brightness caused by reflected light from a planet. Eclipse Timing Variations measure tiny changes in the period of eclipsing binaries caused by orbiting planets. Pulsar Timing uses the extreme regularity of pulsar signals to detect minute perturbations caused by planets.",
         "advantages": [
-          "Microlensing can detect low-mass planets at large distances",
-          "Astrometry can measure true masses",
+          "Can detect planets in unique orbital configurations",
           "Timing methods are extremely precise",
+          "Can find planets around exotic stellar remnants",
           "Each method probes different parameter spaces"
         ],
         "limitations": [
+          "Each method has very specific applicability",
+          "Often require specialized targets (pulsars, eclipsing binaries)",
+          "Limited by the rarity of suitable host stars",
+          "Usually require space-based or specialized ground telescopes"
+        ]
+      },
+      "microlensing": {
+        "title": "Gravitational Microlensing",
+        "description": "Detects planets by observing the temporary amplification of light from a distant star when a foreground star with a planet passes in front of it.",
+        "howItWorks": "When a star passes in front of a more distant background star, its gravity acts like a lens, magnifying the light from the background star. If the foreground star has a planet, the planet creates a brief additional brightening. By monitoring millions of stars, astronomers can detect these rare microlensing events and infer the presence of planets.",
+        "advantages": [
+          "Can detect low-mass planets at large distances",
+          "Sensitive to planets in the outer regions of solar systems",
+          "Works for planets around faint or distant host stars",
+          "Can detect free-floating rogue planets"
+        ],
+        "limitations": [
           "Microlensing events are one-time and unrepeatable",
-          "Astrometry requires extremely precise measurements",
-          "Each method has specific, narrow applicability",
-          "Often require space-based telescopes"
+          "Cannot observe the planet again for follow-up studies",
+          "Requires monitoring millions of stars continuously",
+          "Chance alignments are extremely rare"
+        ]
+      },
+      "astrometry": {
+        "title": "Astrometry",
+        "description": "Measures the tiny positional wobble of a star on the sky caused by the gravitational pull of an orbiting planet.",
+        "howItWorks": "Astrometry measures the position of a star with extreme precision over time. A planet orbiting a star causes the star to trace a small ellipse on the sky as both objects orbit their common center of mass. By precisely measuring these positional shifts, astronomers can determine the planet's mass, orbit, and even detect planets that other methods miss.",
+        "advantages": [
+          "Can measure true planetary masses (not just minimum mass)",
+          "Works for planets in face-on orbits",
+          "Sensitive to planets at large orbital distances",
+          "Complementary to radial velocity measurements"
+        ],
+        "limitations": [
+          "Requires extremely precise measurements (microarcseconds)",
+          "Most effective from space-based telescopes",
+          "Best for nearby, bright stars",
+          "Needs long observation baselines"
+        ]
+      },
+      "transit-timing-variations": {
+        "title": "Transit Timing Variations",
+        "description": "Detects planets by measuring small deviations in the predicted transit times of a known transiting planet, caused by gravitational interactions with another planet.",
+        "howItWorks": "When a transiting planet has planetary siblings, their mutual gravitational attraction perturbs the orbits, causing the transits to occur slightly earlier or later than predicted. By precisely measuring these timing variations over many orbits, astronomers can detect additional planets in the system, even those that do not transit themselves.",
+        "advantages": [
+          "Can detect non-transiting planets in multi-planet systems",
+          "Extremely sensitive to low-mass planets",
+          "Provides information about orbital dynamics",
+          "Can characterize entire planetary systems"
+        ],
+        "limitations": [
+          "Requires a known transiting planet",
+          "Only works in multi-planet systems",
+          "Needs long-term, precise photometric monitoring",
+          "Complex analysis required to disentangle signals"
         ]
       }
     }

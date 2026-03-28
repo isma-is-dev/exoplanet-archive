@@ -20,6 +20,9 @@ const SLUG_TO_METHOD: Record<string, string> = {
   'transit': 'Transit',
   'radial-velocity': 'Radial Velocity',
   'direct-imaging': 'Direct Imaging',
+  'microlensing': 'Microlensing',
+  'astrometry': 'Astrometry',
+  'transit-timing-variations': 'Transit Timing Variations',
   'other': 'Other',
 };
 
@@ -103,6 +106,76 @@ const METHODS: Record<string, MethodInfo> = {
       <path d="M 20,90 L 140,90 Q 200,20 260,90 L 380,90" stroke="#f59e0b" stroke-width="2" fill="none"/>
       <text x="180" y="15" fill="#f59e0b" font-size="9" font-family="Orbitron" opacity="0.7">Lens event</text>
       <circle cx="200" cy="55" r="3" fill="#f59e0b" opacity="0.8"/>
+    </svg>`,
+
+  },
+  'microlensing': {
+    name: 'microlensing',
+    accentColor: '#ec4899',
+    iconSvg: `<svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="60" cy="100" r="25" fill="#f59e0b" opacity="0.7"/>
+      <circle cx="140" cy="100" r="8" fill="#ec4899" opacity="0.9"/>
+      <path d="M 20,100 L 180,100" stroke="rgba(236,72,153,0.3)" stroke-width="1" stroke-dasharray="4 4"/>
+      <path d="M 60,60 Q 100,100 60,140" stroke="rgba(245,158,11,0.4)" stroke-width="1.5" fill="none"/>
+      <text x="135" y="85" fill="#ec4899" font-size="8" font-family="Inter">planet</text>
+    </svg>`,
+    diagramSvg: `<svg viewBox="0 0 400 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="20" y1="60" x2="380" y2="60" stroke="rgba(255,255,255,0.1)" stroke-width="1" stroke-dasharray="4 4"/>
+      <circle cx="80" cy="60" r="20" fill="#f59e0b" opacity="0.5"/>
+      <circle cx="200" cy="60" r="25" fill="none" stroke="#ec4899" stroke-width="2" opacity="0.6"/>
+      <circle cx="320" cy="60" r="15" fill="#6366f1" opacity="0.4"/>
+      <text x="70" y="30" fill="#f59e0b" font-size="9" font-family="Inter">Source</text>
+      <text x="185" y="30" fill="#ec4899" font-size="9" font-family="Inter">Lens</text>
+      <text x="305" y="30" fill="#6366f1" font-size="9" font-family="Inter">Observer</text>
+      <path d="M 100,60 Q 150,40 180,60" stroke="#ec4899" stroke-width="1" fill="none" opacity="0.5"/>
+    </svg>`,
+
+  },
+  'astrometry': {
+    name: 'astrometry',
+    accentColor: '#10b981',
+    iconSvg: `<svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="100" cy="100" r="3" fill="#10b981"/>
+      <circle cx="100" cy="100" r="40" fill="none" stroke="#10b981" stroke-width="0.5" opacity="0.3" stroke-dasharray="2 2"/>
+      <circle cx="85" cy="100" r="3" fill="#f59e0b" opacity="0.8"/>
+      <circle cx="115" cy="100" r="3" fill="#f59e0b" opacity="0.8"/>
+      <path d="M 100,100 L 85,100" stroke="#10b981" stroke-width="0.8" opacity="0.5"/>
+      <path d="M 100,100 L 115,100" stroke="#10b981" stroke-width="0.8" opacity="0.5"/>
+      <text x="140" y="95" fill="#10b981" font-size="8" font-family="Inter">wobble</text>
+    </svg>`,
+    diagramSvg: `<svg viewBox="0 0 400 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="20" y1="60" x2="380" y2="60" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+      <line x1="20" y1="60" x2="380" y2="60" stroke="rgba(16,185,129,0.2)" stroke-width="2" stroke-dasharray="2 4"/>
+      <circle cx="100" cy="60" r="4" fill="#f59e0b"/>
+      <circle cx="160" cy="55" r="3" fill="#f59e0b"/>
+      <circle cx="220" cy="65" r="3" fill="#f59e0b"/>
+      <circle cx="280" cy="58" r="3" fill="#f59e0b"/>
+      <path d="M 100,60 L 160,55 L 220,65 L 280,58" stroke="#10b981" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="340" y="55" fill="#10b981" font-size="9" font-family="Inter">Movement</text>
+    </svg>`,
+
+  },
+  'transit-timing-variations': {
+    name: 'transit-timing-variations',
+    accentColor: '#8b5cf6',
+    iconSvg: `<svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="100" cy="100" r="30" fill="#f59e0b" opacity="0.7"/>
+      <circle cx="70" cy="100" r="5" fill="#8b5cf6" opacity="0.9"/>
+      <circle cx="130" cy="95" r="5" fill="#8b5cf6" opacity="0.9"/>
+      <line x1="0" y1="100" x2="200" y2="100" stroke="rgba(139,92,246,0.2)" stroke-width="0.5" stroke-dasharray="3 3"/>
+      <path d="M 70,80 L 70,120 M 130,75 L 130,115" stroke="#8b5cf6" stroke-width="1" opacity="0.5"/>
+    </svg>`,
+    diagramSvg: `<svg viewBox="0 0 400 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="20" y1="60" x2="380" y2="60" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+      <line x1="20" y1="80" x2="380" y2="80" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+      <circle cx="80" cy="80" r="6" fill="#8b5cf6" opacity="0.8"/>
+      <circle cx="200" cy="80" r="6" fill="#8b5cf6" opacity="0.8"/>
+      <circle cx="320" cy="70" r="6" fill="#8b5cf6" opacity="0.8"/>
+      <text x="75" y="55" fill="#5a6177" font-size="8" font-family="Inter">T+0</text>
+      <text x="190" y="55" fill="#5a6177" font-size="8" font-family="Inter">T+period</text>
+      <text x="305" y="45" fill="#8b5cf6" font-size="8" font-family="Inter">Variation</text>
+      <path d="M 80,40 L 200,40" stroke="#8b5cf6" stroke-width="1" stroke-dasharray="2 2" opacity="0.5"/>
+      <path d="M 200,40 L 320,30" stroke="#8b5cf6" stroke-width="1.5" stroke-dasharray="4 2"/>
     </svg>`,
 
   }

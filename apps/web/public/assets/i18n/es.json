@@ -208,19 +208,70 @@
       },
       "other": {
         "title": "Otros Métodos de Detección",
-        "description": "Incluye microlente gravitacional, astrometría, variaciones de tiempo y otras técnicas menos habituales utilizadas para detectar exoplanetas.",
-        "howItWorks": "Existen otras metodologías adicionales: La microlente gravitacional utiliza la curvatura de la luz cuando una estrella en primer plano y su planeta pasan frente a una estrella de fondo. La astrometría mide la pequeña oscilación posicional de una estrella en el espacio. Las variaciones de los tiempos detectan planetas mediante cambios en el cronometraje de púlsares o por los movimientos de sistemas binarios eclipsantes.",
+        "description": "Incluye modulación de brillo orbital, variaciones de tiempo de eclipse, tiempo de púlsar y otras técnicas especializadas para detectar exoplanetas.",
+        "howItWorks": "Existen varios métodos adicionales: La modulación de brillo orbital detecta planetas midiendo pequeños cambios en el brillo de una estrella causados por la luz reflejada de un planeta. Las variaciones de tiempo de eclipse miden pequeños cambios en el período de binarias eclipsantes causados por planetas en órbita. El tiempo de púlsar utiliza la extrema regularidad de las señales de púlsar para detectar perturbaciones causadas por planetas.",
         "advantages": [
-          "La microlente puede detectar planetas de baja masa a enormes distancias",
-          "La astrometría puede medir las masas reales de los planetas",
-          "Los métodos de pulsaciones de tiempo son extremadamente precisos",
-          "Cada técnica adicional explora parámetros planetarios únicos"
+          "Puede detectar planetas en configuraciones orbitales únicas",
+          "Los métodos de tiempo son extremadamente precisos",
+          "Puede encontrar planetas alrededor de remanentes estelares exóticos",
+          "Cada método explora diferentes espacios de parámetros"
         ],
         "limitations": [
-          "Los eventos de microlentes ocurren una sola vez y no son repetibles",
-          "La astrometría requiere de observaciones microscópicas prolongadas",
-          "Tienen rangos de aplicabilidad más limitados que el Tránsito",
-          "Frecuentemente es indispensable contar con telescopios en el espacio"
+          "Cada método tiene aplicabilidad muy específica",
+          "A menudo requieren objetivos especializados (púlsares, binarias eclipsantes)",
+          "Limitado por la rareza de las estrellas anfitrionas adecuadas",
+          "Generalmente requieren telescopios espaciales o terrestres especializados"
+        ]
+      },
+      "microlensing": {
+        "title": "Microlente Gravitacional",
+        "description": "Detecta planetas observando la amplificación temporal de la luz de una estrella distante cuando una estrella en primer plano con un planeta pasa frente a ella.",
+        "howItWorks": "Cuando una estrella pasa frente a una estrella de fondo más distante, su gravedad actúa como una lente, magnificando la luz de la estrella de fondo. Si la estrella en primer plano tiene un planeta, este crea un breve aumento de brillo adicional. Al monitorear millones de estrellas, los astrónomos pueden detectar estos raros eventos de microlente e inferir la presencia de planetas.",
+        "advantages": [
+          "Puede detectar planetas de baja masa a grandes distancias",
+          "Sensible a planetas en las regiones externas de sistemas solares",
+          "Funciona para planetas alrededor de estrellas débiles o distantes",
+          "Puede detectar planetas errantes libres"
+        ],
+        "limitations": [
+          "Los eventos de microlente ocurren una sola vez y no son repetibles",
+          "No se puede observar el planeta de nuevo para estudios de seguimiento",
+          "Requiere monitorear millones de estrellas continuamente",
+          "Las alineaciones por azar son extremadamente raras"
+        ]
+      },
+      "astrometry": {
+        "title": "Astrometría",
+        "description": "Mide la pequeña oscilación posicional de una estrella en el cielo causada por el tirón gravitacional de un planeta en órbita.",
+        "howItWorks": "La astrometría mide la posición de una estrella con extrema precisión a lo largo del tiempo. Un planeta orbitando una estrella hace que esta trace una pequeña elipse en el cielo mientras ambos objetos orbitan su centro de masa común. Al medir con precisión estos desplazamientos posicionales, los astrónomos pueden determinar la masa, la órbita del planeta e incluso detectar planetas que otros métodos pasan por alto.",
+        "advantages": [
+          "Puede medir las masas planetarias reales (no solo la masa mínima)",
+          "Funciona para planetas en órbitas de frente",
+          "Sensible a planetas a grandes distancias orbitales",
+          "Complementario a las mediciones de velocidad radial"
+        ],
+        "limitations": [
+          "Requiere mediciones extremadamente precisas (microarcosegundos)",
+          "Más efectivo desde telescopios espaciales",
+          "Mejor para estrellas cercanas y brillantes",
+          "Necesita líneas de base de observación prolongadas"
+        ]
+      },
+      "transit-timing-variations": {
+        "title": "Variaciones de Tiempo de Tránsito",
+        "description": "Detecta planetas midiendo pequeñas desviaciones en los tiempos de tránsito predichos de un planeta conocido, causadas por interacciones gravitacionales con otro planeta.",
+        "howItWorks": "Cuando un planeta en tránsito tiene hermanos planetarios, su atracción gravitacional mutua perturba las órbitas, haciendo que los tránsitos ocurran ligeramente antes o después de lo predicho. Al medir con precisión estas variaciones de tiempo a lo largo de muchas órbitas, los astrónomos pueden detectar planetas adicionales en el sistema, incluso aquellos que no hacen tránsito.",
+        "advantages": [
+          "Puede detectar planetas que no hacen tránsito en sistemas multi-planeta",
+          "Extremadamente sensible a planetas de baja masa",
+          "Proporciona información sobre la dinámica orbital",
+          "Puede caracterizar sistemas planetarios enteros"
+        ],
+        "limitations": [
+          "Requiere un planeta en tránsito conocido",
+          "Solo funciona en sistemas multi-planeta",
+          "Necesita monitoreo fotométrico preciso a largo plazo",
+          "Requiere análisis complejo para desentrañar las señales"
         ]
       }
     }

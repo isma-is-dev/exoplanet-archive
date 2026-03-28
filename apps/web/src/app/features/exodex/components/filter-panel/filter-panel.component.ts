@@ -680,6 +680,7 @@ export class FilterPanelComponent {
     const s = this.stats();
     if (!s) return [];
     return Object.entries(s.methodDistribution)
+      .filter(([method, count]) => count > 0 && method !== 'Direct Imaging')
       .sort(([, a], [, b]) => b - a)
       .map(([method]) => {
         const i18nKey = this.methodToI18nKey[method] ?? method;
