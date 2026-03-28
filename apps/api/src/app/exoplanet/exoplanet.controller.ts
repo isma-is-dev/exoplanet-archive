@@ -14,6 +14,7 @@ import {
   PlanetType,
   SortDirection,
   SortField,
+  StellarClass,
 } from '@exodex/shared-types';
 
 @Controller('api/exoplanets')
@@ -38,6 +39,7 @@ export class ExoplanetController {
         query.minRadius !== undefined && query.maxRadius !== undefined
           ? [query.minRadius, query.maxRadius]
           : null,
+      stellarClasses: this.parseArray<StellarClass>(query.stellarClasses),
       massEarthRange: null,
       equilibriumTempKRange: null,
       searchQuery: query.q ?? '',

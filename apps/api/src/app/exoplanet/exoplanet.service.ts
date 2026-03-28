@@ -48,13 +48,13 @@ export class ExoplanetService implements OnModuleInit {
     const query = `
       SELECT
         pl_name, hostname, pl_letter,
-        pl_orbper, pl_orbper_err1, pl_orbper_err2,
+        pl_orbper, pl_orbpererr1, pl_orbpererr2,
         pl_orbsmax, pl_orbeccen,
-        pl_rade, pl_rade_err1, pl_rade_err2,
+        pl_rade, pl_radeerr1, pl_radeerr2,
         pl_radj,
-        pl_bmasse, pl_bmasse_err1, pl_bmasse_err2,
+        pl_bmasse, pl_bmasseerr1, pl_bmasseerr2,
         pl_bmassj,
-        pl_eqt, pl_eqt_err1, pl_eqt_err2,
+        pl_eqt, pl_eqterr1, pl_eqterr2,
         pl_insol, pl_controv_flag,
         discoverymethod, disc_year, disc_facility,
         st_spectype, st_teff, st_rad, st_mass, st_met, st_logg,

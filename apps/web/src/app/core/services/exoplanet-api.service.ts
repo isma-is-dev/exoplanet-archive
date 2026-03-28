@@ -36,7 +36,7 @@ export class ExoplanetApiService {
   private http = inject(HttpClient);
   private mockService = inject(ExoplanetMockService);
   private cache = new Map<string, { data: unknown; timestamp: number }>();
-  private useMock = signal(true); // TODO: cambiar a false cuando el backend esté disponible
+  private useMock = signal(false);
 
   getExoplanets$(
     filters: ExoplanetFilters,
@@ -59,8 +59,8 @@ export class ExoplanetApiService {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('pageSize', pageSize.toString())
-      .set('sortField', sort.field)
-      .set('sortDirection', sort.direction);
+      .set('sort', sort.field)
+      .set('order', sort.direction);
 
     if (filters.searchQuery?.trim()) {
       params = params.set('q', filters.searchQuery.trim());
@@ -81,6 +81,9 @@ export class ExoplanetApiService {
     if (filters.radiusEarthRange) {
       params = params.set('minRadius', filters.radiusEarthRange[0].toString());
       params = params.set('maxRadius', filters.radiusEarthRange[1].toString());
+    }
+    if (filters.stellarClasses?.length) {
+      params = params.set('stellarClasses', filters.stellarClasses.join(','));
     }
 
     return this.http
@@ -141,7 +144,7 @@ export class ExoplanetApiService {
     }
 
     return this.http
-      .get<StatsResponse>(`${API_BASE_URL}/exoplanets/stats`)
+      .get<StatsResponse>(`${API_BASE_URL}/exoplanets/meta/stats`)
       .pipe(
         tap((response) => {
           this.setCache(cacheKey, response);
@@ -164,7 +167,7 @@ export class ExoplanetApiService {
     }
 
     return this.http
-      .get<StatusResponse>(`${API_BASE_URL}/exoplanets/status`)
+      .get<StatusResponse>(`${API_BASE_URL}/exoplanets/meta/status`)
       .pipe(
         shareReplay(1),
         catchError(() => {

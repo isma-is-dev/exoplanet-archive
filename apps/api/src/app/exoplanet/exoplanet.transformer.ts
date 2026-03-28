@@ -11,22 +11,22 @@ export interface NasaExoplanetRaw {
   pl_letter: string;
   // Orbital
   pl_orbper: number | null;
-  pl_orbper_err1: number | null;
-  pl_orbper_err2: number | null;
+  pl_orbpererr1: number | null;
+  pl_orbpererr2: number | null;
   pl_orbsmax: number | null;
   pl_orbeccen: number | null;
   // Physical
   pl_rade: number | null;
-  pl_rade_err1: number | null;
-  pl_rade_err2: number | null;
+  pl_radeerr1: number | null;
+  pl_radeerr2: number | null;
   pl_radj: number | null;
   pl_bmasse: number | null;
-  pl_bmasse_err1: number | null;
-  pl_bmasse_err2: number | null;
+  pl_bmasseerr1: number | null;
+  pl_bmasseerr2: number | null;
   pl_bmassj: number | null;
   pl_eqt: number | null;
-  pl_eqt_err1: number | null;
-  pl_eqt_err2: number | null;
+  pl_eqterr1: number | null;
+  pl_eqterr2: number | null;
   pl_insol: number | null;
   // Flags
   pl_controv_flag: number | null;
@@ -192,24 +192,24 @@ export function transformNasaData(raw: NasaExoplanetRaw, index: number): Exoplan
     hostStar: raw.hostname,
     letter: raw.pl_letter,
     orbitalPeriodDays: raw.pl_orbper,
-    orbitalPeriodErr1: raw.pl_orbper_err1,
-    orbitalPeriodErr2: raw.pl_orbper_err2,
+    orbitalPeriodErr1: raw.pl_orbpererr1,
+    orbitalPeriodErr2: raw.pl_orbpererr2,
     semiMajorAxisAU: raw.pl_orbsmax,
     eccentricity: raw.pl_orbeccen,
     inclinationDeg: null, // pl_orbincl no disponible en este CSV
     radiusEarth: raw.pl_rade,
-    radiusEarthErr1: raw.pl_rade_err1,
-    radiusEarthErr2: raw.pl_rade_err2,
+    radiusEarthErr1: raw.pl_radeerr1,
+    radiusEarthErr2: raw.pl_radeerr2,
     radiusJupiter: raw.pl_radj,
     massEarth: raw.pl_bmasse,
-    massEarthErr1: raw.pl_bmasse_err1,
-    massEarthErr2: raw.pl_bmasse_err2,
+    massEarthErr1: raw.pl_bmasseerr1,
+    massEarthErr2: raw.pl_bmasseerr2,
     massJupiter: raw.pl_bmassj,
     densityGCC: calculateDensityGCC(raw.pl_bmasse, raw.pl_rade),
     gravityMS2: calculateSurfaceGravityMS2(raw.pl_bmasse, raw.pl_rade),
     equilibriumTempK: raw.pl_eqt,
-    equilibriumTempErr1: raw.pl_eqt_err1,
-    equilibriumTempErr2: raw.pl_eqt_err2,
+    equilibriumTempErr1: raw.pl_eqterr1,
+    equilibriumTempErr2: raw.pl_eqterr2,
     insolationFlux: raw.pl_insol,
     planetType,
     discoveryMethod: mapDiscoveryMethod(raw.discoverymethod),

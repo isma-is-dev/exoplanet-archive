@@ -8,6 +8,7 @@ export interface ExoplanetQueryDto {
   maxYear?: number;
   minRadius?: number;
   maxRadius?: number;
+  stellarClasses?: string;
   sort?: string;
   order?: 'asc' | 'desc';
   q?: string;
