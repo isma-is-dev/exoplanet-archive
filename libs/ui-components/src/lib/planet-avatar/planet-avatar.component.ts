@@ -62,8 +62,9 @@ export class PlanetAvatarComponent implements OnInit {
       eccentricity: p.eccentricity,
       insolationFlux: p.insolationFlux,
       discoveryYear: p.discoveryYear,
+      orbitalPeriodDays: p.orbitalPeriodDays,
       size: this.size(),
-      animationsEnabled: false,
+      animationsEnabled: this.size() !== 'micro',
     };
 
     const result = renderPlanet(renderParams, p.name);

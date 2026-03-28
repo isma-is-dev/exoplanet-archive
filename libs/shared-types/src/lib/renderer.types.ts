@@ -11,6 +11,9 @@ export interface PlanetRenderParams {
   insolationFlux: number | null;
   discoveryYear: number | null;
 
+  // Datos orbitales para animación
+  orbitalPeriodDays: number | null;
+
   // Configuración del render
   size: 'card' | 'detail' | 'micro'; // micro=32px, card=120px, detail=320px
   animationsEnabled: boolean;

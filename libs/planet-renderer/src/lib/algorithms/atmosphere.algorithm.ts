@@ -3,13 +3,15 @@ import { lightenHex, darkenHex } from './color.algorithm';
 /**
  * Build a multi-layer atmospheric glow with Fresnel rim lighting.
  * The atmosphere color is inferred from the planet's equilibrium temperature.
+ * When animated, adds subtle breathing pulsation to the glow layers.
  */
 export function buildAtmosphereGlow(
   radius: number,
   center: number,
   color: string,
   equilibriumTempK: number | null,
-  insolationFlux: number | null
+  insolationFlux: number | null,
+  animate: boolean = false
 ): string {
   // Only show atmosphere if we have temperature or flux data
   if (insolationFlux === null && equilibriumTempK === null) {
@@ -64,6 +66,21 @@ export function buildAtmosphereGlow(
   const outerRadius = radius * 1.18;
   const innerRadius = radius * 1.08;
 
+  // Animation: subtle atmospheric breathing
+  const breathDur = '5s';
+  const outerBreathAnim = animate ? `
+    <animate attributeName="r" values="${outerRadius};${outerRadius * 1.04};${outerRadius}" dur="${breathDur}" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1;0.4 0 0.2 1" />
+    <animate attributeName="opacity" values="1;0.85;1" dur="${breathDur}" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1;0.4 0 0.2 1" />
+  ` : '';
+
+  const innerBreathAnim = animate ? `
+    <animate attributeName="r" values="${innerRadius};${innerRadius * 1.03};${innerRadius}" dur="3.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1;0.4 0 0.2 1" />
+  ` : '';
+
+  const rimPulseAnim = animate ? `
+    <animate attributeName="opacity" values="1;0.8;1" dur="4s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1;0.4 0 0.2 1" />
+  ` : '';
+
   let svg = `
     <defs>
       <!-- Outer atmospheric glow — large, soft -->
@@ -90,13 +107,19 @@ export function buildAtmosphereGlow(
     </defs>
 
     <!-- Outer glow layer -->
-    <circle cx="${center}" cy="${center}" r="${outerRadius}" fill="url(#${outerGlowId})"/>
+    <circle cx="${center}" cy="${center}" r="${outerRadius}" fill="url(#${outerGlowId})">
+      ${outerBreathAnim}
+    </circle>
 
     <!-- Inner glow layer -->
-    <circle cx="${center}" cy="${center}" r="${innerRadius}" fill="url(#${innerGlowId})"/>
+    <circle cx="${center}" cy="${center}" r="${innerRadius}" fill="url(#${innerGlowId})">
+      ${innerBreathAnim}
+    </circle>
 
     <!-- Fresnel rim lighting -->
-    <circle cx="${center}" cy="${center}" r="${radius * 1.01}" fill="url(#${rimGradId})"/>
+    <circle cx="${center}" cy="${center}" r="${radius * 1.01}" fill="url(#${rimGradId})">
+      ${rimPulseAnim}
+    </circle>
   `;
 
   return svg;

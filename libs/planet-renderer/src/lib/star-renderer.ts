@@ -3,6 +3,22 @@ import { getViewBoxSize } from './algorithms/size.algorithm';
 import { getStarColors, getStarVisualRadius } from './algorithms/star.algorithm';
 import { lightenHex, darkenHex } from './algorithms/color.algorithm';
 
+/**
+ * Determines animation timing multiplier based on stellar temperature.
+ * Hotter stars = more energetic / faster animations.
+ * Cooler stars = calmer / slower animations.
+ */
+function getAnimationTimingFactor(tempK: number | null): number {
+  const t = tempK ?? 5778;
+  if (t > 25000) return 0.5;   // O — very fast, violent
+  if (t > 10000) return 0.65;  // B — fast
+  if (t > 7500) return 0.8;    // A — moderate-fast
+  if (t > 6000) return 0.9;    // F — moderate
+  if (t > 5000) return 1.0;    // G — baseline (Sun)
+  if (t > 3500) return 1.2;    // K — slower
+  return 1.5;                   // M — calm, slow
+}
+
 export function renderStar(
   params: StarRenderParams,
   starName: string = 'Unknown Star'
@@ -24,6 +40,9 @@ export function renderStar(
   const colors = getStarColors(stellarTempK);
   const { primary, secondary, glow, core, spectralClass } = colors;
 
+  // Animation timing
+  const tf = getAnimationTimingFactor(stellarTempK);
+
   // Unique IDs for gradients and filters
   const idSuffix = Math.random().toString(36).substr(2, 6);
   const coreGradId = `star-core-${idSuffix}`;
@@ -37,8 +56,14 @@ export function renderStar(
   const isMicro = size === 'micro';
 
   if (!isMicro) {
-    // 1. Outer Corona / Glow (behind the star)
+    // 1. Outer Corona / Glow (behind the star) — with breathing animation
     const coronaSize = visualRadius * 1.6;
+    const coronaBreathDur = `${4 * tf}s`;
+    const coronaPulseAnim = animationsEnabled ? `
+          <animate attributeName="r" values="${coronaSize};${coronaSize * 1.1};${coronaSize}" dur="${coronaBreathDur}" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1;0.4 0 0.2 1" />
+          <animate attributeName="opacity" values="1;0.75;1" dur="${coronaBreathDur}" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1;0.4 0 0.2 1" />
+    ` : '';
+
     svgParts.push(`
       <defs>
         <radialGradient id="${coronaGradId}" cx="50%" cy="50%" r="50%">
@@ -48,16 +73,24 @@ export function renderStar(
           <stop offset="100%" stop-color="${secondary}" stop-opacity="0" />
         </radialGradient>
       </defs>
-      <circle cx="${center}" cy="${center}" r="${coronaSize}" fill="url(#${coronaGradId})" />
+      <circle cx="${center}" cy="${center}" r="${coronaSize}" fill="url(#${coronaGradId})">
+        ${coronaPulseAnim}
+      </circle>
     `);
 
-    // 2. Solar Flares / Turbulent edge (SVG filters)
+    // 2. Solar Flares / Turbulent edge — with animated turbulence
     const flareSize = visualRadius * 1.08;
-    const baseFreq = size === 'detail' ? '0.04' : '0.08';
+    const baseFreq = size === 'detail' ? 0.04 : 0.08;
+    const flareTurbDur = `${3 * tf}s`;
+    const flareRotDur = `${40 * tf}s`;
     
-    // In animated mode we add a simple rotating group
+    // Animate the feTurbulence baseFrequency to create "boiling" effect
+    const turbulenceAnimate = animationsEnabled ? `
+          <animate attributeName="baseFrequency" values="${baseFreq};${baseFreq * 1.4};${baseFreq * 0.7};${baseFreq}" dur="${flareTurbDur}" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1" />
+    ` : '';
+
     const animateTransform = animationsEnabled
-      ? `<animateTransform attributeName="transform" type="rotate" from="0 ${center} ${center}" to="360 ${center} ${center}" dur="40s" repeatCount="indefinite" />`
+      ? `<animateTransform attributeName="transform" type="rotate" from="0 ${center} ${center}" to="360 ${center} ${center}" dur="${flareRotDur}" repeatCount="indefinite" />`
       : '';
 
     svgParts.push(`
@@ -67,7 +100,9 @@ export function renderStar(
           <stop offset="100%" stop-color="${primary}" stop-opacity="0" />
         </radialGradient>
         <filter id="${filterId}" x="-30%" y="-30%" width="160%" height="160%">
-          <feTurbulence type="fractalNoise" baseFrequency="${baseFreq}" numOctaves="3" seed="${stellarTempK || 123}" result="noise" />
+          <feTurbulence type="fractalNoise" baseFrequency="${baseFreq}" numOctaves="3" seed="${stellarTempK || 123}" result="noise">
+            ${turbulenceAnimate}
+          </feTurbulence>
           <feColorMatrix type="matrix" values="1 0 0 0 0, 0 1 0 0 0, 0 0 1 0 0, 0 0 0 1 -0.3" in="noise" result="alphaNoise" />
           <feDisplacementMap in="SourceGraphic" in2="alphaNoise" scale="${visualRadius * 0.2}" xChannelSelector="R" yChannelSelector="G" />
         </filter>
@@ -78,9 +113,44 @@ export function renderStar(
         </circle>
       </g>
     `);
+
+    // 2b. Secondary flare layer for more complex look (only in detail size)
+    if (size === 'detail' && animationsEnabled) {
+      const flare2Id = `star-flare2-${idSuffix}`;
+      const flare2FilterId = `star-turb2-${idSuffix}`;
+      const flare2Size = visualRadius * 1.12;
+      const baseFreq2 = baseFreq * 0.7;
+      const flare2RotDur = `${55 * tf}s`;
+
+      svgParts.push(`
+        <defs>
+          <radialGradient id="${flare2Id}" cx="50%" cy="50%" r="50%">
+            <stop offset="80%" stop-color="${lightenHex(primary, 0.15)}" stop-opacity="0.6" />
+            <stop offset="100%" stop-color="${primary}" stop-opacity="0" />
+          </radialGradient>
+          <filter id="${flare2FilterId}" x="-35%" y="-35%" width="170%" height="170%">
+            <feTurbulence type="fractalNoise" baseFrequency="${baseFreq2}" numOctaves="2" seed="${(stellarTempK || 123) + 50}" result="noise2">
+              <animate attributeName="baseFrequency" values="${baseFreq2};${baseFreq2 * 1.5};${baseFreq2 * 0.6};${baseFreq2}" dur="${4.5 * tf}s" repeatCount="indefinite" />
+            </feTurbulence>
+            <feColorMatrix type="matrix" values="1 0 0 0 0, 0 1 0 0 0, 0 0 1 0 0, 0 0 0 0.7 -0.2" in="noise2" result="alphaNoise2" />
+            <feDisplacementMap in="SourceGraphic" in2="alphaNoise2" scale="${visualRadius * 0.15}" xChannelSelector="G" yChannelSelector="R" />
+          </filter>
+        </defs>
+        <g filter="url(#${flare2FilterId})">
+          <circle cx="${center}" cy="${center}" r="${flare2Size}" fill="url(#${flare2Id})">
+            <animateTransform attributeName="transform" type="rotate" from="360 ${center} ${center}" to="0 ${center} ${center}" dur="${flare2RotDur}" repeatCount="indefinite" />
+          </circle>
+        </g>
+      `);
+    }
   }
 
-  // 3. Core of the star
+  // 3. Core of the star — with subtle pulsation
+  const corePulseDur = `${2.5 * tf}s`;
+  const corePulseAnim = animationsEnabled && !isMicro ? `
+    <animate attributeName="r" values="${visualRadius};${visualRadius * 1.008};${visualRadius}" dur="${corePulseDur}" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1;0.4 0 0.2 1" />
+  ` : '';
+
   svgParts.push(`
     <defs>
       <radialGradient id="${coreGradId}" cx="50%" cy="50%" r="50%">
@@ -90,13 +160,21 @@ export function renderStar(
         <stop offset="100%" stop-color="${primary}" />
       </radialGradient>
     </defs>
-    <circle cx="${center}" cy="${center}" r="${visualRadius}" fill="url(#${coreGradId})" />
+    <circle cx="${center}" cy="${center}" r="${visualRadius}" fill="url(#${coreGradId})">
+      ${corePulseAnim}
+    </circle>
   `);
   
   if (!isMicro) {
-    // 4. Star spots
+    // 4. Star spots with animated turbulence
     const spotsId = `star-spots-${idSuffix}`;
-    const rotDur = animationsEnabled ? '60s' : '0s';
+    const rotDur = `${60 * tf}s`;
+    const spotsFreq = 0.05;
+    
+    const spotsTurbAnim = animationsEnabled ? `
+          <animate attributeName="baseFrequency" values="${spotsFreq};${spotsFreq * 1.3};${spotsFreq * 0.8};${spotsFreq}" dur="${5 * tf}s" repeatCount="indefinite" />
+    ` : '';
+    
     const animateRot = animationsEnabled
       ? `<animateTransform attributeName="transform" type="rotate" from="360 ${center} ${center}" to="0 ${center} ${center}" dur="${rotDur}" repeatCount="indefinite" />`
       : '';
@@ -104,7 +182,9 @@ export function renderStar(
     svgParts.push(`
       <defs>
         <filter id="${spotsId}" x="0%" y="0%" width="100%" height="100%">
-          <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="4" seed="${(stellarMassSun || 1) * 10}" result="noise" />
+          <feTurbulence type="fractalNoise" baseFrequency="${spotsFreq}" numOctaves="4" seed="${(stellarMassSun || 1) * 10}" result="noise">
+            ${spotsTurbAnim}
+          </feTurbulence>
           <feColorMatrix type="matrix" values="0 0 0 0 0, 0 0 0 0 0, 0 0 0 0 0, 0 0 0 0.25 0" in="noise" result="coloredNoise" />
           <feComposite operator="in" in="coloredNoise" in2="SourceGraphic" result="composite" />
         </filter>
@@ -118,7 +198,7 @@ export function renderStar(
   }
 
   const numStars = params.numberOfStarsInSystem || 1;
-  const extraStarsParts: string[] = [];
+  let extraStarsParts: string[] = [];
 
   if (numStars > 1 && !isMicro) {
     for (let i = 1; i < numStars; i++) {
@@ -132,7 +212,14 @@ export function renderStar(
       const compTemp = stellarTempK ? Math.max(2500, stellarTempK * (1 - i * 0.25)) : 3500;
       const compColors = getStarColors(compTemp);
       const compIdSuffix = `${idSuffix}-comp${i}`;
-      
+      const compTf = getAnimationTimingFactor(compTemp);
+
+      // Companion corona with breathing
+      const compCoronaSize = compVisualRadius * 2.5;
+      const compCoronaBreath = animationsEnabled ? `
+        <animate attributeName="r" values="${compCoronaSize};${compCoronaSize * 1.08};${compCoronaSize}" dur="${4.5 * compTf}s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1;0.4 0 0.2 1" />
+      ` : '';
+
       extraStarsParts.push(`
         <defs>
           <radialGradient id="star-corona-${compIdSuffix}" cx="50%" cy="50%" r="50%">
@@ -141,18 +228,23 @@ export function renderStar(
             <stop offset="100%" stop-color="${compColors.secondary}" stop-opacity="0" />
           </radialGradient>
         </defs>
-        <circle cx="${cx}" cy="${cy}" r="${compVisualRadius * 2.5}" fill="url(#star-corona-${compIdSuffix})" />
+        <circle cx="${cx}" cy="${cy}" r="${compCoronaSize}" fill="url(#star-corona-${compIdSuffix})">
+          ${compCoronaBreath}
+        </circle>
       `);
       
       const compFlareSize = compVisualRadius * 1.08;
       const compFlaresGradId = `star-flares-${compIdSuffix}`;
       const compFilterId = `star-turb-${compIdSuffix}`;
+      const compBaseFreq = size === 'detail' ? 0.04 : 0.08;
+
+      const compTurbAnim = animationsEnabled ? `
+            <animate attributeName="baseFrequency" values="${compBaseFreq};${compBaseFreq * 1.3};${compBaseFreq * 0.8};${compBaseFreq}" dur="${3.5 * compTf}s" repeatCount="indefinite" />
+      ` : '';
       const compAnimateTransform = animationsEnabled
-        ? `<animateTransform attributeName="transform" type="rotate" from="0 ${cx} ${cy}" to="360 ${cx} ${cy}" dur="50s" repeatCount="indefinite" />`
+        ? `<animateTransform attributeName="transform" type="rotate" from="0 ${cx} ${cy}" to="360 ${cx} ${cy}" dur="${50 * compTf}s" repeatCount="indefinite" />`
         : '';
         
-      const baseFreq = size === 'detail' ? '0.04' : '0.08';
-      
       extraStarsParts.push(`
         <defs>
           <radialGradient id="${compFlaresGradId}" cx="50%" cy="50%" r="50%">
@@ -160,7 +252,9 @@ export function renderStar(
             <stop offset="100%" stop-color="${compColors.primary}" stop-opacity="0" />
           </radialGradient>
           <filter id="${compFilterId}" x="-30%" y="-30%" width="160%" height="160%">
-            <feTurbulence type="fractalNoise" baseFrequency="${baseFreq}" numOctaves="3" seed="${(stellarTempK || 123) + i}" result="noise" />
+            <feTurbulence type="fractalNoise" baseFrequency="${compBaseFreq}" numOctaves="3" seed="${(stellarTempK || 123) + i}" result="noise">
+              ${compTurbAnim}
+            </feTurbulence>
             <feColorMatrix type="matrix" values="1 0 0 0 0, 0 1 0 0 0, 0 0 1 0 0, 0 0 0 1 -0.3" in="noise" result="alphaNoise" />
             <feDisplacementMap in="SourceGraphic" in2="alphaNoise" scale="${compVisualRadius * 0.2}" xChannelSelector="R" yChannelSelector="G" />
           </filter>

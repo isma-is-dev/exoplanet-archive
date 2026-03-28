@@ -24,6 +24,7 @@ export function renderPlanet(
     discoveryYear,
     size,
     animationsEnabled,
+    orbitalPeriodDays,
   } = params;
 
   // Calculate dimensions
@@ -46,6 +47,9 @@ export function renderPlanet(
   // Determine if showing rings
   const showRings = shouldShowRings(planetType, radiusEarth);
 
+  // Should animate? Only for card and detail sizes
+  const shouldAnimate = animationsEnabled && size !== 'micro';
+
   // ─── Assemble SVG layers in correct order ────────────────────
 
   let svgParts: string[] = [];
@@ -61,7 +65,8 @@ export function renderPlanet(
     center,
     primaryColor,
     equilibriumTempK,
-    insolationFlux
+    insolationFlux,
+    shouldAnimate
   );
   if (atmosphereSvg) {
     svgParts.push(atmosphereSvg);
@@ -92,7 +97,9 @@ export function renderPlanet(
     equilibriumTempK,
     planetName,
     tertiaryColor,
-    accentColor
+    accentColor,
+    shouldAnimate,
+    orbitalPeriodDays
   );
   svgParts.push(surfaceSvg);
 
