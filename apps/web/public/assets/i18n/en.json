@@ -18,6 +18,7 @@
     "habitability": "Habitability",
     "stellarClass": "Host Star Type",
     "discoveryYear": "Discovery Year",
+    "discoveryMethod": "Detection Method",
     "planetTypes": {
       "rocky-terrestrial": "Rocky Terrestrial",
       "super-earth": "Super-Earth",

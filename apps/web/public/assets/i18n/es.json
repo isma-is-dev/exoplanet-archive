@@ -18,6 +18,7 @@
     "habitability": "Habitabilidad",
     "stellarClass": "Tipo de estrella",
     "discoveryYear": "Año de descubrimiento",
+    "discoveryMethod": "Método de detección",
     "planetTypes": {
       "rocky-terrestrial": "Terrestre rocoso",
       "super-earth": "Super-Tierra",

@@ -73,7 +73,18 @@
     "discoveryFacility": "Facility",
     "telescope": "Telescope",
     "lastUpdated": "Last Updated",
-    "publicationDate": "Publication"
+    "publicationDate": "Publication",
+    "methodNames": {
+      "transit": "Transit",
+      "radial-velocity": "Radial Velocity",
+      "Direct Imaging": "Direct Imaging",
+      "Microlensing": "Microlensing",
+      "Astrometry": "Astrometry",
+      "Pulsar Timing": "Pulsar Timing",
+      "Disk Transit": "Disk Transit",
+      "Orbital Resonance": "Orbital Resonance",
+      "Other": "Other"
+    }
   },
   "sections": {
     "orbitalProperties": "Orbital Properties",

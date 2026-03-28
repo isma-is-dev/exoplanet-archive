@@ -1,4 +1,4 @@
-import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -57,6 +57,25 @@ import { SearchInputComponent } from '@exodex/ui-components';
           }
         </div>
       </div>
+
+      <!-- Discovery Method Filter -->
+      @if (discoveryMethods().length > 0) {
+        <div class="filter-section">
+          <h3><span class="section-indicator"></span>{{ 'filters.discoveryMethod' | translate }}</h3>
+          <div class="method-grid">
+            @for (m of discoveryMethods(); track m.value) {
+              <button
+                class="method-chip"
+                [class.selected]="isMethodSelected(m.value)"
+                (click)="toggleMethod(m.value)"
+              >
+                <div class="method-icon" [innerHTML]="m.icon"></div>
+                <span class="method-label">{{ m.label }}</span>
+              </button>
+            }
+          </div>
+        </div>
+      }
 
       <!-- Stellar Class Filter -->
       <div class="filter-section">
@@ -351,6 +370,68 @@ import { SearchInputComponent } from '@exodex/ui-components';
       height: 100%;
     }
 
+    /* ═══ Discovery Method Grid ═══ */
+    .method-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .method-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: rgba(15, 20, 40, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      color: #8892b0;
+      cursor: pointer;
+      transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+      font-size: 11px;
+      font-weight: 500;
+      text-align: left;
+      min-width: 0;
+    }
+
+    .method-chip:hover {
+      background: rgba(77, 138, 255, 0.06);
+      border-color: rgba(77, 138, 255, 0.15);
+      color: #e8eeff;
+    }
+
+    .method-chip.selected {
+      background: rgba(77, 138, 255, 0.1);
+      border-color: rgba(77, 138, 255, 0.3);
+      color: #4d8aff;
+      box-shadow: 0 0 10px rgba(77, 138, 255, 0.1);
+    }
+
+    .method-chip.selected .method-icon {
+      filter: drop-shadow(0 0 4px rgba(77, 138, 255, 0.5));
+    }
+
+    .method-icon {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: filter 300ms ease;
+    }
+
+    .method-icon :deep(svg) {
+      width: 100%;
+      height: 100%;
+    }
+
+    .method-label {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
     /* ═══ Range Inputs ═══ */
     .range-inputs {
       display: flex;
@@ -528,6 +609,21 @@ export class FilterPanelComponent {
     </svg>`,
   };
 
+  private methodIcons: Record<string, string> = {
+    'Transit': `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="4" r="2.5" fill="currentColor" opacity="0.7"/><path d="M2 17 L7.5 17 C8.5 17 9.5 14 10.5 12 C11 11 11.5 10.5 12 10.5 C12.5 10.5 13 11 13.5 12 C14.5 14 15.5 17 16.5 17 L22 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+    'Radial Velocity': `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><line x1="2" y1="12" x2="22" y2="12" stroke="currentColor" stroke-width="0.5" opacity="0.4" stroke-dasharray="2 2"/><path d="M2 12 Q4.5 5 7 12 Q9.5 19 12 12 Q14.5 5 17 12 Q19.5 19 22 12" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>`,
+    'Imaging': `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 12 C4 6 8 4 12 4 C16 4 20 6 22 12 C20 18 16 20 12 20 C8 20 4 18 2 12Z" stroke="currentColor" stroke-width="1.5" fill="none"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg>`,
+    'Microlensing': `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 4 L8 12 L2 20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 4 L16 12 L22 20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.2"/><circle cx="12" cy="12" r="1" fill="currentColor" opacity="0.8"/></svg>`,
+    'Astrometry': `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><line x1="12" y1="2" x2="12" y2="22" stroke="currentColor" stroke-width="0.7" opacity="0.3"/><line x1="2" y1="12" x2="22" y2="12" stroke="currentColor" stroke-width="0.7" opacity="0.3"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.2"/><circle cx="12" cy="12" r="1" fill="currentColor"/><path d="M12 8 L12 5 M12 19 L12 16 M8 12 L5 12 M19 12 L16 12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>`,
+    'Transit Timing Variations': `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><line x1="2" y1="12" x2="22" y2="12" stroke="currentColor" stroke-width="0.7" opacity="0.4"/><path d="M5 12 L10 7 L15 15 L20 9" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="5" cy="12" r="1.5" fill="currentColor"/><circle cx="10" cy="7" r="1.5" fill="currentColor"/><circle cx="15" cy="15" r="1.5" fill="currentColor"/><circle cx="20" cy="9" r="1.5" fill="currentColor"/></svg>`,
+    'Orbital Brightness Modulation': `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><ellipse cx="12" cy="14" rx="9" ry="4" stroke="currentColor" stroke-width="1.2" opacity="0.5"/><circle cx="12" cy="7" r="3" fill="currentColor" opacity="0.8"/><path d="M6 11 Q9 6 12 4 Q15 6 18 11" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg>`,
+    'Pulsar Timing': `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="2.5" fill="currentColor"/><circle cx="12" cy="12" r="5.5" stroke="currentColor" stroke-width="1" opacity="0.6"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="0.8" opacity="0.3"/><path d="M12 3 L12 1 M12 23 L12 21 M3 12 L1 12 M23 12 L21 12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity="0.5"/></svg>`,
+    'Eclipse Timing Variations': `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="9" cy="12" r="6" stroke="currentColor" stroke-width="1.3"/><circle cx="15" cy="12" r="6" stroke="currentColor" stroke-width="1.3" opacity="0.5"/></svg>`,
+    'Pulsation Timing Variations': `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="2.5" fill="currentColor" opacity="0.8"/><path d="M12 4 L13.4 8.6 L18.4 8.6 L14.5 11.4 L15.9 16 L12 13.2 L8.1 16 L9.5 11.4 L5.6 8.6 L10.6 8.6 Z" stroke="currentColor" stroke-width="1" fill="none" opacity="0.6"/></svg>`,
+    'Disk Kinematics': `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><ellipse cx="12" cy="12" rx="10" ry="4" stroke="currentColor" stroke-width="1.5"/><ellipse cx="12" cy="12" rx="6" ry="2.4" stroke="currentColor" stroke-width="1" opacity="0.6"/><circle cx="12" cy="12" r="2" fill="currentColor" opacity="0.7"/></svg>`,
+    '_default': `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.2" opacity="0.6"/><path d="M9.5 9 Q9.5 6.5 12 6.5 Q14.5 6.5 14.5 9 Q14.5 11 12 11.5 L12 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="12" cy="15.5" r="0.8" fill="currentColor"/></svg>`,
+  };
+
   private starIcons: Record<string, string> = {
     'O': '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="sg-o" cx="50%" cy="50%"><stop offset="0%" stop-color="#8ca8ff" stop-opacity="0.8"/><stop offset="60%" stop-color="#8ca8ff" stop-opacity="0.2"/><stop offset="100%" stop-color="transparent"/></radialGradient></defs><circle cx="12" cy="12" r="11" fill="url(#sg-o)" /><circle cx="12" cy="12" r="4" fill="#ffffff" /></svg>',
     'B': '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="sg-b" cx="50%" cy="50%"><stop offset="0%" stop-color="#d6e5ff" stop-opacity="0.8"/><stop offset="60%" stop-color="#d6e5ff" stop-opacity="0.2"/><stop offset="100%" stop-color="transparent"/></radialGradient></defs><circle cx="12" cy="12" r="11" fill="url(#sg-b)" /><circle cx="12" cy="12" r="4" fill="#ffffff" /></svg>',
@@ -567,6 +663,24 @@ export class FilterPanelComponent {
     { requireSync: true }
   );
 
+  private langVersion = toSignal(
+    this.translate.onLangChange.pipe(startWith(null), map(() => 0)),
+    { initialValue: 0 }
+  );
+
+  discoveryMethods = computed(() => {
+    this.langVersion();
+    const s = this.stats();
+    if (!s) return [];
+    return Object.entries(s.methodDistribution)
+      .sort(([, a], [, b]) => b - a)
+      .map(([method]) => ({
+        value: method,
+        label: this.translate.instant(`stats.methodNames.${method}`) || method,
+        icon: this.trust(this.methodIcons[method] ?? this.methodIcons['_default']),
+      }));
+  });
+
   stellarClasses = [
     { value: 'O', icon: this.trust(this.starIcons['O']) },
     { value: 'B', icon: this.trust(this.starIcons['B']) },
@@ -603,6 +717,18 @@ export class FilterPanelComponent {
       ? current.filter((x) => x !== h)
       : [...current, h as never];
     this.filterState.updateFilter('habitabilityClasses', updated);
+  }
+
+  isMethodSelected(method: string): boolean {
+    return this.filters().discoveryMethods.includes(method as never);
+  }
+
+  toggleMethod(method: string): void {
+    const current = this.filters().discoveryMethods;
+    const updated = current.includes(method as never)
+      ? current.filter((m) => m !== method)
+      : [...current, method as never];
+    this.filterState.updateFilter('discoveryMethods', updated);
   }
 
   isStellarClassSelected(sc: string): boolean {
