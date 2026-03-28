@@ -6,6 +6,7 @@ const DEFAULT_FILTERS: ExoplanetFilters = {
   planetTypes: [],
   discoveryMethods: [],
   habitabilityClasses: [],
+  stellarClasses: [],
   discoveryYearRange: null,
   radiusEarthRange: null,
   massEarthRange: null,
@@ -37,6 +38,7 @@ export class FilterStateService {
     if (f.planetTypes.length > 0) count++;
     if (f.discoveryMethods.length > 0) count++;
     if (f.habitabilityClasses.length > 0) count++;
+    if (f.stellarClasses.length > 0) count++;
     if (f.discoveryYearRange !== null) count++;
     if (f.radiusEarthRange !== null) count++;
     if (f.massEarthRange !== null) count++;

@@ -769,6 +769,23 @@ export class ExoplanetMockService {
         return false;
       }
 
+      // Filtro por clase estelar
+      if (filters.stellarClasses?.length) {
+        let sc = 'G'; // default a G if no data, typical of sun-like
+        const t = planet.stellarTempK ?? 5778;
+        if (t < 3700) sc = 'M';
+        else if (t < 5200) sc = 'K';
+        else if (t < 6000) sc = 'G';
+        else if (t < 7500) sc = 'F';
+        else if (t < 10000) sc = 'A';
+        else if (t < 33000) sc = 'B';
+        else sc = 'O';
+
+        if (!filters.stellarClasses.includes(sc as any)) {
+          return false;
+        }
+      }
+
       // Filtro por método de descubrimiento
       if (filters.discoveryMethods?.length && !filters.discoveryMethods.includes(planet.discoveryMethod)) {
         return false;

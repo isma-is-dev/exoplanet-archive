@@ -58,6 +58,23 @@ import { SearchInputComponent } from '@exodex/ui-components';
         </div>
       </div>
 
+      <!-- Stellar Class Filter -->
+      <div class="filter-section">
+        <h3><span class="section-indicator"></span>{{ 'filters.stellarClass' | translate }}</h3>
+        <div class="star-grid">
+          @for (sc of stellarClasses; track sc.value) {
+            <button
+              class="star-chip star-chip--{{ sc.value.toLowerCase() }}"
+              [class.selected]="isStellarClassSelected(sc.value)"
+              (click)="toggleStellarClass(sc.value)"
+            >
+              <div class="star-icon" [innerHTML]="sc.icon"></div>
+              <span class="star-label">{{ sc.value }}</span>
+            </button>
+          }
+        </div>
+      </div>
+
       @if (stats(); as s) {
         <div class="filter-section">
           <h3><span class="section-indicator"></span>{{ 'filters.discoveryYear' | translate }}</h3>
@@ -265,6 +282,75 @@ import { SearchInputComponent } from '@exodex/ui-components';
       height: 100%;
     }
 
+    /* ═══ Stellar Class Grid ═══ */
+    .star-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+    }
+
+    .star-chip--o { --star-rgb: 140, 168, 255; }
+    .star-chip--b { --star-rgb: 214, 229, 255; }
+    .star-chip--a { --star-rgb: 255, 255, 255; }
+    .star-chip--f { --star-rgb: 255, 244, 232; }
+    .star-chip--g { --star-rgb: 255, 218, 117; }
+    .star-chip--k { --star-rgb: 255, 157, 92; }
+    .star-chip--m { --star-rgb: 255, 91, 79; }
+
+    .star-chip {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 4px;
+      border-radius: 10px;
+      /* Background tint using star color variable */
+      background: rgba(var(--star-rgb, 136, 146, 176), 0.08); /* Fallback si no hay variable */
+      border: 1px solid rgba(var(--star-rgb, 255, 255, 255), 0.1);
+      color: #8892b0;
+      cursor: pointer;
+      transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+      font-size: 13px;
+      font-weight: 700;
+      font-family: 'Orbitron', monospace;
+      min-width: 0;
+    }
+
+    .star-chip:hover {
+      background: rgba(var(--star-rgb), 0.15);
+      border-color: rgba(var(--star-rgb), 0.35);
+      color: #e8eeff;
+      box-shadow: 0 4px 12px rgba(var(--star-rgb), 0.1);
+    }
+
+    .star-chip.selected {
+      background: rgba(var(--star-rgb), 0.25);
+      border-color: rgba(var(--star-rgb), 0.7);
+      color: #ffffff;
+      box-shadow: 0 0 16px rgba(var(--star-rgb), 0.35);
+    }
+
+    .star-chip.selected .star-icon {
+      transform: scale(1.15);
+      filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.4));
+    }
+
+    .star-icon {
+      width: 22px;
+      height: 22px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 300ms ease;
+    }
+
+    .star-icon :deep(svg) {
+      width: 100%;
+      height: 100%;
+    }
+
     /* ═══ Range Inputs ═══ */
     .range-inputs {
       display: flex;
@@ -282,6 +368,13 @@ import { SearchInputComponent } from '@exodex/ui-components';
       border-radius: 10px;
       color: #e8eeff;
       text-align: center;
+      -moz-appearance: textfield;
+    }
+
+    .range-inputs input::-webkit-outer-spin-button,
+    .range-inputs input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
     }
 
     .range-separator {
@@ -414,6 +507,16 @@ export class FilterPanelComponent {
     </svg>`,
   };
 
+  private starIcons: Record<string, string> = {
+    'O': '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="sg-o" cx="50%" cy="50%"><stop offset="0%" stop-color="#8ca8ff" stop-opacity="0.8"/><stop offset="60%" stop-color="#8ca8ff" stop-opacity="0.2"/><stop offset="100%" stop-color="transparent"/></radialGradient></defs><circle cx="12" cy="12" r="11" fill="url(#sg-o)" /><circle cx="12" cy="12" r="4" fill="#ffffff" /></svg>',
+    'B': '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="sg-b" cx="50%" cy="50%"><stop offset="0%" stop-color="#d6e5ff" stop-opacity="0.8"/><stop offset="60%" stop-color="#d6e5ff" stop-opacity="0.2"/><stop offset="100%" stop-color="transparent"/></radialGradient></defs><circle cx="12" cy="12" r="11" fill="url(#sg-b)" /><circle cx="12" cy="12" r="4" fill="#ffffff" /></svg>',
+    'A': '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="sg-a" cx="50%" cy="50%"><stop offset="0%" stop-color="#ffffff" stop-opacity="0.6"/><stop offset="60%" stop-color="#ffffff" stop-opacity="0.1"/><stop offset="100%" stop-color="transparent"/></radialGradient></defs><circle cx="12" cy="12" r="11" fill="url(#sg-a)" /><circle cx="12" cy="12" r="4" fill="#ffffff" /></svg>',
+    'F': '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="sg-f" cx="50%" cy="50%"><stop offset="0%" stop-color="#fff4e8" stop-opacity="0.8"/><stop offset="60%" stop-color="#fff4e8" stop-opacity="0.2"/><stop offset="100%" stop-color="transparent"/></radialGradient></defs><circle cx="12" cy="12" r="11" fill="url(#sg-f)" /><circle cx="12" cy="12" r="4" fill="#ffffff" /></svg>',
+    'G': '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="sg-g" cx="50%" cy="50%"><stop offset="0%" stop-color="#ffda75" stop-opacity="0.8"/><stop offset="60%" stop-color="#ffda75" stop-opacity="0.2"/><stop offset="100%" stop-color="transparent"/></radialGradient></defs><circle cx="12" cy="12" r="11" fill="url(#sg-g)" /><circle cx="12" cy="12" r="4" fill="#ffffff" /></svg>',
+    'K': '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="sg-k" cx="50%" cy="50%"><stop offset="0%" stop-color="#ff9d5c" stop-opacity="0.8"/><stop offset="60%" stop-color="#ff9d5c" stop-opacity="0.2"/><stop offset="100%" stop-color="transparent"/></radialGradient></defs><circle cx="12" cy="12" r="11" fill="url(#sg-k)" /><circle cx="12" cy="12" r="4" fill="#ffffff" /></svg>',
+    'M': '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="sg-m" cx="50%" cy="50%"><stop offset="0%" stop-color="#ff5b4f" stop-opacity="0.8"/><stop offset="60%" stop-color="#ff5b4f" stop-opacity="0.2"/><stop offset="100%" stop-color="transparent"/></radialGradient></defs><circle cx="12" cy="12" r="11" fill="url(#sg-m)" /><circle cx="12" cy="12" r="4" fill="#ffffff" /></svg>',
+  };
+
   planetTypes = toSignal(
     this.translate.onLangChange.pipe(
       startWith(null),
@@ -443,6 +546,16 @@ export class FilterPanelComponent {
     { requireSync: true }
   );
 
+  stellarClasses = [
+    { value: 'O', icon: this.trust(this.starIcons['O']) },
+    { value: 'B', icon: this.trust(this.starIcons['B']) },
+    { value: 'A', icon: this.trust(this.starIcons['A']) },
+    { value: 'F', icon: this.trust(this.starIcons['F']) },
+    { value: 'G', icon: this.trust(this.starIcons['G']) },
+    { value: 'K', icon: this.trust(this.starIcons['K']) },
+    { value: 'M', icon: this.trust(this.starIcons['M']) },
+  ];
+
   onSearch(query: string): void {
     this.filterState.updateFilter('searchQuery', query);
   }
@@ -469,6 +582,18 @@ export class FilterPanelComponent {
       ? current.filter((x) => x !== h)
       : [...current, h as never];
     this.filterState.updateFilter('habitabilityClasses', updated);
+  }
+
+  isStellarClassSelected(sc: string): boolean {
+    return this.filters().stellarClasses.includes(sc as never);
+  }
+
+  toggleStellarClass(sc: string): void {
+    const current: string[] = this.filters().stellarClasses;
+    const updated = current.includes(sc as never)
+      ? current.filter((x) => x !== sc)
+      : [...current, sc as never];
+    this.filterState.updateFilter('stellarClasses', updated as any);
   }
 
   updateYearRange(event: Event, index: number): void {

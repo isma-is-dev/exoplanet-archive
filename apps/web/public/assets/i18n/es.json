@@ -16,6 +16,7 @@
     "title": "Filtros",
     "planetType": "Tipo de planeta",
     "habitability": "Habitabilidad",
+    "stellarClass": "Tipo de estrella",
     "discoveryYear": "Año de descubrimiento",
     "planetTypes": {
       "rocky-terrestrial": "Terrestre rocoso",

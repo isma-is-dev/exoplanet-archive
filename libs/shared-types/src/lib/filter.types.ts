@@ -1,9 +1,10 @@
-import { DiscoveryMethod, HabitabilityClass, PlanetType } from './exoplanet.types';
+import { DiscoveryMethod, HabitabilityClass, PlanetType, StellarClass } from './exoplanet.types';
 
 export interface ExoplanetFilters {
   planetTypes: PlanetType[];
   discoveryMethods: DiscoveryMethod[];
   habitabilityClasses: HabitabilityClass[];
+  stellarClasses: StellarClass[];
   discoveryYearRange: [number, number] | null;
   radiusEarthRange: [number, number] | null;
   massEarthRange: [number, number] | null;

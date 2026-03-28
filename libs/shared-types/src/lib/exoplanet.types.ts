@@ -76,3 +76,5 @@ export type HabitabilityClass =
   | 'marginal'
   | 'uninhabitable'
   | 'unknown';
+
+export type StellarClass = 'O' | 'B' | 'A' | 'F' | 'G' | 'K' | 'M';

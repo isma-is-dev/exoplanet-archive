@@ -16,6 +16,7 @@
     "title": "Filters",
     "planetType": "Planet Type",
     "habitability": "Habitability",
+    "stellarClass": "Host Star Type",
     "discoveryYear": "Discovery Year",
     "planetTypes": {
       "rocky-terrestrial": "Rocky Terrestrial",
