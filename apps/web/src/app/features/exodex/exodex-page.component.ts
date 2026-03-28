@@ -1,5 +1,8 @@
-import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  Component, inject, ChangeDetectionStrategy,
+  AfterViewInit, OnDestroy, ElementRef, NgZone, ViewChild, PLATFORM_ID
+} from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -65,8 +68,10 @@ import { LanguageSwitcherComponent } from '../../core/components/language-switch
         </div>
       </header>
 
-      <aside class="filter-sidebar" [class.open]="sidebarOpen()">
-        <app-filter-panel />
+      <aside class="filter-sidebar" [class.open]="sidebarOpen()" #sidebarEl>
+        <div class="filter-sidebar-inner">
+          <app-filter-panel />
+        </div>
       </aside>
       <div class="sidebar-overlay" [class.visible]="sidebarOpen()" (click)="filterState.toggleSidebar()"></div>
 
@@ -219,13 +224,23 @@ import { LanguageSwitcherComponent } from '../../core/components/language-switch
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border-right: 1px solid rgba(77, 138, 255, 0.08);
-      overflow-y: auto;
+      /* Twitter-like sticky: position is sticky, top is dynamically set by JS */
+      position: sticky;
+      top: var(--sidebar-top, 65px);
+      align-self: start;
+      max-height: none;
+      overflow: visible;
+      transition: none;
+    }
+
+    .filter-sidebar-inner {
+      /* Inner wrapper ensures we can measure actual content height */
     }
 
     .exodex-main {
       grid-area: main;
       padding: 0 24px 24px;
-      overflow-y: auto;
+      min-height: 0;
     }
 
     @media (max-width: 1024px) {
@@ -307,14 +322,116 @@ import { LanguageSwitcherComponent } from '../../core/components/language-switch
     }
   `,
 })
-export class ExodexPageComponent {
+export class ExodexPageComponent implements AfterViewInit, OnDestroy {
   protected filterState = inject(FilterStateService);
   private apiService = inject(ExoplanetApiService);
+  private zone = inject(NgZone);
+  private platformId = inject(PLATFORM_ID);
+
+  @ViewChild('sidebarEl', { static: false }) sidebarRef!: ElementRef<HTMLElement>;
 
   sidebarOpen = this.filterState.sidebarOpen;
   stats = toSignal(this.apiService.getStats$().pipe(startWith(null)));
 
+  private lastScrollY = 0;
+  private currentTop = 0;
+  private headerHeight = 65; // Approximate sticky header height
+  private scrollHandler: (() => void) | null = null;
+  private rafId: number | null = null;
+
+  ngAfterViewInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    // Read actual header height
+    const header = document.querySelector('.exodex-header') as HTMLElement;
+    if (header) {
+      this.headerHeight = header.offsetHeight;
+    }
+
+    this.lastScrollY = window.scrollY;
+    this.currentTop = this.headerHeight;
+    this.updateSidebarTop();
+
+    // Run scroll listener outside Angular zone for performance
+    this.zone.runOutsideAngular(() => {
+      this.scrollHandler = () => {
+        if (this.rafId !== null) return;
+        this.rafId = requestAnimationFrame(() => {
+          this.onScroll();
+          this.rafId = null;
+        });
+      };
+      window.addEventListener('scroll', this.scrollHandler, { passive: true });
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.scrollHandler) {
+      window.removeEventListener('scroll', this.scrollHandler);
+    }
+    if (this.rafId !== null) {
+      cancelAnimationFrame(this.rafId);
+    }
+  }
+
   onSearch(query: string): void {
     this.filterState.updateFilter('searchQuery', query);
+  }
+
+  /**
+   * Twitter-like sticky sidebar logic:
+   *
+   * The sidebar is `position: sticky`. We dynamically compute `top` so that:
+   *
+   * 1. If sidebar fits in the viewport (sidebarH ≤ viewportH - headerH),
+   *    simply stick at headerHeight.
+   *
+   * 2. If sidebar is TALLER than the viewport:
+   *    - Scrolling DOWN → decrease `top` so the bottom of the sidebar
+   *      eventually reaches the viewport bottom. Min value:
+   *      -(sidebarH - viewportH)
+   *    - Scrolling UP → increase `top` towards headerHeight so the
+   *      top of the sidebar comes back into view.
+   *    - When changing scroll direction, the sidebar "freezes" at its
+   *      current visual position, then moves as you continue scrolling.
+   */
+  private onScroll(): void {
+    const sidebar = this.sidebarRef?.nativeElement;
+    if (!sidebar) return;
+
+    const scrollY = window.scrollY;
+    const delta = scrollY - this.lastScrollY;
+    this.lastScrollY = scrollY;
+
+    if (delta === 0) return;
+
+    const sidebarH = sidebar.offsetHeight;
+    const viewportH = window.innerHeight;
+
+    // If sidebar fits entirely below the header, just stick at the top
+    if (sidebarH <= viewportH - this.headerHeight) {
+      this.currentTop = this.headerHeight;
+      this.updateSidebarTop();
+      return;
+    }
+
+    // The maximum sticky top (sidebar top aligned below header)
+    const maxTop = this.headerHeight;
+    // The minimum sticky top (sidebar bottom aligned to viewport bottom)
+    const minTop = -(sidebarH - viewportH);
+
+    // Adjust currentTop by the negative of scroll delta
+    this.currentTop -= delta;
+
+    // Clamp
+    this.currentTop = Math.max(minTop, Math.min(maxTop, this.currentTop));
+
+    this.updateSidebarTop();
+  }
+
+  private updateSidebarTop(): void {
+    const sidebar = this.sidebarRef?.nativeElement;
+    if (!sidebar) return;
+    sidebar.style.setProperty('--sidebar-top', `${this.currentTop}px`);
   }
 }
