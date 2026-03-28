@@ -54,7 +54,7 @@ import { PlanetAvatarComponent } from '../planet-avatar/planet-avatar.component'
             <circle cx="8" cy="8" r="2" fill="currentColor" opacity="0.6"/>
             <ellipse cx="8" cy="8" rx="6" ry="3"/>
           </svg>
-          {{ planet().numberOfKnownPlanetsInSystem }} planets
+          {{ 'components.planetCard.planets' | translate:{ count: planet().numberOfKnownPlanetsInSystem } }}
           <svg class="arrow-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M6 4l4 4-4 4" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>

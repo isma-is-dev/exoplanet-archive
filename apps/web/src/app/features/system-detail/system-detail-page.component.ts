@@ -22,7 +22,7 @@ import { Exoplanet } from '@exodex/shared-types';
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
           <path d="M19 12H5M12 19l-7-7 7-7" />
         </svg>
-        Back to Exodex
+        {{ 'systemDetail.returnToExodex' | translate }}
       </button>
 
       @if (planets() && planets().length > 0) {
@@ -34,11 +34,11 @@ import { Exoplanet } from '@exodex/shared-types';
                 <ellipse cx="12" cy="12" rx="9" ry="4"/>
                 <ellipse cx="12" cy="12" rx="5" ry="9" transform="rotate(60 12 12)"/>
               </svg>
-              {{ systemName() }} System
+              {{ systemName() }} {{ 'systemDetail.system' | translate }}
             </h1>
             <p class="system-subtitle">
               <span class="planet-count-badge">{{ planets().length }}</span>
-              {{ planets().length === 1 ? 'planet' : 'planets' }} discovered in this system
+              {{ (planets().length === 1 ? 'systemDetail.planetsDiscoveredSingle' : 'systemDetail.planetsDiscoveredPlural') | translate : { count: planets().length } }}
             </p>
           </div>
         </div>
@@ -65,23 +65,23 @@ import { Exoplanet } from '@exodex/shared-types';
                       [style.borderColor]="starData()?.primaryColor"
                       [style.backgroundColor]="starData()?.primaryColor + '12'">
                   <span class="spectral-dot" [style.background]="starData()?.primaryColor"></span>
-                  Type {{ starData()?.spectralClass }}
+                  {{ 'systemDetail.type' | translate }} {{ starData()?.spectralClass }}
                 </span>
                 <div class="star-stats-grid">
                   <div class="star-stat-item">
-                    <span class="stat-label">Temp</span>
+                    <span class="stat-label">{{ 'systemDetail.temp' | translate }}</span>
                     <span class="stat-val">{{ planets()[0].stellarTempK || '—' }} <small>K</small></span>
                   </div>
                   <div class="star-stat-item">
-                    <span class="stat-label">Mass</span>
+                    <span class="stat-label">{{ 'systemDetail.mass' | translate }}</span>
                     <span class="stat-val">{{ planets()[0].stellarMassSun || '—' }} <small>M☉</small></span>
                   </div>
                   <div class="star-stat-item">
-                    <span class="stat-label">Radius</span>
+                    <span class="stat-label">{{ 'systemDetail.radius' | translate }}</span>
                     <span class="stat-val">{{ planets()[0].stellarRadiusSun || '—' }} <small>R☉</small></span>
                   </div>
                   <div class="star-stat-item">
-                    <span class="stat-label">Age</span>
+                    <span class="stat-label">{{ 'systemDetail.age' | translate }}</span>
                     <span class="stat-val">{{ planets()[0].stellarAge || '—' }} <small>Gyr</small></span>
                   </div>
                 </div>
@@ -119,7 +119,7 @@ import { Exoplanet } from '@exodex/shared-types';
                       <div class="mini-stat">
                         <span class="mini-icon">◷</span>
                         <span class="mini-val">{{ planet.planet.orbitalPeriodDays | number:'1.0-1' }}</span>
-                        <span class="mini-unit">days</span>
+                        <span class="mini-unit">{{ 'stats.days' | translate }}</span>
                       </div>
                       <div class="mini-stat">
                         <span class="mini-icon">⟷</span>
@@ -143,7 +143,7 @@ import { Exoplanet } from '@exodex/shared-types';
                         {{ planet.planet.habitabilityClass.replace('-', ' ') }}
                       </span>
                       <span class="view-link">
-                        View
+                        {{ 'systemDetail.view' | translate }}
                         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="10" height="10">
                           <path d="M6 4l4 4-4 4" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
@@ -163,14 +163,14 @@ import { Exoplanet } from '@exodex/shared-types';
             <circle cx="12" cy="12" r="10"/>
             <path d="M12 8v4M12 16h.01" stroke-linecap="round"/>
           </svg>
-          <h2>System not found</h2>
-          <p>We couldn't locate any planets for this star system.</p>
-          <button class="back-btn" routerLink="/">← Return to Exodex</button>
+          <h2>{{ 'systemDetail.notFound' | translate }}</h2>
+          <p>{{ 'systemDetail.notFoundDesc' | translate }}</p>
+          <button class="back-btn" routerLink="/">{{ 'systemDetail.returnToExodex' | translate }}</button>
         </div>
       } @else {
         <div class="loading-state">
           <div class="spinner"></div>
-          <p>Scanning star system {{ systemName() }}...</p>
+          <p>{{ 'systemDetail.scanning' | translate:{ system: systemName() } }}</p>
         </div>
       }
     </div>

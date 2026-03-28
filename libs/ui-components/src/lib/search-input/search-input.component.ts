@@ -108,7 +108,7 @@ import { FormsModule } from '@angular/forms';
   `,
 })
 export class SearchInputComponent {
-  placeholder = input<string>('Buscar...');
+  placeholder = input<string>('');
   value = signal<string>('');
 
   search = output<string>();

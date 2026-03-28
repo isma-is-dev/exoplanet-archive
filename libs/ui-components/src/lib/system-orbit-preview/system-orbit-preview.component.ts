@@ -1,22 +1,23 @@
 import { Component, input, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 import { Exoplanet } from '@exodex/shared-types';
 
 @Component({
   selector: 'app-system-orbit-preview',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
   template: `
     <div class="system-orbit-container">
       <div class="system-title">
         <svg class="title-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><circle cx="8" cy="8" r="2"/></svg>
-        {{ systemName() || 'System Map' }}
+        {{ systemName() || ('components.systemOrbit.systemMap' | translate) }}
       </div>
 
       <!-- Habitable zone legend -->
       @if (hzBand()) {
         <div class="hz-legend">
-          <span class="hz-dot"></span> Potentially Habitable
+          <span class="hz-dot"></span> {{ 'components.systemOrbit.potentiallyHabitable' | translate }}
         </div>
       }
 

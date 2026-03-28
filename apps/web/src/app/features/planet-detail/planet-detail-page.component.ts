@@ -71,8 +71,8 @@ import { getTelescopeWikiLink } from '../../core/constants/telescopes';
                           <ellipse cx="12" cy="12" rx="5" ry="9" transform="rotate(60 12 12)"/>
                         </svg>
                         <div class="system-btn-text">
-                          <span class="system-btn-title">Explore {{ p.hostStar }} System</span>
-                          <span class="system-btn-sub">{{ systemPlanets().length }} planets discovered</span>
+                          <span class="system-btn-title">{{ 'planetDetail.exploreSystem' | translate:{ system: p.hostStar } }}</span>
+                          <span class="system-btn-sub">{{ 'planetDetail.planetsDiscovered' | translate:{ count: systemPlanets().length } }}</span>
                         </div>
                       </div>
                       <svg class="system-btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
@@ -109,7 +109,7 @@ import { getTelescopeWikiLink } from '../../core/constants/telescopes';
                         [style.color]="starData()?.primaryColor"
                         [style.borderColor]="starData()?.primaryColor"
                         [style.backgroundColor]="starData()?.primaryColor + '15'">
-                    Type {{ starData()?.spectralClass }}
+                    {{ 'systemDetail.type' | translate }} {{ starData()?.spectralClass }}
                   </span>
                 </div>
               </h3>
@@ -139,9 +139,9 @@ import { getTelescopeWikiLink } from '../../core/constants/telescopes';
                 <path d="M10 6v4M10 13h.01" stroke-linecap="round" />
               </svg>
               <span>
-                Data sourced from the
+                {{ 'planetDetail.dataSourcedFrom' | translate }}
                 <a href="https://exoplanetarchive.ipac.caltech.edu/" target="_blank" rel="noopener noreferrer" class="nasa-link">
-                  NASA Exoplanet Archive
+                  {{ 'planetDetail.nasaArchive' | translate }}
                   <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                 </a>
               </span>

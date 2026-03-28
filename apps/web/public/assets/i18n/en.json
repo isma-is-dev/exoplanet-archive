@@ -9,7 +9,8 @@
     "backToList": "Back to list",
     "discoveredIn": "Discovered in {{year}}",
     "notFound": "Planet not found",
-    "notFoundDescription": "The planet you are looking for does not exist in our database."
+    "notFoundDescription": "The planet you are looking for does not exist in our database.",
+    "backToExodex": "Back to Exodex"
   },
   "filters": {
     "title": "Filters",
@@ -92,5 +93,114 @@
     "select": "Language",
     "es": "Español",
     "en": "English"
+  },
+  "systemDetail": {
+    "system": "System",
+    "planetsDiscoveredSingle": "{{count}} planet discovered in this system",
+    "planetsDiscoveredPlural": "{{count}} planets discovered in this system",
+    "type": "Type",
+    "temp": "Temp",
+    "mass": "Mass",
+    "radius": "Radius",
+    "age": "Age",
+    "view": "View",
+    "notFound": "System not found",
+    "notFoundDesc": "We couldn't locate any planets for this star system.",
+    "returnToExodex": "← Return to Exodex",
+    "scanning": "Scanning star system {{system}}..."
+  },
+  "planetDetail": {
+    "exploreSystem": "Explore {{system}} System",
+    "planetsDiscovered": "{{count}} planets discovered",
+    "dataSourcedFrom": "Data sourced from the",
+    "nasaArchive": "NASA Exoplanet Archive"
+  },
+  "components": {
+    "planetCard": {
+      "planets": "{{count}} planets"
+    },
+    "systemOrbit": {
+      "systemMap": "System Map",
+      "potentiallyHabitable": "Potentially Habitable"
+    }
+  },
+  "methodsData": {
+    "detectionMethod": "Detection Method",
+    "howItWorks": "How it Works",
+    "advantages": "Advantages",
+    "limitations": "Limitations",
+    "notableDiscoveries": "Notable Discoveries",
+    "notFound": "Method not found",
+    "notFoundDesc": "The requested detection method could not be found.",
+    "methods": {
+      "transit": {
+        "title": "Transit Photometry",
+        "description": "Detects planets by measuring the tiny dimming of a star's light as a planet passes (transits) in front of it from our perspective.",
+        "howItWorks": "When a planet crosses between its host star and Earth, it blocks a small fraction of the star's light. By precisely measuring the brightness of the star over time, astronomers can detect the periodic dips that indicate a planet is orbiting. The depth of the dip reveals the planet's size relative to its star, while the period between dips gives the orbital period.",
+        "advantages": [
+          "Can determine planet radius directly",
+          "Can detect atmospheric composition during transit",
+          "Efficient for surveying many stars simultaneously",
+          "Has discovered the most exoplanets to date"
+        ],
+        "limitations": [
+          "Requires orbital alignment with our line of sight",
+          "Only ~1% of planetary systems are geometrically aligned",
+          "Cannot easily determine planet mass",
+          "False positives from binary stars are common"
+        ]
+      },
+      "radial-velocity": {
+        "title": "Radial Velocity (Doppler)",
+        "description": "Detects planets by measuring the tiny wobble of a star caused by the gravitational pull of an orbiting planet.",
+        "howItWorks": "A planet doesn't just orbit its star — the star also moves slightly in response to the planet's gravity. This creates a small Doppler shift in the starlight: the light is blue-shifted when the star moves toward us and red-shifted when it moves away. By measuring these shifts with extreme precision (down to 1 m/s), astronomers can infer the presence, mass, and orbit of the planet.",
+        "advantages": [
+          "Can determine minimum planet mass",
+          "Works for planets in any orbital inclination",
+          "Effective for detecting massive planets close to their star",
+          "First method to confirm an exoplanet around a Sun-like star"
+        ],
+        "limitations": [
+          "Biased toward massive, close-in planets",
+          "Only gives minimum mass (depends on inclination)",
+          "Stellar activity can mimic planetary signals",
+          "Requires many observations over the orbital period"
+        ]
+      },
+      "direct-imaging": {
+        "title": "Direct Imaging",
+        "description": "Captures actual images of exoplanets by blocking out the overwhelming light from the host star using coronagraphs or starshades.",
+        "howItWorks": "Stars are billions of times brighter than their planets, making direct imaging extremely challenging. Using advanced instruments like coronagraphs (which block the star's light) and adaptive optics (which correct atmospheric distortion), telescopes can reveal faint planetary companions. This method works best for large, young, hot planets far from their stars.",
+        "advantages": [
+          "Provides direct evidence of a planet's existence",
+          "Can study planetary atmospheres and spectra",
+          "Best for planets in wide orbits",
+          "Can image entire planetary systems"
+        ],
+        "limitations": [
+          "Extremely technically challenging",
+          "Only works for young, large, distant planets",
+          "Requires advanced instrumentation",
+          "Limited to nearby stars"
+        ]
+      },
+      "other": {
+        "title": "Other Detection Methods",
+        "description": "Includes gravitational microlensing, astrometry, timing variations, and other techniques used to detect exoplanets.",
+        "howItWorks": "Several additional methods exist: Gravitational microlensing uses the bending of light when a foreground star and its planet pass in front of a background star. Astrometry measures the tiny positional wobble of a star. Timing variations detect planets by changes in the timing of pulsars or eclipsing binaries.",
+        "advantages": [
+          "Microlensing can detect low-mass planets at large distances",
+          "Astrometry can measure true masses",
+          "Timing methods are extremely precise",
+          "Each method probes different parameter spaces"
+        ],
+        "limitations": [
+          "Microlensing events are one-time and unrepeatable",
+          "Astrometry requires extremely precise measurements",
+          "Each method has specific, narrow applicability",
+          "Often require space-based telescopes"
+        ]
+      }
+    }
   }
 }

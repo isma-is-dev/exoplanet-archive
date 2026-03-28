@@ -1,15 +1,16 @@
 import { Component, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 
 type BadgeType = 'type' | 'habitability' | 'method';
 
 @Component({
   selector: 'app-stat-badge',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
   template: `
     <span class="badge" [class]="'badge--' + type()" [attr.data-value]="value()">
-      {{ displayText() }}
+      {{ getTranslationKey() | translate }}
     </span>
   `,
   styles: `
@@ -73,11 +74,18 @@ export class StatBadgeComponent {
   type = input.required<BadgeType>();
   value = input.required<string>();
 
-  displayText(): string {
+  getTranslationKey(): string {
     const val = this.value();
     if (!val) return '';
 
-    // Convertir kebab-case a texto legible
+    if (this.type() === 'type') {
+      return `filters.planetTypes.${val}`;
+    } else if (this.type() === 'habitability') {
+      return `filters.habitabilityOptions.${val}`;
+    } else if (this.type() === 'method') {
+      return `methodsData.methods.${val}.title`;
+    }
+
     return val
       .split('-')
       .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))

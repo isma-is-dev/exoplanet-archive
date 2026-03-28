@@ -9,7 +9,8 @@
     "backToList": "Volver al listado",
     "discoveredIn": "Descubierto en {{year}}",
     "notFound": "No se encontró el planeta",
-    "notFoundDescription": "El planeta que buscas no existe en nuestra base de datos."
+    "notFoundDescription": "El planeta que buscas no existe en nuestra base de datos.",
+    "backToExodex": "Volver a Exodex"
   },
   "filters": {
     "title": "Filtros",
@@ -92,5 +93,114 @@
     "select": "Idioma",
     "es": "Español",
     "en": "English"
+  },
+  "systemDetail": {
+    "system": "Sistema",
+    "planetsDiscoveredSingle": "{{count}} planeta descubierto en este sistema",
+    "planetsDiscoveredPlural": "{{count}} planetas descubiertos en este sistema",
+    "type": "Tipo",
+    "temp": "Temp",
+    "mass": "Masa",
+    "radius": "Radio",
+    "age": "Edad",
+    "view": "Ver",
+    "notFound": "Sistema no encontrado",
+    "notFoundDesc": "No pudimos localizar ningún planeta para este sistema estelar.",
+    "returnToExodex": "← Volver a Exodex",
+    "scanning": "Escaneando el sistema estelar {{system}}..."
+  },
+  "planetDetail": {
+    "exploreSystem": "Explorar el sistema {{system}}",
+    "planetsDiscovered": "{{count}} planetas descubiertos",
+    "dataSourcedFrom": "Datos obtenidos del",
+    "nasaArchive": "NASA Exoplanet Archive"
+  },
+  "components": {
+    "planetCard": {
+      "planets": "{{count}} planetas"
+    },
+    "systemOrbit": {
+      "systemMap": "Mapa del Sistema",
+      "potentiallyHabitable": "Potencialmente Habitable"
+    }
+  },
+  "methodsData": {
+    "detectionMethod": "Método de Detección",
+    "howItWorks": "Cómo Funciona",
+    "advantages": "Ventajas",
+    "limitations": "Limitaciones",
+    "notableDiscoveries": "Descubrimientos Notables",
+    "notFound": "Método no encontrado",
+    "notFoundDesc": "El método de detección solicitado no pudo ser encontrado.",
+    "methods": {
+      "transit": {
+        "title": "Fotometría de Tránsito",
+        "description": "Detecta planetas midiendo la pequeña disminución de la luz de una estrella cuando un planeta pasa (transita) frente a ella desde nuestra perspectiva.",
+        "howItWorks": "Cuando un planeta cruza entre su estrella anfitriona y la Tierra, bloquea una pequeña fracción de la luz de la estrella. Al medir con precisión el brillo de la estrella a lo largo del tiempo, los astrónomos pueden detectar las caídas periódicas que indican que un planeta está orbitando. La profundidad de la caída revela el tamaño del planeta relativo a su estrella, mientras que el período entre caídas indica el período orbital.",
+        "advantages": [
+          "Puede determinar el radio del planeta directamente",
+          "Puede detectar la composición atmosférica durante el tránsito",
+          "Eficiente para inspeccionar muchas estrellas simultáneamente",
+          "Ha descubierto la mayor cantidad de exoplanetas hasta la fecha"
+        ],
+        "limitations": [
+          "Requiere alineación orbital con nuestra línea de visión",
+          "Solo ~1% de los sistemas planetarios están alineados geométricamente",
+          "No puede determinar fácilmente la masa del planeta",
+          "Los falsos positivos de estrellas binarias son comunes"
+        ]
+      },
+      "radial-velocity": {
+        "title": "Velocidad Radial (Doppler)",
+        "description": "Detecta planetas midiendo la pequeña oscilación de una estrella causada por el tirón gravitacional de un planeta en órbita.",
+        "howItWorks": "Un planeta no solo orbita a su estrella, la estrella también se mueve ligeramente en respuesta a la gravedad del planeta. Esto crea un pequeño cambio Doppler en la luz de la estrella: la luz se corre al azul cuando la estrella se mueve hacia nosotros y al rojo cuando se aleja. Al medir estos cambios con precisión extrema (hasta 1 m/s), los astrónomos pueden deducir la presencia, la masa y la órbita del planeta.",
+        "advantages": [
+          "Puede determinar la masa mínima del planeta",
+          "Funciona para planetas en cualquier inclinación orbital",
+          "Efectivo para detectar planetas masivos cercanos a su estrella",
+          "Primer método en confirmar un exoplaneta alrededor de una estrella similar al Sol"
+        ],
+        "limitations": [
+          "Sesgado hacia planetas masivos y cercanos",
+          "Solo proporciona la masa mínima (depende de la inclinación)",
+          "La actividad estelar puede imitar señales planetarias",
+          "Requiere de múltiples observaciones a lo largo del período orbital"
+        ]
+      },
+      "direct-imaging": {
+        "title": "Imagen Directa",
+        "description": "Captura imágenes reales de exoplanetas bloqueando la abrumadora luz de la estrella anfitriona utilizando coronógrafos o sombrillas espaciales.",
+        "howItWorks": "Las estrellas son miles de millones de veces más brillantes que sus planetas, lo que hace que la captura de imágenes directas sea un desafío extremo. Utilizando instrumentos avanzados como coronógrafos (que bloquean la luz de la estrella) y espejos de óptica adaptativa (que corrigen la distorsión atmosférica), los telescopios pueden revelar débiles compañeros planetarios. Este método funciona mejor para planetas grandes, jóvenes y calientes que estén lejos de sus estrellas.",
+        "advantages": [
+          "Proporciona evidencia visual directa de la existencia de un planeta",
+          "Puede estudiar atmósferas planetarias y espectros detectables",
+          "Ideal para planetas en órbitas amplias",
+          "Puede capturar imágenes de sistemas planetarios enteros"
+        ],
+        "limitations": [
+          "Extremadamente desafiante desde el punto de vista tecnológico",
+          "Solo funciona con planetas jóvenes, masivos y distantes",
+          "Requiere instrumentación e infraestructura muy avanzada",
+          "Se limita principalmente a observaciones de estrellas cercanas"
+        ]
+      },
+      "other": {
+        "title": "Otros Métodos de Detección",
+        "description": "Incluye microlente gravitacional, astrometría, variaciones de tiempo y otras técnicas menos habituales utilizadas para detectar exoplanetas.",
+        "howItWorks": "Existen otras metodologías adicionales: La microlente gravitacional utiliza la curvatura de la luz cuando una estrella en primer plano y su planeta pasan frente a una estrella de fondo. La astrometría mide la pequeña oscilación posicional de una estrella en el espacio. Las variaciones de los tiempos detectan planetas mediante cambios en el cronometraje de púlsares o por los movimientos de sistemas binarios eclipsantes.",
+        "advantages": [
+          "La microlente puede detectar planetas de baja masa a enormes distancias",
+          "La astrometría puede medir las masas reales de los planetas",
+          "Los métodos de pulsaciones de tiempo son extremadamente precisos",
+          "Cada técnica adicional explora parámetros planetarios únicos"
+        ],
+        "limitations": [
+          "Los eventos de microlentes ocurren una sola vez y no son repetibles",
+          "La astrometría requiere de observaciones microscópicas prolongadas",
+          "Tienen rangos de aplicabilidad más limitados que el Tránsito",
+          "Frecuentemente es indispensable contar con telescopios en el espacio"
+        ]
+      }
+    }
   }
 }

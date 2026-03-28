@@ -4,14 +4,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { TranslateModule } from '@ngx-translate/core';
 
 interface MethodInfo {
   name: string;
-  title: string;
-  description: string;
-  howItWorks: string;
-  advantages: string[];
-  limitations: string[];
   accentColor: string;
   iconSvg: string;
   diagramSvg: string;
@@ -21,21 +17,6 @@ interface MethodInfo {
 const METHODS: Record<string, MethodInfo> = {
   'transit': {
     name: 'transit',
-    title: 'Transit Photometry',
-    description: 'Detects planets by measuring the tiny dimming of a star\'s light as a planet passes (transits) in front of it from our perspective.',
-    howItWorks: 'When a planet crosses between its host star and Earth, it blocks a small fraction of the star\'s light. By precisely measuring the brightness of the star over time, astronomers can detect the periodic dips that indicate a planet is orbiting. The depth of the dip reveals the planet\'s size relative to its star, while the period between dips gives the orbital period.',
-    advantages: [
-      'Can determine planet radius directly',
-      'Can detect atmospheric composition during transit',
-      'Efficient for surveying many stars simultaneously',
-      'Has discovered the most exoplanets to date'
-    ],
-    limitations: [
-      'Requires orbital alignment with our line of sight',
-      'Only ~1% of planetary systems are geometrically aligned',
-      'Cannot easily determine planet mass',
-      'False positives from binary stars are common'
-    ],
     accentColor: '#4d8aff',
     iconSvg: `<svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
       <circle cx="100" cy="100" r="50" fill="#fbd38d" opacity="0.9"/>
@@ -58,21 +39,6 @@ const METHODS: Record<string, MethodInfo> = {
   },
   'radial-velocity': {
     name: 'radial-velocity',
-    title: 'Radial Velocity (Doppler)',
-    description: 'Detects planets by measuring the tiny wobble of a star caused by the gravitational pull of an orbiting planet.',
-    howItWorks: 'A planet doesn\'t just orbit its star — the star also moves slightly in response to the planet\'s gravity. This creates a small Doppler shift in the starlight: the light is blue-shifted when the star moves toward us and red-shifted when it moves away. By measuring these shifts with extreme precision (down to 1 m/s), astronomers can infer the presence, mass, and orbit of the planet.',
-    advantages: [
-      'Can determine minimum planet mass',
-      'Works for planets in any orbital inclination',
-      'Effective for detecting massive planets close to their star',
-      'First method to confirm an exoplanet around a Sun-like star'
-    ],
-    limitations: [
-      'Biased toward massive, close-in planets',
-      'Only gives minimum mass (depends on inclination)',
-      'Stellar activity can mimic planetary signals',
-      'Requires many observations over the orbital period'
-    ],
     accentColor: '#a855f7',
     iconSvg: `<svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
       <circle cx="90" cy="100" r="40" fill="#fbd38d" opacity="0.8"/>
@@ -96,21 +62,6 @@ const METHODS: Record<string, MethodInfo> = {
   },
   'direct-imaging': {
     name: 'direct-imaging',
-    title: 'Direct Imaging',
-    description: 'Captures actual images of exoplanets by blocking out the overwhelming light from the host star using coronagraphs or starshades.',
-    howItWorks: 'Stars are billions of times brighter than their planets, making direct imaging extremely challenging. Using advanced instruments like coronagraphs (which block the star\'s light) and adaptive optics (which correct atmospheric distortion), telescopes can reveal faint planetary companions. This method works best for large, young, hot planets far from their stars.',
-    advantages: [
-      'Provides direct evidence of a planet\'s existence',
-      'Can study planetary atmospheres and spectra',
-      'Best for planets in wide orbits',
-      'Can image entire planetary systems'
-    ],
-    limitations: [
-      'Extremely technically challenging',
-      'Only works for young, large, distant planets',
-      'Requires advanced instrumentation',
-      'Limited to nearby stars'
-    ],
     accentColor: '#22d3ee',
     iconSvg: `<svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
       <circle cx="100" cy="100" r="30" fill="#1a1a2e" stroke="rgba(34,211,238,0.3)" stroke-width="1"/>
@@ -132,21 +83,6 @@ const METHODS: Record<string, MethodInfo> = {
   },
   'other': {
     name: 'other',
-    title: 'Other Detection Methods',
-    description: 'Includes gravitational microlensing, astrometry, timing variations, and other techniques used to detect exoplanets.',
-    howItWorks: 'Several additional methods exist: Gravitational microlensing uses the bending of light when a foreground star and its planet pass in front of a background star. Astrometry measures the tiny positional wobble of a star. Timing variations detect planets by changes in the timing of pulsars or eclipsing binaries.',
-    advantages: [
-      'Microlensing can detect low-mass planets at large distances',
-      'Astrometry can measure true masses',
-      'Timing methods are extremely precise',
-      'Each method probes different parameter spaces'
-    ],
-    limitations: [
-      'Microlensing events are one-time and unrepeatable',
-      'Astrometry requires extremely precise measurements',
-      'Each method has specific, narrow applicability',
-      'Often require space-based telescopes'
-    ],
     accentColor: '#f59e0b',
     iconSvg: `<svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
       <circle cx="100" cy="100" r="25" fill="#f59e0b" opacity="0.3"/>
@@ -166,7 +102,7 @@ const METHODS: Record<string, MethodInfo> = {
 @Component({
   selector: 'app-method-page',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (method(); as m) {
@@ -175,15 +111,15 @@ const METHODS: Record<string, MethodInfo> = {
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
             <path d="M19 12H5M12 19l-7-7 7-7" />
           </svg>
-          Back to Exodex
+          {{ 'common.backToExodex' | translate }}
         </button>
 
         <div class="method-hero">
           <div class="method-icon" [innerHTML]="iconSvg()"></div>
           <div class="method-hero-text">
-            <div class="method-label" [style.color]="m.accentColor">Detection Method</div>
-            <h1 class="method-title" [style.color]="m.accentColor">{{ m.title }}</h1>
-            <p class="method-description">{{ m.description }}</p>
+            <div class="method-label" [style.color]="m.accentColor">{{ 'methodsData.detectionMethod' | translate }}</div>
+            <h1 class="method-title" [style.color]="m.accentColor">{{ 'methodsData.methods.' + m.name + '.title' | translate }}</h1>
+            <p class="method-description">{{ 'methodsData.methods.' + m.name + '.description' | translate }}</p>
           </div>
         </div>
 
@@ -191,9 +127,9 @@ const METHODS: Record<string, MethodInfo> = {
           <section class="method-section">
             <h2 [style.borderBottomColor]="m.accentColor + '30'">
               <span class="section-num" [style.color]="m.accentColor">01</span>
-              How it Works
+              {{ 'methodsData.howItWorks' | translate }}
             </h2>
-            <p class="method-body">{{ m.howItWorks }}</p>
+            <p class="method-body">{{ 'methodsData.methods.' + m.name + '.howItWorks' | translate }}</p>
             <div class="method-diagram" [innerHTML]="diagramSvg()"></div>
           </section>
 
@@ -201,10 +137,10 @@ const METHODS: Record<string, MethodInfo> = {
             <section class="method-card advantages">
               <h3>
                 <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#22c55e" stroke-width="2"><circle cx="10" cy="10" r="8"/><path d="M7 10l2 2 4-4"/></svg>
-                Advantages
+                {{ 'methodsData.advantages' | translate }}
               </h3>
               <ul>
-                @for (adv of m.advantages; track $index) {
+                @for (adv of ('methodsData.methods.' + m.name + '.advantages' | translate); track $index) {
                   <li>{{ adv }}</li>
                 }
               </ul>
@@ -213,10 +149,10 @@ const METHODS: Record<string, MethodInfo> = {
             <section class="method-card limitations">
               <h3>
                 <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#f59e0b" stroke-width="2"><circle cx="10" cy="10" r="8"/><path d="M10 7v4M10 13h.01" stroke-linecap="round"/></svg>
-                Limitations
+                {{ 'methodsData.limitations' | translate }}
               </h3>
               <ul>
-                @for (lim of m.limitations; track $index) {
+                @for (lim of ('methodsData.methods.' + m.name + '.limitations' | translate); track $index) {
                   <li>{{ lim }}</li>
                 }
               </ul>
@@ -226,7 +162,7 @@ const METHODS: Record<string, MethodInfo> = {
           <section class="method-section">
             <h2 [style.borderBottomColor]="m.accentColor + '30'">
               <span class="section-num" [style.color]="m.accentColor">02</span>
-              Notable Discoveries
+              {{ 'methodsData.notableDiscoveries' | translate }}
             </h2>
             <div class="example-planets">
               @for (name of m.examplePlanets; track $index) {
@@ -241,9 +177,9 @@ const METHODS: Record<string, MethodInfo> = {
       </div>
     } @else {
       <div class="error-state">
-        <h2>Method not found</h2>
-        <p>The requested detection method could not be found.</p>
-        <button class="back-btn" (click)="goBack()">Back to Exodex</button>
+        <h2>{{ 'methodsData.notFound' | translate }}</h2>
+        <p>{{ 'methodsData.notFoundDesc' | translate }}</p>
+        <button class="back-btn" (click)="goBack()">{{ 'common.backToExodex' | translate }}</button>
       </div>
     }
   `,
