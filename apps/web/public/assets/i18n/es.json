@@ -74,14 +74,15 @@
       "Transit": "Tránsito",
       "Radial Velocity": "Velocidad Radial",
       "Imaging": "Imagen Directa",
-      "Microlensing": "Microlente",
+      "Microlensing": "Microlente Gravitacional",
       "Astrometry": "Astrometría",
       "Transit Timing Variations": "Variaciones de Tiempo de Tránsito",
       "Orbital Brightness Modulation": "Modulación de Brillo Orbital",
-      "Pulsar Timing": "Tiempo de Púlsares",
+      "Pulsar Timing": "Tiempo de Pulsar",
       "Eclipse Timing Variations": "Variaciones de Tiempo de Eclipse",
       "Pulsation Timing Variations": "Variaciones de Tiempo de Pulsación",
-      "Disk Kinematics": "Cinemática de Disco"
+      "Disk Kinematics": "Cinemática de Disco",
+      "Other": "Otros"
     }
   },
   "sections": {

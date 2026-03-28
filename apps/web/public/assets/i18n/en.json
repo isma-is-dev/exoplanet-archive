@@ -81,7 +81,8 @@
       "Pulsar Timing": "Pulsar Timing",
       "Eclipse Timing Variations": "Eclipse Timing Variations",
       "Pulsation Timing Variations": "Pulsation Timing Variations",
-      "Disk Kinematics": "Disk Kinematics"
+      "Disk Kinematics": "Disk Kinematics",
+      "Other": "Other"
     }
   },
   "sections": {

@@ -668,17 +668,27 @@ export class FilterPanelComponent {
     { initialValue: 0 }
   );
 
+  /** Maps raw discovery method names from data to i18n translation keys */
+  private methodToI18nKey: Record<string, string> = {
+    'Direct Imaging': 'Imaging',
+    'Imaging': 'Imaging',
+    'Other': 'Other',
+  };
+
   discoveryMethods = computed(() => {
     this.langVersion();
     const s = this.stats();
     if (!s) return [];
     return Object.entries(s.methodDistribution)
       .sort(([, a], [, b]) => b - a)
-      .map(([method]) => ({
-        value: method,
-        label: this.translate.instant(`stats.methodNames.${method}`) || method,
-        icon: this.trust(this.methodIcons[method] ?? this.methodIcons['_default']),
-      }));
+      .map(([method]) => {
+        const i18nKey = this.methodToI18nKey[method] ?? method;
+        return {
+          value: method,
+          label: this.translate.instant(`stats.methodNames.${i18nKey}`) || method,
+          icon: this.trust(this.methodIcons[method] ?? this.methodIcons['_default']),
+        };
+      });
   });
 
   stellarClasses = [
