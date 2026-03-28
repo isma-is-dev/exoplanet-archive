@@ -28,11 +28,17 @@ import { PlanetAvatarComponent } from '../planet-avatar/planet-avatar.component'
             <path d="M8 1l2.1 4.3 4.7.7-3.4 3.3.8 4.7L8 11.8 3.8 14l.8-4.7L1.2 6l4.7-.7L8 1z" fill="#f59e0b" stroke="#f59e0b" stroke-width="0.5" opacity="0.9"/>
           </svg>
           {{ planet().hostStar }}
+          @if (planet().spectralType) {
+            <span class="spectral-tag">{{ planet().spectralType }}</span>
+          }
         </span>
 
         <div class="card-badges">
           <app-stat-badge type="type" [value]="planet().planetType" />
           <app-stat-badge type="habitability" [value]="planet().habitabilityClass" />
+          @if (planet().controversialFlag) {
+            <app-stat-badge type="controversial" value="disputed" />
+          }
         </div>
 
         <div class="card-stats">
@@ -44,6 +50,16 @@ import { PlanetAvatarComponent } from '../planet-avatar/planet-avatar.component'
       </div>
 
       <div class="card-year">{{ planet().discoveryYear }}</div>
+
+      @if (planet().visualMagnitude !== null && planet().visualMagnitude !== undefined && planet().visualMagnitude! < 6.5) {
+        <div class="naked-eye-badge" [title]="'badges.nakedEye' | translate">
+          <svg viewBox="0 0 20 20" fill="none" width="13" height="13">
+            <path d="M10 4C5.5 4 1.7 7.3 1 10c.7 2.7 4.5 6 9 6s8.3-3.3 9-6c-.7-2.7-4.5-6-9-6z" stroke="#22d3ee" stroke-width="1.3" fill="rgba(34,211,238,0.08)"/>
+            <circle cx="10" cy="10" r="2.5" fill="#22d3ee" opacity="0.7"/>
+          </svg>
+          <span>{{ planet().visualMagnitude | number:'1.1-1' }}m</span>
+        </div>
+      }
 
       @if (planet().numberOfKnownPlanetsInSystem && planet().numberOfKnownPlanetsInSystem! > 1) {
         <a class="system-badge"
@@ -199,6 +215,42 @@ import { PlanetAvatarComponent } from '../planet-avatar/planet-avatar.component'
       display: flex;
       flex-direction: column;
       gap: 2px;
+    }
+
+    .spectral-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      font-weight: 600;
+      color: rgba(245, 158, 11, 0.7);
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.15);
+      padding: 1px 6px;
+      border-radius: 4px;
+      letter-spacing: 0.3px;
+    }
+
+    .naked-eye-badge {
+      position: absolute;
+      bottom: 14px;
+      left: 14px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      font-weight: 500;
+      color: rgba(34, 211, 238, 0.7);
+      background: rgba(34, 211, 238, 0.06);
+      border: 1px solid rgba(34, 211, 238, 0.12);
+      border-radius: 6px;
+      transition: all 300ms ease;
+    }
+
+    .naked-eye-badge:hover {
+      color: #22d3ee;
+      background: rgba(34, 211, 238, 0.12);
+      border-color: rgba(34, 211, 238, 0.25);
     }
 
     .card-year {

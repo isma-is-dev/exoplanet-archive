@@ -26,16 +26,24 @@ function createMockPlanet(partial: Partial<Exoplanet>): Exoplanet {
     discoveryFacility: partial.discoveryFacility ?? null,
     telescope: partial.telescope ?? null,
     orbitalPeriodDays: partial.orbitalPeriodDays ?? null,
+    orbitalPeriodErr1: partial.orbitalPeriodErr1 ?? null,
+    orbitalPeriodErr2: partial.orbitalPeriodErr2 ?? null,
     semiMajorAxisAU: partial.semiMajorAxisAU ?? null,
     eccentricity: partial.eccentricity ?? null,
     inclinationDeg: partial.inclinationDeg ?? null,
     radiusEarth: partial.radiusEarth ?? null,
+    radiusEarthErr1: partial.radiusEarthErr1 ?? null,
+    radiusEarthErr2: partial.radiusEarthErr2 ?? null,
     radiusJupiter: partial.radiusJupiter ?? null,
     massEarth: partial.massEarth ?? null,
+    massEarthErr1: partial.massEarthErr1 ?? null,
+    massEarthErr2: partial.massEarthErr2 ?? null,
     massJupiter: partial.massJupiter ?? null,
     densityGCC: partial.densityGCC ?? null,
     gravityMS2: partial.gravityMS2 ?? null,
     equilibriumTempK: partial.equilibriumTempK ?? null,
+    equilibriumTempErr1: partial.equilibriumTempErr1 ?? null,
+    equilibriumTempErr2: partial.equilibriumTempErr2 ?? null,
     insolationFlux: partial.insolationFlux ?? null,
     stellarTempK: partial.stellarTempK ?? null,
     stellarRadiusSun: partial.stellarRadiusSun ?? null,
@@ -46,6 +54,14 @@ function createMockPlanet(partial: Partial<Exoplanet>): Exoplanet {
     declination: partial.declination ?? null,
     distanceParsec: partial.distanceParsec ?? null,
     habitabilityScore: partial.habitabilityScore ?? 0,
+    spectralType: partial.spectralType ?? null,
+    stellarSurfaceGravity: partial.stellarSurfaceGravity ?? null,
+    controversialFlag: partial.controversialFlag ?? false,
+    visualMagnitude: partial.visualMagnitude ?? null,
+    kMagnitude: partial.kMagnitude ?? null,
+    gaiaMagnitude: partial.gaiaMagnitude ?? null,
+    lastUpdated: partial.lastUpdated ?? null,
+    publicationDate: partial.publicationDate ?? null,
     referenceUrl: partial.referenceUrl ?? null,
     hasAtmosphereData: partial.hasAtmosphereData ?? false,
     numberOfStarsInSystem: partial.numberOfStarsInSystem ?? 1,
@@ -80,6 +96,12 @@ const MOCK_PLANETS_BASE: Array<Partial<Exoplanet> & { habitabilityClass: string;
     stellarMassSun: 0.54,
     stellarMetallicity: null,
     stellarAge: 4,
+    spectralType: 'M1 V',
+    visualMagnitude: 14.6,
+    stellarSurfaceGravity: 4.69,
+    distanceParsec: 178.5,
+    lastUpdated: '2023-09-22',
+    publicationDate: '2014-04',
   },
   {
     id: 'proxima-centauri-b',
@@ -107,6 +129,12 @@ const MOCK_PLANETS_BASE: Array<Partial<Exoplanet> & { habitabilityClass: string;
     stellarMetallicity: 0.21,
     stellarAge: 4.85,
     numberOfStarsInSystem: 3,
+    spectralType: 'M5.5 V',
+    visualMagnitude: 11.13,
+    stellarSurfaceGravity: 5.20,
+    distanceParsec: 1.30,
+    lastUpdated: '2023-06-12',
+    publicationDate: '2016-08',
   },
   {
     id: 'trappist-1e',
@@ -133,6 +161,12 @@ const MOCK_PLANETS_BASE: Array<Partial<Exoplanet> & { habitabilityClass: string;
     stellarMassSun: 0.09,
     stellarMetallicity: 0.04,
     stellarAge: 7.6,
+    spectralType: 'M8 V',
+    visualMagnitude: 18.8,
+    stellarSurfaceGravity: 5.24,
+    distanceParsec: 12.43,
+    lastUpdated: '2023-09-22',
+    publicationDate: '2017-02',
   },
   {
     id: 'trappist-1b',
@@ -160,6 +194,12 @@ const MOCK_PLANETS_BASE: Array<Partial<Exoplanet> & { habitabilityClass: string;
     stellarMassSun: 0.09,
     stellarMetallicity: 0.04,
     stellarAge: 7.6,
+    spectralType: 'M8 V',
+    visualMagnitude: 18.8,
+    stellarSurfaceGravity: 5.24,
+    distanceParsec: 12.43,
+    lastUpdated: '2023-09-22',
+    publicationDate: '2016-05',
   },
   {
     id: 'trappist-1d',
@@ -187,6 +227,12 @@ const MOCK_PLANETS_BASE: Array<Partial<Exoplanet> & { habitabilityClass: string;
     stellarMassSun: 0.09,
     stellarMetallicity: 0.04,
     stellarAge: 7.6,
+    spectralType: 'M8 V',
+    visualMagnitude: 18.8,
+    stellarSurfaceGravity: 5.24,
+    distanceParsec: 12.43,
+    lastUpdated: '2023-09-22',
+    publicationDate: '2017-02',
   },
   {
     id: 'trappist-1f',
@@ -214,6 +260,12 @@ const MOCK_PLANETS_BASE: Array<Partial<Exoplanet> & { habitabilityClass: string;
     stellarMassSun: 0.09,
     stellarMetallicity: 0.04,
     stellarAge: 7.6,
+    spectralType: 'M8 V',
+    visualMagnitude: 18.8,
+    stellarSurfaceGravity: 5.24,
+    distanceParsec: 12.43,
+    lastUpdated: '2023-09-22',
+    publicationDate: '2017-02',
   },
   {
     id: 'hd-209458-b',
@@ -241,6 +293,12 @@ const MOCK_PLANETS_BASE: Array<Partial<Exoplanet> & { habitabilityClass: string;
     stellarMetallicity: 0.02,
     stellarAge: 4,
     hasAtmosphereData: true,
+    spectralType: 'F8 V',
+    visualMagnitude: 7.65,
+    stellarSurfaceGravity: 4.36,
+    distanceParsec: 48.3,
+    lastUpdated: '2023-09-22',
+    publicationDate: '1999-11',
   },
   {
     id: 'kepler-22b',
@@ -267,6 +325,12 @@ const MOCK_PLANETS_BASE: Array<Partial<Exoplanet> & { habitabilityClass: string;
     stellarMassSun: 1.0,
     stellarMetallicity: -0.29,
     stellarAge: null,
+    spectralType: 'G5 V',
+    visualMagnitude: 11.66,
+    stellarSurfaceGravity: 4.44,
+    distanceParsec: 189.4,
+    lastUpdated: '2023-09-22',
+    publicationDate: '2011-12',
   },
   {
     id: 'gj-1214-b',
@@ -294,6 +358,12 @@ const MOCK_PLANETS_BASE: Array<Partial<Exoplanet> & { habitabilityClass: string;
     stellarMetallicity: null,
     stellarAge: 6,
     hasAtmosphereData: true,
+    spectralType: 'M4.5 V',
+    visualMagnitude: 14.67,
+    stellarSurfaceGravity: 5.03,
+    distanceParsec: 14.6,
+    lastUpdated: '2023-09-22',
+    publicationDate: '2009-12',
   },
   {
     id: 'k2-18b',
@@ -321,6 +391,12 @@ const MOCK_PLANETS_BASE: Array<Partial<Exoplanet> & { habitabilityClass: string;
     stellarMetallicity: 0.1,
     stellarAge: 2.4,
     hasAtmosphereData: true,
+    spectralType: 'M2.5 V',
+    visualMagnitude: 13.5,
+    stellarSurfaceGravity: 4.84,
+    distanceParsec: 38.0,
+    lastUpdated: '2023-09-28',
+    publicationDate: '2015-12',
   },
   {
     id: 'wasp-12b',
@@ -348,6 +424,12 @@ const MOCK_PLANETS_BASE: Array<Partial<Exoplanet> & { habitabilityClass: string;
     stellarMetallicity: 0.3,
     stellarAge: 2,
     hasAtmosphereData: true,
+    spectralType: 'F9',
+    visualMagnitude: 11.69,
+    stellarSurfaceGravity: 4.17,
+    distanceParsec: 427.0,
+    lastUpdated: '2023-09-22',
+    publicationDate: '2008-04',
   },
   {
     id: '55-cancri-e',
@@ -374,6 +456,12 @@ const MOCK_PLANETS_BASE: Array<Partial<Exoplanet> & { habitabilityClass: string;
     stellarMassSun: 0.91,
     stellarMetallicity: 0.35,
     stellarAge: 10.2,
+    spectralType: 'G8 V',
+    visualMagnitude: 5.95,
+    stellarSurfaceGravity: 4.45,
+    distanceParsec: 12.3,
+    lastUpdated: '2023-09-22',
+    publicationDate: '2004-08',
   },
   {
     id: 'gliese-581g',
@@ -400,6 +488,13 @@ const MOCK_PLANETS_BASE: Array<Partial<Exoplanet> & { habitabilityClass: string;
     stellarMassSun: 0.31,
     stellarMetallicity: -0.33,
     stellarAge: 7,
+    controversialFlag: true,
+    spectralType: 'M3 V',
+    visualMagnitude: 10.56,
+    stellarSurfaceGravity: 4.92,
+    distanceParsec: 6.3,
+    lastUpdated: '2023-09-22',
+    publicationDate: '2010-09',
   },
   {
     id: 'kepler-452b',
@@ -426,6 +521,12 @@ const MOCK_PLANETS_BASE: Array<Partial<Exoplanet> & { habitabilityClass: string;
     stellarMassSun: 1.04,
     stellarMetallicity: 0.21,
     stellarAge: 6,
+    spectralType: 'G2 V',
+    visualMagnitude: 13.42,
+    stellarSurfaceGravity: 4.32,
+    distanceParsec: 556.0,
+    lastUpdated: '2023-09-22',
+    publicationDate: '2015-07',
   },
   {
     id: 'toi-700d',
@@ -452,6 +553,12 @@ const MOCK_PLANETS_BASE: Array<Partial<Exoplanet> & { habitabilityClass: string;
     stellarMassSun: 0.41,
     stellarMetallicity: -0.1,
     stellarAge: 1.5,
+    spectralType: 'M2 V',
+    visualMagnitude: 13.07,
+    stellarSurfaceGravity: 4.69,
+    distanceParsec: 31.1,
+    lastUpdated: '2023-09-22',
+    publicationDate: '2020-01',
   },
   {
     id: 'hd-189733b',
@@ -479,6 +586,12 @@ const MOCK_PLANETS_BASE: Array<Partial<Exoplanet> & { habitabilityClass: string;
     stellarMetallicity: -0.03,
     stellarAge: null,
     hasAtmosphereData: true,
+    spectralType: 'K1-K2 V',
+    visualMagnitude: 7.67,
+    stellarSurfaceGravity: 4.56,
+    distanceParsec: 19.8,
+    lastUpdated: '2023-09-22',
+    publicationDate: '2005-10',
   },
   {
     id: 'jupiter-analog',
@@ -505,6 +618,12 @@ const MOCK_PLANETS_BASE: Array<Partial<Exoplanet> & { habitabilityClass: string;
     stellarMassSun: 1.0,
     stellarMetallicity: 0.0,
     stellarAge: 4.6,
+    spectralType: 'G2 V',
+    visualMagnitude: null,
+    stellarSurfaceGravity: 4.44,
+    distanceParsec: null,
+    lastUpdated: '2023-09-22',
+    publicationDate: '2023-01',
   },
   {
     id: 'ltt-9779b',
@@ -531,6 +650,12 @@ const MOCK_PLANETS_BASE: Array<Partial<Exoplanet> & { habitabilityClass: string;
     stellarMassSun: 0.93,
     stellarMetallicity: 0.0,
     stellarAge: null,
+    spectralType: 'G1 V',
+    visualMagnitude: 10.73,
+    stellarSurfaceGravity: 4.43,
+    distanceParsec: 80.4,
+    lastUpdated: '2023-09-22',
+    publicationDate: '2020-06',
   },
   {
     id: 'tau-ceti-e',
@@ -557,6 +682,12 @@ const MOCK_PLANETS_BASE: Array<Partial<Exoplanet> & { habitabilityClass: string;
     stellarMassSun: 0.78,
     stellarMetallicity: -0.55,
     stellarAge: 5.8,
+    spectralType: 'G8.5 V',
+    visualMagnitude: 3.5,
+    stellarSurfaceGravity: 4.53,
+    distanceParsec: 3.65,
+    lastUpdated: '2023-09-22',
+    publicationDate: '2017-08',
   },
   {
     id: 'luyten-b',
@@ -583,6 +714,12 @@ const MOCK_PLANETS_BASE: Array<Partial<Exoplanet> & { habitabilityClass: string;
     stellarMassSun: 0.26,
     stellarMetallicity: null,
     stellarAge: 8,
+    spectralType: 'M3.5 V',
+    visualMagnitude: 9.87,
+    stellarSurfaceGravity: 4.97,
+    distanceParsec: 3.72,
+    lastUpdated: '2023-09-22',
+    publicationDate: '2017-06',
   },
   {
     id: 'corot-7b',
@@ -609,6 +746,12 @@ const MOCK_PLANETS_BASE: Array<Partial<Exoplanet> & { habitabilityClass: string;
     stellarMassSun: 0.91,
     stellarMetallicity: 0.12,
     stellarAge: 1.5,
+    spectralType: 'G9 V',
+    visualMagnitude: 11.67,
+    stellarSurfaceGravity: 4.52,
+    distanceParsec: 150.0,
+    lastUpdated: '2023-09-22',
+    publicationDate: '2009-02',
   },
   {
     id: 'lhs-1140b',
@@ -635,6 +778,12 @@ const MOCK_PLANETS_BASE: Array<Partial<Exoplanet> & { habitabilityClass: string;
     stellarMassSun: 0.18,
     stellarMetallicity: -0.24,
     stellarAge: 5,
+    spectralType: 'M4.5 V',
+    visualMagnitude: 14.18,
+    stellarSurfaceGravity: 5.06,
+    distanceParsec: 12.5,
+    lastUpdated: '2023-09-22',
+    publicationDate: '2017-04',
   },
   {
     id: 'pegasi-51b',
@@ -661,6 +810,12 @@ const MOCK_PLANETS_BASE: Array<Partial<Exoplanet> & { habitabilityClass: string;
     stellarMassSun: 1.03,
     stellarMetallicity: 0.2,
     stellarAge: 6.5,
+    spectralType: 'G2.5 IVa',
+    visualMagnitude: 5.49,
+    stellarSurfaceGravity: 4.33,
+    distanceParsec: 15.6,
+    lastUpdated: '2023-09-22',
+    publicationDate: '1995-11',
   },
 ];
 
@@ -776,16 +931,21 @@ export class ExoplanetMockService {
 
       // Filtro por clase estelar
       if (filters.stellarClasses?.length) {
-        let sc = 'G'; // default a G if no data, typical of sun-like
-        const t = planet.stellarTempK ?? 5778;
-        if (t < 3700) sc = 'M';
-        else if (t < 5200) sc = 'K';
-        else if (t < 6000) sc = 'G';
-        else if (t < 7500) sc = 'F';
-        else if (t < 10000) sc = 'A';
-        else if (t < 33000) sc = 'B';
-        else sc = 'O';
-
+        let sc: string | null = null;
+        if (planet.spectralType) {
+          const match = planet.spectralType.match(/^([OBAFGKM])/i);
+          if (match) sc = match[1].toUpperCase();
+        }
+        if (!sc) {
+          const t = planet.stellarTempK ?? 5778;
+          if (t < 3700) sc = 'M';
+          else if (t < 5200) sc = 'K';
+          else if (t < 6000) sc = 'G';
+          else if (t < 7500) sc = 'F';
+          else if (t < 10000) sc = 'A';
+          else if (t < 33000) sc = 'B';
+          else sc = 'O';
+        }
         if (!filters.stellarClasses.includes(sc as any)) {
           return false;
         }

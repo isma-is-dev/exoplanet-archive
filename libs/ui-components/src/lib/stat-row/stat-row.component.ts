@@ -22,6 +22,11 @@ import { CommonModule } from '@angular/common';
           </svg>
         </a>
         <span class="stat-unit" *ngIf="unit()">{{ unit() }}</span>
+        <span class="stat-uncertainty" *ngIf="hasUncertainty()">
+          <span class="unc-plus">+{{ formattedErr(errPlus()) }}</span>
+          <span class="unc-sep">/</span>
+          <span class="unc-minus">{{ formattedErr(errMinus()) }}</span>
+        </span>
       </span>
     </div>
   `,
@@ -94,6 +99,20 @@ import { CommonModule } from '@angular/common';
       opacity: 0.7;
       margin-bottom: 1px;
     }
+
+    .stat-uncertainty {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      color: rgba(136, 146, 176, 0.7);
+      margin-left: 4px;
+    }
+
+    .unc-plus { color: rgba(34, 197, 94, 0.7); }
+    .unc-sep  { color: rgba(136, 146, 176, 0.4); }
+    .unc-minus { color: rgba(239, 68, 68, 0.65); }
   `,
 })
 export class StatRowComponent {
@@ -102,6 +121,21 @@ export class StatRowComponent {
   unit = input<string>('');
   href = input<string | null>(null);
   isExternalLink = input<boolean>(false);
+  errPlus = input<number | null>(null);
+  errMinus = input<number | null>(null);
+
+  hasUncertainty(): boolean {
+    const v = this.value();
+    return v !== null && v !== undefined && typeof v === 'number' &&
+           (this.errPlus() !== null || this.errMinus() !== null);
+  }
+
+  formattedErr(val: number | null | undefined): string {
+    if (val === null || val === undefined) return '—';
+    const abs = Math.abs(val);
+    if (abs < 0.001) return abs.toExponential(1);
+    return abs.toLocaleString('es-ES', { maximumFractionDigits: 3 });
+  }
 
   formattedValue(): string {
     const val = this.value();

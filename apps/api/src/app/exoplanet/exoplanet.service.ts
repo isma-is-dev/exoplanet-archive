@@ -48,12 +48,19 @@ export class ExoplanetService implements OnModuleInit {
     const query = `
       SELECT
         pl_name, hostname, pl_letter,
-        pl_orbper, pl_orbsmax, pl_orbeccen, pl_orbincl,
-        pl_rade, pl_radj, pl_bmasse, pl_bmassj, pl_dens, pl_g, pl_eqt, pl_insol,
-        discoverymethod, disc_year, disc_facility, disc_telescope,
-        st_teff, st_rad, st_mass, st_met, st_age,
-        ra, dec, sy_dist, sy_pnum,
-        pl_refname
+        pl_orbper, pl_orbper_err1, pl_orbper_err2,
+        pl_orbsmax, pl_orbeccen,
+        pl_rade, pl_rade_err1, pl_rade_err2,
+        pl_radj,
+        pl_bmasse, pl_bmasse_err1, pl_bmasse_err2,
+        pl_bmassj,
+        pl_eqt, pl_eqt_err1, pl_eqt_err2,
+        pl_insol, pl_controv_flag,
+        discoverymethod, disc_year, disc_facility,
+        st_spectype, st_teff, st_rad, st_mass, st_met, st_logg,
+        sy_vmag, sy_kmag, sy_gaiamag,
+        ra, dec, sy_dist, sy_snum, sy_pnum,
+        pl_refname, rowupdate, pl_pubdate
       FROM ps
       WHERE default_flag = 1
       ORDER BY disc_year ASC, pl_name ASC
@@ -226,6 +233,21 @@ export class ExoplanetService implements OnModuleInit {
     };
   }
 
+  private getStellarClass(planet: Exoplanet): string {
+    if (planet.spectralType) {
+      const match = planet.spectralType.match(/^([OBAFGKM])/i);
+      if (match) return match[1].toUpperCase();
+    }
+    const t = planet.stellarTempK ?? 5778;
+    if (t < 3700) return 'M';
+    if (t < 5200) return 'K';
+    if (t < 6000) return 'G';
+    if (t < 7500) return 'F';
+    if (t < 10000) return 'A';
+    if (t < 33000) return 'B';
+    return 'O';
+  }
+
   private matchesFilters(
     planet: Exoplanet,
     filters: ExoplanetFilters
@@ -236,6 +258,14 @@ export class ExoplanetService implements OnModuleInit {
       !filters.planetTypes.includes(planet.planetType)
     ) {
       return false;
+    }
+
+    // Filtro por clase estelar
+    if (filters.stellarClasses.length > 0) {
+      const sc = this.getStellarClass(planet);
+      if (!filters.stellarClasses.includes(sc as never)) {
+        return false;
+      }
     }
 
     // Filtro por método de descubrimiento

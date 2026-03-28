@@ -11,6 +11,10 @@
     "notFound": "Planet not found",
     "notFoundDescription": "The planet you are looking for does not exist in our database."
   },
+  "badges": {
+    "controversial": "⚠ Disputed",
+    "nakedEye": "Naked eye"
+  },
   "filters": {
     "title": "Filters",
     "planetType": "Planet Type",
@@ -60,16 +64,23 @@
     "stellarMass": "Mass",
     "stellarMetallicity": "Metallicity",
     "stellarAge": "Age",
+    "stellarGravity": "Surface Gravity",
+    "spectralType": "Spectral Type",
+    "visualMagnitude": "Visual Mag.",
+    "distance": "Distance",
     "discoveryMethod": "Method",
     "discoveryYear": "Year",
     "discoveryFacility": "Facility",
-    "telescope": "Telescope"
+    "telescope": "Telescope",
+    "lastUpdated": "Last Updated",
+    "publicationDate": "Publication"
   },
   "sections": {
     "orbitalProperties": "Orbital Properties",
     "physicalProperties": "Physical Properties",
     "hostStar": "Host Star",
-    "discovery": "Discovery"
+    "discovery": "Discovery",
+    "metadata": "Data Source"
   },
   "emptyState": {
     "title": "No planets found",
@@ -86,7 +97,9 @@
     "gravity": "m/s²",
     "radiusSun": "R☉",
     "massSun": "M☉",
-    "gyr": "Gyr"
+    "gyr": "Gyr",
+    "pc": "pc",
+    "logg": "log(cm/s²)"
   },
   "language": {
     "select": "Language",
@@ -94,3 +107,4 @@
     "en": "English"
   }
 }
+

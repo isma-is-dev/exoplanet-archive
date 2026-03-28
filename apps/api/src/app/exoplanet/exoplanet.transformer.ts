@@ -9,32 +9,62 @@ export interface NasaExoplanetRaw {
   pl_name: string;
   hostname: string;
   pl_letter: string;
+  // Orbital
   pl_orbper: number | null;
+  pl_orbper_err1: number | null;
+  pl_orbper_err2: number | null;
   pl_orbsmax: number | null;
   pl_orbeccen: number | null;
-  pl_orbincl: number | null;
+  // Physical
   pl_rade: number | null;
+  pl_rade_err1: number | null;
+  pl_rade_err2: number | null;
   pl_radj: number | null;
   pl_bmasse: number | null;
+  pl_bmasse_err1: number | null;
+  pl_bmasse_err2: number | null;
   pl_bmassj: number | null;
-  pl_dens: number | null;
-  pl_g: number | null;
   pl_eqt: number | null;
+  pl_eqt_err1: number | null;
+  pl_eqt_err2: number | null;
   pl_insol: number | null;
+  // Flags
+  pl_controv_flag: number | null;
+  // Discovery
   discoverymethod: string;
   disc_year: number | null;
   disc_facility: string | null;
-  disc_telescope: string | null;
+  // Stellar
+  st_spectype: string | null;
   st_teff: number | null;
   st_rad: number | null;
   st_mass: number | null;
   st_met: number | null;
-  st_age: number | null;
+  st_logg: number | null;
+  // Photometry
+  sy_vmag: number | null;
+  sy_kmag: number | null;
+  sy_gaiamag: number | null;
+  // Position & system
   ra: number | null;
   dec: number | null;
   sy_dist: number | null;
+  sy_snum: number | null;
   sy_pnum: number | null;
+  // Metadata
   pl_refname: string | null;
+  rowupdate: string | null;
+  pl_pubdate: string | null;
+}
+
+function calculateDensityGCC(massEarth: number | null, radiusEarth: number | null): number | null {
+  if (!massEarth || !radiusEarth || radiusEarth === 0) return null;
+  return parseFloat((5.515 * massEarth / Math.pow(radiusEarth, 3)).toFixed(3));
+}
+
+function calculateSurfaceGravityMS2(massEarth: number | null, radiusEarth: number | null): number | null {
+  if (!massEarth || !radiusEarth || radiusEarth === 0) return null;
+  return parseFloat((9.807 * massEarth / Math.pow(radiusEarth, 2)).toFixed(2));
 }
 
 function mapDiscoveryMethod(method: string): DiscoveryMethod {
@@ -162,34 +192,51 @@ export function transformNasaData(raw: NasaExoplanetRaw, index: number): Exoplan
     hostStar: raw.hostname,
     letter: raw.pl_letter,
     orbitalPeriodDays: raw.pl_orbper,
+    orbitalPeriodErr1: raw.pl_orbper_err1,
+    orbitalPeriodErr2: raw.pl_orbper_err2,
     semiMajorAxisAU: raw.pl_orbsmax,
     eccentricity: raw.pl_orbeccen,
-    inclinationDeg: raw.pl_orbincl,
+    inclinationDeg: null, // pl_orbincl no disponible en este CSV
     radiusEarth: raw.pl_rade,
+    radiusEarthErr1: raw.pl_rade_err1,
+    radiusEarthErr2: raw.pl_rade_err2,
     radiusJupiter: raw.pl_radj,
     massEarth: raw.pl_bmasse,
+    massEarthErr1: raw.pl_bmasse_err1,
+    massEarthErr2: raw.pl_bmasse_err2,
     massJupiter: raw.pl_bmassj,
-    densityGCC: raw.pl_dens,
-    gravityMS2: raw.pl_g,
+    densityGCC: calculateDensityGCC(raw.pl_bmasse, raw.pl_rade),
+    gravityMS2: calculateSurfaceGravityMS2(raw.pl_bmasse, raw.pl_rade),
     equilibriumTempK: raw.pl_eqt,
+    equilibriumTempErr1: raw.pl_eqt_err1,
+    equilibriumTempErr2: raw.pl_eqt_err2,
     insolationFlux: raw.pl_insol,
     planetType,
     discoveryMethod: mapDiscoveryMethod(raw.discoverymethod),
     discoveryYear: raw.disc_year,
     discoveryFacility: raw.disc_facility,
-    telescope: raw.disc_telescope,
+    telescope: null, // disc_telescope no disponible en este CSV
     stellarTempK: raw.st_teff,
     stellarRadiusSun: raw.st_rad,
     stellarMassSun: raw.st_mass,
     stellarMetallicity: raw.st_met,
-    stellarAge: raw.st_age,
+    stellarAge: null, // st_age no disponible en este CSV
     rightAscension: raw.ra,
     declination: raw.dec,
     distanceParsec: raw.sy_dist,
     habitabilityScore,
     habitabilityClass,
+    spectralType: raw.st_spectype,
+    stellarSurfaceGravity: raw.st_logg,
+    visualMagnitude: raw.sy_vmag,
+    kMagnitude: raw.sy_kmag,
+    gaiaMagnitude: raw.sy_gaiamag,
+    controversialFlag: raw.pl_controv_flag === 1,
+    lastUpdated: raw.rowupdate,
+    publicationDate: raw.pl_pubdate,
     referenceUrl: raw.pl_refname,
-    hasAtmosphereData: false, // No hay datos de atmósfera en TAP actualmente
+    hasAtmosphereData: false,
+    numberOfStarsInSystem: raw.sy_snum,
     numberOfKnownPlanetsInSystem: raw.sy_pnum,
   };
 }

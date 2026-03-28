@@ -48,6 +48,12 @@ import { getTelescopeWikiLink } from '../../core/constants/telescopes';
             <div class="planet-badges">
               <app-stat-badge type="type" [value]="p.planetType" />
               <app-stat-badge type="habitability" [value]="p.habitabilityClass" />
+              @if (p.controversialFlag) {
+                <app-stat-badge type="controversial" value="disputed" />
+              }
+              @if (p.visualMagnitude !== null && p.visualMagnitude !== undefined && p.visualMagnitude < 6.5) {
+                <app-stat-badge type="visibility" value="naked-eye" />
+              }
             </div>
             <div class="discovery-year">{{ 'common.discoveredIn' | translate: { year: p.discoveryYear } }}</div>
           </div>
@@ -83,7 +89,7 @@ import { getTelescopeWikiLink } from '../../core/constants/telescopes';
                   </a>
                 }
 
-              <app-stat-row [label]="'stats.orbitalPeriod' | translate" [value]="p.orbitalPeriodDays" [unit]="'units.days' | translate" />
+              <app-stat-row [label]="'stats.orbitalPeriod' | translate" [value]="p.orbitalPeriodDays" [unit]="'units.days' | translate" [errPlus]="p.orbitalPeriodErr1" [errMinus]="p.orbitalPeriodErr2" />
               <app-stat-row [label]="'stats.semiMajorAxis' | translate" [value]="p.semiMajorAxisAU" [unit]="'units.au' | translate" />
               <app-stat-row [label]="'stats.eccentricity' | translate" [value]="p.eccentricity" />
               <app-stat-row [label]="'stats.inclination' | translate" [value]="p.inclinationDeg" [unit]="'units.deg' | translate" />
@@ -91,11 +97,12 @@ import { getTelescopeWikiLink } from '../../core/constants/telescopes';
 
             <section class="detail-section">
               <h3><span class="section-icon"><svg viewBox="0 0 20 20" fill="none" stroke="#a855f7" stroke-width="1.2"><circle cx="10" cy="10" r="8"/><path d="M10 2v16M2 10h16" opacity="0.3"/><circle cx="10" cy="10" r="4" fill="rgba(168,85,247,0.2)"/></svg></span> {{ 'sections.physicalProperties' | translate }}</h3>
-              <app-stat-row [label]="'stats.radius' | translate" [value]="p.radiusEarth" unit="R⊕" />
-              <app-stat-row [label]="'stats.mass' | translate" [value]="p.massEarth" unit="M⊕" />
+              <app-stat-row [label]="'stats.radius' | translate" [value]="p.radiusEarth" unit="R⊕" [errPlus]="p.radiusEarthErr1" [errMinus]="p.radiusEarthErr2" />
+              <app-stat-row [label]="'stats.mass' | translate" [value]="p.massEarth" unit="M⊕" [errPlus]="p.massEarthErr1" [errMinus]="p.massEarthErr2" />
               <app-stat-row [label]="'stats.density' | translate" [value]="p.densityGCC" [unit]="'units.density' | translate" />
               <app-stat-row [label]="'stats.gravity' | translate" [value]="p.gravityMS2" [unit]="'units.gravity' | translate" />
-              <app-stat-row [label]="'stats.temperature' | translate" [value]="p.equilibriumTempK" unit="K" />
+              <app-stat-row [label]="'stats.temperature' | translate" [value]="p.equilibriumTempK" unit="K" [errPlus]="p.equilibriumTempErr1" [errMinus]="p.equilibriumTempErr2" />
+              <app-stat-row [label]="'stats.distance' | translate" [value]="p.distanceParsec" [unit]="'units.pc' | translate" />
             </section>
 
             <section class="detail-section">
@@ -106,12 +113,30 @@ import { getTelescopeWikiLink } from '../../core/constants/telescopes';
                 </div>
                 <div class="host-star-badges" *ngIf="p.hostStar">
                   <span class="star-name-badge">{{ p.hostStar }}</span>
-                  <span class="star-type-badge" *ngIf="starData()?.spectralClass"
-                        [style.color]="starData()?.primaryColor"
-                        [style.borderColor]="starData()?.primaryColor"
-                        [style.backgroundColor]="starData()?.primaryColor + '15'">
-                    {{ 'systemDetail.type' | translate }} {{ starData()?.spectralClass }}
-                  </span>
+                  @if (p.spectralType) {
+                    <span class="star-type-badge spectral-real"
+                          [style.color]="starData()?.primaryColor"
+                          [style.borderColor]="starData()?.primaryColor"
+                          [style.backgroundColor]="starData()?.primaryColor + '15'">
+                      {{ p.spectralType }}
+                    </span>
+                  } @else if (starData()?.spectralClass) {
+                    <span class="star-type-badge"
+                          [style.color]="starData()?.primaryColor"
+                          [style.borderColor]="starData()?.primaryColor"
+                          [style.backgroundColor]="starData()?.primaryColor + '15'">
+                      {{ 'systemDetail.type' | translate }} {{ starData()?.spectralClass }}
+                    </span>
+                  }
+                  @if (p.visualMagnitude !== null && p.visualMagnitude !== undefined && p.visualMagnitude < 6.5) {
+                    <span class="naked-eye-indicator">
+                      <svg viewBox="0 0 16 16" fill="none" width="11" height="11">
+                        <path d="M8 3.5C4.7 3.5 2 6.3 1.3 8c.7 1.7 3.4 4.5 6.7 4.5s6-2.8 6.7-4.5c-.7-1.7-3.4-4.5-6.7-4.5z" stroke="#22d3ee" stroke-width="1" fill="rgba(34,211,238,0.1)"/>
+                        <circle cx="8" cy="8" r="2" fill="#22d3ee" opacity="0.7"/>
+                      </svg>
+                      {{ p.visualMagnitude | number:'1.1-1' }}m
+                    </span>
+                  }
                 </div>
               </h3>
               @if (starData()?.svg) {
@@ -119,11 +144,14 @@ import { getTelescopeWikiLink } from '../../core/constants/telescopes';
                   <div class="host-star-avatar" [innerHTML]="starData()?.svg"></div>
                 </div>
               }
+              <app-stat-row [label]="'stats.spectralType' | translate" [value]="p.spectralType" />
               <app-stat-row [label]="'stats.stellarTemperature' | translate" [value]="p.stellarTempK" unit="K" />
               <app-stat-row [label]="'stats.stellarRadius' | translate" [value]="p.stellarRadiusSun" unit="R☉" />
               <app-stat-row [label]="'stats.stellarMass' | translate" [value]="p.stellarMassSun" unit="M☉" />
               <app-stat-row [label]="'stats.stellarMetallicity' | translate" [value]="p.stellarMetallicity" />
+              <app-stat-row [label]="'stats.stellarGravity' | translate" [value]="p.stellarSurfaceGravity" [unit]="'units.logg' | translate" />
               <app-stat-row [label]="'stats.stellarAge' | translate" [value]="p.stellarAge" [unit]="'units.gyr' | translate" />
+              <app-stat-row [label]="'stats.visualMagnitude' | translate" [value]="p.visualMagnitude" />
             </section>
 
             <section class="detail-section">
@@ -133,6 +161,14 @@ import { getTelescopeWikiLink } from '../../core/constants/telescopes';
               <app-stat-row [label]="'stats.discoveryFacility' | translate" [value]="p.discoveryFacility" />
               <app-stat-row [label]="'stats.telescope' | translate" [value]="p.telescope" [href]="getTelescopeWikiLink(p.telescope)" [isExternalLink]="true" />
             </section>
+
+            @if (p.lastUpdated || p.publicationDate) {
+              <section class="detail-section metadata-section">
+                <h3><span class="section-icon"><svg viewBox="0 0 20 20" fill="none" stroke="#8892b0" stroke-width="1.2" stroke-linecap="round"><rect x="3" y="4" width="14" height="13" rx="2"/><path d="M3 9h14"/><path d="M7 4V2M13 4V2"/></svg></span> {{ 'sections.metadata' | translate }}</h3>
+                <app-stat-row [label]="'stats.publicationDate' | translate" [value]="p.publicationDate" />
+                <app-stat-row [label]="'stats.lastUpdated' | translate" [value]="p.lastUpdated" />
+              </section>
+            }
 
             @if (atmosphereData(); as atm) {
               <section class="detail-section atmosphere-section">
@@ -487,6 +523,35 @@ import { getTelescopeWikiLink } from '../../core/constants/telescopes';
       color: #5a6177;
       margin-bottom: 14px;
       line-height: 1.6;
+    }
+
+    .naked-eye-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 600;
+      color: #22d3ee;
+      background: rgba(34, 211, 238, 0.08);
+      border: 1px solid rgba(34, 211, 238, 0.15);
+      padding: 2px 8px;
+      border-radius: 6px;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    .spectral-real {
+      font-family: 'JetBrains Mono', monospace !important;
+    }
+
+    .metadata-section {
+      opacity: 0.8;
+    }
+
+    .metadata-section h3 {
+      color: #8892b0 !important;
+      border-bottom-color: rgba(136, 146, 176, 0.1) !important;
     }
 
     .full-system-btn {

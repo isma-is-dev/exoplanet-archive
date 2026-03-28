@@ -2,7 +2,7 @@ import { Component, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 
-type BadgeType = 'type' | 'habitability' | 'method';
+type BadgeType = 'type' | 'habitability' | 'method' | 'controversial' | 'visibility';
 
 @Component({
   selector: 'app-stat-badge',
@@ -14,9 +14,15 @@ type BadgeType = 'type' | 'habitability' | 'method';
     </span>
   `,
   styles: `
+    @keyframes controversialPulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 6px rgba(245, 158, 11, 0.2); }
+      50% { opacity: 0.8; box-shadow: 0 0 14px rgba(245, 158, 11, 0.4); }
+    }
+
     .badge {
       display: inline-flex;
       align-items: center;
+      gap: 5px;
       padding: 4px 12px;
       border-radius: 20px;
       font-size: 10px;
@@ -68,6 +74,26 @@ type BadgeType = 'type' | 'habitability' | 'method';
       border-color: rgba(168, 85, 247, 0.25);
       text-shadow: 0 0 8px rgba(168, 85, 247, 0.3);
     }
+
+    .badge--controversial {
+      background: rgba(245, 158, 11, 0.1);
+      color: #f59e0b;
+      border-color: rgba(245, 158, 11, 0.3);
+      text-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
+      animation: controversialPulse 2.5s ease-in-out infinite;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 1.5px;
+    }
+
+    .badge--visibility {
+      background: rgba(34, 211, 238, 0.08);
+      color: #22d3ee;
+      border-color: rgba(34, 211, 238, 0.2);
+      text-shadow: 0 0 6px rgba(34, 211, 238, 0.3);
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
   `,
 })
 export class StatBadgeComponent {
@@ -84,6 +110,10 @@ export class StatBadgeComponent {
       return `filters.habitabilityOptions.${val}`;
     } else if (this.type() === 'method') {
       return `methodsData.methods.${val}.title`;
+    } else if (this.type() === 'controversial') {
+      return 'badges.controversial';
+    } else if (this.type() === 'visibility') {
+      return 'badges.nakedEye';
     }
 
     return val
