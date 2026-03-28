@@ -28,74 +28,144 @@ import { Exoplanet } from '@exodex/shared-types';
       @if (planets() && planets().length > 0) {
         <div class="system-header">
           <div class="header-content">
-            <h1 class="system-name">{{ systemName() }} System</h1>
-            <p class="system-subtitle">{{ planets().length }} {{ planets().length === 1 ? 'planet' : 'planets' }} discovered in this system.</p>
+            <h1 class="system-name">
+              <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="12" cy="12" r="3" fill="currentColor" opacity="0.4"/>
+                <ellipse cx="12" cy="12" rx="9" ry="4"/>
+                <ellipse cx="12" cy="12" rx="5" ry="9" transform="rotate(60 12 12)"/>
+              </svg>
+              {{ systemName() }} System
+            </h1>
+            <p class="system-subtitle">
+              <span class="planet-count-badge">{{ planets().length }}</span>
+              {{ planets().length === 1 ? 'planet' : 'planets' }} discovered in this system
+            </p>
           </div>
         </div>
 
         <div class="system-visualizer-wrapper">
+          <!-- Ambient particles -->
+          <div class="ambient-particle p1"></div>
+          <div class="ambient-particle p2"></div>
+          <div class="ambient-particle p3"></div>
+          <div class="ambient-particle p4"></div>
+          <div class="ambient-particle p5"></div>
+
           <div class="system-visualizer">
-            
+
             <!-- Host Star -->
             <div class="star-section">
-              <div class="star-avatar-container" [style.box-shadow]="'0 0 100px ' + (starData()?.primaryColor || '#fbd38d') + '40'">
+              <div class="star-avatar-container">
                 <div class="star-avatar" [innerHTML]="starData()?.svg"></div>
               </div>
               <div class="star-info">
-                <h3>{{ systemName() }}</h3>
-                <span class="spectral-badge" 
-                      [style.color]="starData()?.primaryColor" 
+                <h3 class="star-title">{{ systemName() }}</h3>
+                <span class="spectral-badge"
+                      [style.color]="starData()?.primaryColor"
                       [style.borderColor]="starData()?.primaryColor"
-                      [style.backgroundColor]="starData()?.primaryColor + '15'">
+                      [style.backgroundColor]="starData()?.primaryColor + '12'">
+                  <span class="spectral-dot" [style.background]="starData()?.primaryColor"></span>
                   Type {{ starData()?.spectralClass }}
                 </span>
-                <div class="star-stats">
-                  <div><span class="label">Temp:</span> {{ planets()[0].stellarTempK || 'N/A' }} K</div>
-                  <div><span class="label">Mass:</span> {{ planets()[0].stellarMassSun || 'N/A' }} M☉</div>
-                  <div><span class="label">Radius:</span> {{ planets()[0].stellarRadiusSun || 'N/A' }} R☉</div>
+                <div class="star-stats-grid">
+                  <div class="star-stat-item">
+                    <span class="stat-label">Temp</span>
+                    <span class="stat-val">{{ planets()[0].stellarTempK || '—' }} <small>K</small></span>
+                  </div>
+                  <div class="star-stat-item">
+                    <span class="stat-label">Mass</span>
+                    <span class="stat-val">{{ planets()[0].stellarMassSun || '—' }} <small>M☉</small></span>
+                  </div>
+                  <div class="star-stat-item">
+                    <span class="stat-label">Radius</span>
+                    <span class="stat-val">{{ planets()[0].stellarRadiusSun || '—' }} <small>R☉</small></span>
+                  </div>
+                  <div class="star-stat-item">
+                    <span class="stat-label">Age</span>
+                    <span class="stat-val">{{ planets()[0].stellarAge || '—' }} <small>Gyr</small></span>
+                  </div>
                 </div>
               </div>
             </div>
 
             <!-- Orbit Track Line -->
-            <div class="orbit-timeline"></div>
+            <div class="orbit-timeline">
+              <div class="orbit-pulse"></div>
+            </div>
 
             <!-- Planets -->
             <div class="planets-section">
               <div class="spacer" style="width: 100px;"></div>
               @for (planet of mappedPlanets(); track planet.planet.id; let i = $index) {
-                <a class="planet-node" [routerLink]="['/planeta', planet.planet.id]" [style.margin-left.px]="planet.spacing">
-                  <div class="orbit-connect"></div>
+                <a class="planet-node" [routerLink]="['/planeta', planet.planet.id]" [style.margin-left.px]="planet.spacing" [style.animation-delay]="(i * 120) + 'ms'">
+                  <!-- Orbit vertical connector dot -->
+                  <div class="orbit-connector">
+                    <div class="connector-dot" [style.background]="planet.color" [style.box-shadow]="'0 0 8px ' + planet.color + '80'"></div>
+                  </div>
+
                   <div class="planet-avatar-wrapper" [style.transform]="'scale(' + planet.scale + ')'">
+                    <div class="planet-glow" [style.background]="'radial-gradient(circle, ' + planet.color + '20 0%, transparent 70%)'"></div>
                     <app-planet-avatar [planet]="planet.planet" size="card" />
                   </div>
+
                   <div class="planet-info-card">
+                    <div class="card-accent-line" [style.background]="'linear-gradient(90deg, ' + planet.color + ', transparent)'"></div>
                     <h4>{{ planet.planet.name }}</h4>
-                    <div class="planet-meta">{{ planet.planet.planetType.replace('-', ' ') }}</div>
-                    
+                    <div class="planet-type-tag" [style.color]="planet.color" [style.borderColor]="planet.color + '40'" [style.background]="planet.color + '10'">
+                      {{ planet.planet.planetType.replace('-', ' ') }}
+                    </div>
+
                     <div class="mini-stats">
                       <div class="mini-stat">
-                        <span class="icon">◷</span> {{ planet.planet.orbitalPeriodDays | number:'1.0-2' }} d
+                        <span class="mini-icon">◷</span>
+                        <span class="mini-val">{{ planet.planet.orbitalPeriodDays | number:'1.0-1' }}</span>
+                        <span class="mini-unit">days</span>
                       </div>
                       <div class="mini-stat">
-                        <span class="icon">⟷</span> {{ planet.planet.semiMajorAxisAU | number:'1.0-3' }} AU
+                        <span class="mini-icon">⟷</span>
+                        <span class="mini-val">{{ planet.planet.semiMajorAxisAU | number:'1.0-3' }}</span>
+                        <span class="mini-unit">AU</span>
                       </div>
                       <div class="mini-stat">
-                        <span class="icon">◎</span> {{ planet.planet.radiusEarth | number:'1.0-2' }} R⊕
+                        <span class="mini-icon">◎</span>
+                        <span class="mini-val">{{ planet.planet.radiusEarth | number:'1.0-2' }}</span>
+                        <span class="mini-unit">R⊕</span>
                       </div>
+                      <div class="mini-stat">
+                        <span class="mini-icon">🌡</span>
+                        <span class="mini-val">{{ planet.planet.equilibriumTempK || '—' }}</span>
+                        <span class="mini-unit">K</span>
+                      </div>
+                    </div>
+
+                    <div class="card-footer">
+                      <span class="hab-indicator" [class]="'hab-' + planet.planet.habitabilityClass">
+                        {{ planet.planet.habitabilityClass.replace('-', ' ') }}
+                      </span>
+                      <span class="view-link">
+                        View
+                        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="10" height="10">
+                          <path d="M6 4l4 4-4 4" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                      </span>
                     </div>
                   </div>
                 </a>
               }
-              <div class="spacer" style="width: 150px;"></div>
+              <div class="spacer" style="width: 200px;"></div>
             </div>
 
           </div>
         </div>
       } @else if (error()) {
         <div class="error-state">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="1.5" width="48" height="48" opacity="0.6">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 8v4M12 16h.01" stroke-linecap="round"/>
+          </svg>
           <h2>System not found</h2>
           <p>We couldn't locate any planets for this star system.</p>
+          <button class="back-btn" routerLink="/">← Return to Exodex</button>
         </div>
       } @else {
         <div class="loading-state">
@@ -110,24 +180,45 @@ import { Exoplanet } from '@exodex/shared-types';
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
 
-    @keyframes spin {
-      100% { transform: rotate(360deg); }
+    @keyframes planetNodeEnter {
+      from { opacity: 0; transform: translateY(30px) scale(0.9); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes pulseOrbit {
+      0% { transform: translateX(-100%); opacity: 0; }
+      10% { opacity: 1; }
+      100% { transform: translateX(100vw); opacity: 0; }
+    }
+
+    @keyframes floatAmbient {
+      0%, 100% { transform: translateY(0) scale(1); opacity: 0.3; }
+      50% { transform: translateY(-15px) scale(1.2); opacity: 0.6; }
+    }
+
+    @keyframes starBreath {
+      0%, 100% { opacity: 0.15; transform: scale(1); }
+      50% { opacity: 0.3; transform: scale(1.05); }
     }
 
     .system-container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 32px 24px;
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+      overflow: hidden;
       animation: fadeInUp 600ms cubic-bezier(0.4, 0, 0.2, 1);
-      min-height: calc(100vh - 80px);
     }
 
     .back-btn {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      margin-bottom: 24px;
+      margin: 24px 32px 16px;
+      width: fit-content;
       padding: 10px 20px;
       background: rgba(15, 20, 40, 0.6);
       backdrop-filter: blur(12px);
@@ -138,8 +229,8 @@ import { Exoplanet } from '@exodex/shared-types';
       cursor: pointer;
       transition: all 300ms ease;
       font-family: 'Inter', sans-serif;
+      flex-shrink: 0;
     }
-
     .back-btn:hover {
       background: rgba(77, 138, 255, 0.1);
       color: #e8eeff;
@@ -147,148 +238,244 @@ import { Exoplanet } from '@exodex/shared-types';
       transform: translateX(-4px);
     }
 
-    .system-header {
-      margin-bottom: 40px;
+    /* ═══════ HEADER ═══════ */
+    .system-header { 
+      padding: 0 32px 24px;
+      flex-shrink: 0;
     }
 
     .system-name {
       font-family: 'Orbitron', sans-serif;
-      font-size: 2.5rem;
+      font-size: 2.4rem;
       font-weight: 900;
       color: #e8eeff;
-      margin: 0 0 8px 0;
-      letter-spacing: 1px;
+      margin: 0 0 10px 0;
+      letter-spacing: 1.5px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .header-icon {
+      width: 34px;
+      height: 34px;
+      color: #6da5ff;
+      filter: drop-shadow(0 0 10px rgba(109, 165, 255, 0.5));
+      animation: starBreath 4s ease-in-out infinite;
     }
 
     .system-subtitle {
-      color: #8892b0;
-      font-size: 16px;
+      color: #6a7394;
+      font-size: 15px;
       font-family: 'Inter', sans-serif;
       margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .planet-count-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      background: rgba(77, 138, 255, 0.15);
+      border-radius: 8px;
+      color: #4d8aff;
+      font-weight: 700;
+      font-size: 13px;
+      font-family: 'Orbitron', sans-serif;
+      border: 1px solid rgba(77, 138, 255, 0.2);
     }
 
+    /* ═══════ VISUALIZER WRAPPER ═══════ */
     .system-visualizer-wrapper {
+      flex: 1;
       width: 100%;
-      overflow-x: auto;
-      overflow-y: hidden;
-      padding-bottom: 40px;
+      display: flex;
+      align-items: center;
       scrollbar-width: thin;
       scrollbar-color: rgba(77, 138, 255, 0.3) rgba(10, 14, 28, 0.3);
-      background: radial-gradient(ellipse at left, rgba(15, 20, 40, 0.5) 0%, rgba(10, 14, 28, 0) 70%);
-      border-radius: 24px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      background: 
+        radial-gradient(ellipse at 3% 50%, rgba(15, 20, 40, 0.7) 0%, transparent 40%),
+        radial-gradient(ellipse at 50% 50%, rgba(10, 14, 28, 0.15) 0%, transparent 70%);
+      border-top: 1px solid rgba(255, 255, 255, 0.03);
+      position: relative;
     }
-
-    .system-visualizer-wrapper::-webkit-scrollbar {
-      height: 8px;
-    }
+    .system-visualizer-wrapper::-webkit-scrollbar { height: 6px; }
     .system-visualizer-wrapper::-webkit-scrollbar-track {
-      background: rgba(10, 14, 28, 0.3);
-      border-radius: 4px;
+      background: rgba(10, 14, 28, 0.2);
+      border-radius: 3px;
+      margin: 0 24px;
     }
     .system-visualizer-wrapper::-webkit-scrollbar-thumb {
-      background: rgba(77, 138, 255, 0.3);
-      border-radius: 4px;
+      background: rgba(77, 138, 255, 0.25);
+      border-radius: 3px;
     }
+    .system-visualizer-wrapper::-webkit-scrollbar-thumb:hover {
+      background: rgba(77, 138, 255, 0.4);
+    }
+
+    /* Ambient floating particles */
+    .ambient-particle {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      background: rgba(77, 138, 255, 0.4);
+      border-radius: 50%;
+      pointer-events: none;
+      animation: floatAmbient 6s ease-in-out infinite;
+    }
+    .p1 { top: 15%; left: 30%; animation-delay: 0s; animation-duration: 7s; }
+    .p2 { top: 70%; left: 50%; animation-delay: 1.5s; animation-duration: 5s; width: 2px; height: 2px; }
+    .p3 { top: 25%; left: 70%; animation-delay: 3s; animation-duration: 8s; background: rgba(168, 85, 247, 0.3); }
+    .p4 { top: 80%; left: 20%; animation-delay: 2s; animation-duration: 6s; width: 2px; height: 2px; background: rgba(34, 211, 238, 0.3); }
+    .p5 { top: 40%; left: 85%; animation-delay: 4s; animation-duration: 9s; }
 
     .system-visualizer {
       display: flex;
       align-items: center;
+      height: 100%;
       min-width: min-content;
-      padding: 40px 0;
       position: relative;
     }
 
-    /* Track line across the whole visualizer */
+    /* ═══════ ORBIT TIMELINE ═══════ */
     .orbit-timeline {
       position: absolute;
-      top: 50%;
-      left: 170px; /* start inside star radius */
+      top: 34%;
+      left: 300px;
       right: 0;
       height: 1px;
-      background: linear-gradient(90deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.05) 100%);
+      background: linear-gradient(90deg,
+        rgba(77, 138, 255, 0.3) 0%,
+        rgba(255, 255, 255, 0.14) 15%,
+        rgba(255, 255, 255, 0.07) 50%,
+        rgba(255, 255, 255, 0.02) 100%
+      );
       z-index: 0;
-      box-shadow: 0 0 10px rgba(255,255,255,0.1);
+      overflow: hidden;
+    }
+    .orbit-pulse {
+      position: absolute;
+      width: 80px;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, rgba(77, 138, 255, 0.6), transparent);
+      border-radius: 2px;
+      animation: pulseOrbit 8s linear infinite;
     }
 
+    /* ═══════ STAR SECTION ═══════ */
     .star-section {
       display: flex;
       flex-direction: column;
       align-items: flex-start;
+      justify-content: center;
       gap: 20px;
-      width: 300px;
+      width: 400px;
+      height: 100%;
       flex-shrink: 0;
       z-index: 10;
       position: relative;
+      margin-left: -80px; /* Offset to partially hide star off left edge */
     }
+
+
 
     .star-avatar-container {
-      width: 340px;
-      height: 340px;
+      width: 550px;
+      margin-top: -200px;
+      height: 550px;
       border-radius: 50%;
-      background: #0a0e1c;
-      /* Left flush so it looks cut off like a real map */
-      margin-left: -170px; 
+      margin-left: -150px; /* Match offset */
+      position: relative;
+      transition: box-shadow 500ms ease;
     }
-
     .star-avatar {
       width: 100%;
       height: 100%;
       overflow: visible;
     }
-    .star-avatar :deep(svg) {
+    /* Fixed pseudo-class from :deep to ::ng-deep for Angular */
+    .star-avatar ::ng-deep svg {
       width: 100%;
       height: 100%;
       overflow: visible;
     }
 
     .star-info {
+      position: absolute;
+      bottom: 24px;
+      left: 120px;
+      z-index: 15;
       text-align: left;
-      width: 100%;
-      padding-left: 24px;
-      margin-top: -30px;
+      width: 260px;
     }
-
-    .star-info h3 {
+    .star-title {
       font-family: 'Orbitron', sans-serif;
-      font-size: 1.4rem;
+      font-size: 1.3rem;
+      font-weight: 800;
       color: #e8eeff;
-      margin: 0 0 8px 0;
+      margin: 0 0 10px 0;
+      letter-spacing: 1px;
     }
 
     .spectral-badge {
-      display: inline-block;
-      padding: 4px 8px;
-      font-size: 11px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      font-size: 10px;
       font-family: 'Orbitron', sans-serif;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 1px;
       border: 1px solid;
-      border-radius: 6px;
-      margin-bottom: 16px;
+      border-radius: 8px;
+      margin-bottom: 18px;
+    }
+    .spectral-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
     }
 
-    .star-stats {
+    .star-stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      background: rgba(10, 14, 28, 0.7);
+      backdrop-filter: blur(12px);
+      padding: 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      width: 210px;
+    }
+    .star-stat-item {
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      font-size: 13px;
-      color: #a0aec0;
-      font-family: 'Inter', sans-serif;
-      background: rgba(10, 14, 28, 0.6);
-      padding: 16px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.05);
-      width: 180px;
+      gap: 2px;
     }
-    
-    .star-stats .label {
-      color: #5a6177;
-      display: inline-block;
-      width: 55px;
+    .stat-label {
+      font-size: 9px;
+      color: #4a5568;
+      font-family: 'Inter', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .stat-val {
+      font-size: 13px;
+      color: #c9d1e5;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+    }
+    .stat-val small {
+      font-size: 9px;
+      color: #4a5568;
+      font-weight: 400;
     }
 
+    /* ═══════ PLANETS ═══════ */
     .planets-section {
       display: flex;
       align-items: center;
@@ -301,90 +488,214 @@ import { Exoplanet } from '@exodex/shared-types';
       align-items: center;
       position: relative;
       text-decoration: none;
-      transition: transform 0.3s ease;
       cursor: pointer;
+      animation: planetNodeEnter 600ms cubic-bezier(0.4, 0, 0.2, 1) both;
     }
 
     .planet-node:hover {
-      transform: translateY(-5px);
+      z-index: 20;
+    }
+
+    /* Orbit connector */
+    .orbit-connector {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 1px;
+      height: 100%;
+      z-index: -1;
+    }
+    .connector-dot {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      transition: all 300ms ease;
+    }
+    .planet-node:hover .connector-dot {
+      width: 10px;
+      height: 10px;
     }
 
     .planet-avatar-wrapper {
-      width: 100px;
-      height: 100px;
-      margin-bottom: 24px;
-      filter: drop-shadow(0 0 15px rgba(0,0,0,0.5));
-      transition: filter 0.3s ease;
-      /* Visual centering on the timeline */
+      width: 110px;
+      height: 110px;
+      margin-bottom: 16px;
+      filter: drop-shadow(0 0 18px rgba(0,0,0,0.5));
+      transition: all 400ms cubic-bezier(0.4, 0, 0.2, 1);
       transform-origin: center center;
+      position: relative;
+    }
+    .planet-glow {
+      position: absolute;
+      inset: -20px;
+      border-radius: 50%;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 400ms ease;
+    }
+    .planet-node:hover .planet-glow {
+      opacity: 1;
     }
 
     .planet-node:hover .planet-avatar-wrapper {
-      filter: drop-shadow(0 0 25px rgba(77, 138, 255, 0.8));
+      filter: drop-shadow(0 0 30px rgba(77, 138, 255, 0.6));
+      transform: scale(1.08) translateY(-8px) !important;
     }
 
+    /* ═══════ PLANET CARD ═══════ */
     .planet-info-card {
-      background: rgba(15, 20, 40, 0.85);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(77, 138, 255, 0.15);
-      border-radius: 12px;
-      padding: 16px;
-      width: 180px;
-      text-align: center;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      background: rgba(12, 16, 35, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 16px;
+      padding: 18px;
+      width: 200px;
+      text-align: left;
+      transition: all 400ms cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-accent-line {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      opacity: 0;
+      transition: opacity 300ms ease;
+    }
+    .planet-node:hover .card-accent-line {
+      opacity: 1;
     }
 
     .planet-node:hover .planet-info-card {
-      border-color: rgba(77, 138, 255, 0.4);
-      background: rgba(20, 26, 50, 0.95);
-      box-shadow: 0 8px 25px rgba(77, 138, 255, 0.15);
+      border-color: rgba(77, 138, 255, 0.25);
+      background: rgba(16, 21, 45, 0.95);
+      box-shadow:
+        0 16px 48px rgba(0, 0, 0, 0.4),
+        0 0 40px rgba(77, 138, 255, 0.08);
+      transform: translateY(-4px);
     }
 
     .planet-info-card h4 {
       font-family: 'Orbitron', sans-serif;
-      font-size: 14px;
+      font-size: 13px;
+      font-weight: 700;
       color: #e8eeff;
-      margin: 0 0 6px 0;
+      margin: 0 0 8px 0;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      letter-spacing: 0.5px;
     }
 
-    .planet-meta {
-      font-size: 10px;
+    .planet-type-tag {
+      display: inline-block;
+      font-size: 9px;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: #6da5ff;
-      margin-bottom: 14px;
+      letter-spacing: 0.6px;
       font-family: 'Inter', sans-serif;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-      padding-bottom: 8px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border: 1px solid;
+      border-radius: 6px;
+      margin-bottom: 14px;
     }
 
     .mini-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.04);
+    }
+    .mini-stat {
       display: flex;
-      flex-direction: column;
-      gap: 8px;
-      text-align: left;
+      align-items: baseline;
+      gap: 4px;
+    }
+    .mini-icon {
+      font-size: 10px;
+      color: #4a5568;
+      width: 14px;
+      flex-shrink: 0;
+    }
+    .mini-val {
+      font-size: 12px;
+      color: #c9d1e5;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 500;
+    }
+    .mini-unit {
+      font-size: 9px;
+      color: #4a5568;
+      font-family: 'Inter', sans-serif;
     }
 
-    .mini-stat {
-      font-size: 12px;
-      color: #a0aec0;
-      font-family: 'Inter', sans-serif;
+    .card-footer {
       display: flex;
       align-items: center;
-      gap: 8px;
+      justify-content: space-between;
+      margin-top: 14px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.04);
     }
 
-    .mini-stat .icon {
-      color: #5a6177;
-      font-size: 12px;
-      width: 14px;
-      text-align: center;
+    .hab-indicator {
+      font-size: 9px;
+      font-weight: 600;
+      text-transform: capitalize;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-family: 'Inter', sans-serif;
+    }
+    .hab-potentially-habitable {
+      background: rgba(34, 197, 94, 0.1);
+      color: #4ade80;
+      border: 1px solid rgba(34, 197, 94, 0.15);
+    }
+    .hab-marginal {
+      background: rgba(234, 179, 8, 0.1);
+      color: #facc15;
+      border: 1px solid rgba(234, 179, 8, 0.15);
+    }
+    .hab-uninhabitable {
+      background: rgba(239, 68, 68, 0.08);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.1);
+    }
+    .hab-unknown {
+      background: rgba(148, 163, 184, 0.08);
+      color: #94a3b8;
+      border: 1px solid rgba(148, 163, 184, 0.1);
     }
 
+    .view-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      color: #4d8aff;
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      opacity: 0;
+      transform: translateX(-6px);
+      transition: all 300ms ease;
+    }
+    .planet-node:hover .view-link {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    /* ═══════ STATES ═══════ */
     .loading-state, .error-state {
       display: flex;
       flex-direction: column;
@@ -392,19 +703,11 @@ import { Exoplanet } from '@exodex/shared-types';
       justify-content: center;
       height: 400px;
       text-align: center;
+      gap: 4px;
     }
-
-    .loading-state p, .error-state p {
-      color: #8892b0;
-      font-family: 'Inter', sans-serif;
-      margin-top: 16px;
-    }
-
-    .error-state h2 {
-      color: #ef4444;
-      font-family: 'Orbitron', sans-serif;
-      margin: 0;
-    }
+    .loading-state p { color: #8892b0; font-family: 'Inter', sans-serif; margin-top: 16px; }
+    .error-state h2 { color: #ef4444; font-family: 'Orbitron', sans-serif; margin: 12px 0 4px; font-size: 1.2rem; }
+    .error-state p { color: #8892b0; font-family: 'Inter', sans-serif; margin: 0 0 24px; }
 
     .spinner {
       width: 40px;
@@ -413,6 +716,18 @@ import { Exoplanet } from '@exodex/shared-types';
       border-top-color: #4d8aff;
       border-radius: 50%;
       animation: spin 1s linear infinite;
+    }
+
+    /* ═══════ RESPONSIVE ═══════ */
+    @media (max-width: 768px) {
+      .system-container { padding: 0; }
+      .system-header { padding: 0 16px 16px; }
+      .back-btn { margin: 16px 16px 12px; }
+      .system-name { font-size: 1.6rem; }
+      .star-avatar-container { width: 350px; height: 350px; margin-left: -175px; }
+      .star-section { width: 280px; }
+      .planet-info-card { width: 170px; padding: 14px; }
+      .mini-stats { grid-template-columns: 1fr; }
     }
   `
 })
@@ -447,17 +762,17 @@ export class SystemDetailPageComponent {
   starData = computed(() => {
     const list = this.planets();
     if (!list || list.length === 0) return null;
-    const p = list[0]; 
-    
+    const p = list[0];
+
     const params = {
       stellarTempK: p.stellarTempK,
       stellarRadiusSun: p.stellarRadiusSun,
       stellarMassSun: p.stellarMassSun,
       size: 'detail' as const,
       animationsEnabled: true,
-      numberOfStarsInSystem: 1 // Only show the main star in the system detail view for now
+      numberOfStarsInSystem: 1
     };
-    const { svgString, primaryColor, spectralClass } = renderStar(params, p.hostStar); 
+    const { svgString, primaryColor, spectralClass } = renderStar(params, p.hostStar);
     return {
       svg: this.sanitizer.bypassSecurityTrustHtml(svgString),
       primaryColor,
@@ -482,25 +797,31 @@ export class SystemDetailPageComponent {
     return sorted.map((planet, index) => {
       let scale = 1;
       if (maxPR > minPR) {
-        scale = 0.6 + ((planet.radiusEarth || 1) - minPR) / (maxPR - minPR) * 0.8; // Scale from 0.6 to 1.4
+        scale = 0.6 + ((planet.radiusEarth || 1) - minPR) / (maxPR - minPR) * 0.8;
       }
 
-      let spacing = 0; // Margin left
+      let spacing = 0;
       if (index > 0) {
         const prev = sorted[index - 1];
         const prevVal = prev.semiMajorAxisAU || prev.orbitalPeriodDays || 0;
         const curVal = planet.semiMajorAxisAU || planet.orbitalPeriodDays || 0;
         const diff = curVal - prevVal;
-        
-        spacing = Math.max(80, diff * 1000); 
-        spacing = Math.min(spacing, 350); // Cap spacing
+
+        spacing = Math.max(80, diff * 1000);
+        spacing = Math.min(spacing, 350);
       }
 
-      return {
-        planet,
-        scale,
-        spacing
-      };
+      // Color based on temperature
+      let color = '#a0aec0';
+      if (planet.equilibriumTempK) {
+        if (planet.equilibriumTempK > 1500) color = '#ef4444';
+        else if (planet.equilibriumTempK > 800) color = '#f97316';
+        else if (planet.equilibriumTempK > 400) color = '#eab308';
+        else if (planet.equilibriumTempK > 200) color = '#22c55e';
+        else color = '#38bdf8';
+      }
+
+      return { planet, scale, spacing, color };
     });
   });
 }

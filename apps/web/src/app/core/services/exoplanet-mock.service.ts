@@ -660,7 +660,18 @@ const MOCK_PLANETS_BASE: Array<Partial<Exoplanet> & { habitabilityClass: string;
 ];
 
 // Convertir datos base a objetos Exoplanet completos
-const MOCK_EXOPLANETS: Exoplanet[] = MOCK_PLANETS_BASE.map(createMockPlanet);
+const MOCK_EXOPLANETS: Exoplanet[] = (() => {
+  const planets = MOCK_PLANETS_BASE.map(createMockPlanet);
+  // Auto-compute numberOfKnownPlanetsInSystem based on hostStar grouping
+  const starCounts = new Map<string, number>();
+  for (const p of planets) {
+    starCounts.set(p.hostStar, (starCounts.get(p.hostStar) || 0) + 1);
+  }
+  for (const p of planets) {
+    p.numberOfKnownPlanetsInSystem = starCounts.get(p.hostStar) || 1;
+  }
+  return planets;
+})();
 
 @Injectable({
   providedIn: 'root',

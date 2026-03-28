@@ -1,5 +1,6 @@
 import { Component, input, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Exoplanet } from '@exodex/shared-types';
 import { StatBadgeComponent } from '../stat-badge/stat-badge.component';
@@ -9,7 +10,7 @@ import { PlanetAvatarComponent } from '../planet-avatar/planet-avatar.component'
 @Component({
   selector: 'app-planet-card',
   standalone: true,
-  imports: [CommonModule, TranslateModule, StatBadgeComponent, StatRowComponent, PlanetAvatarComponent],
+  imports: [CommonModule, RouterLink, TranslateModule, StatBadgeComponent, StatRowComponent, PlanetAvatarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <article class="planet-card" [class]="'planet-card--' + planet().planetType">
@@ -43,6 +44,22 @@ import { PlanetAvatarComponent } from '../planet-avatar/planet-avatar.component'
       </div>
 
       <div class="card-year">{{ planet().discoveryYear }}</div>
+
+      @if (planet().numberOfKnownPlanetsInSystem && planet().numberOfKnownPlanetsInSystem! > 1) {
+        <a class="system-badge"
+           [routerLink]="['/system', planet().hostStar]"
+           (click)="$event.stopPropagation()"
+           title="View {{ planet().hostStar }} system">
+          <svg class="system-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2">
+            <circle cx="8" cy="8" r="2" fill="currentColor" opacity="0.6"/>
+            <ellipse cx="8" cy="8" rx="6" ry="3"/>
+          </svg>
+          {{ planet().numberOfKnownPlanetsInSystem }} planets
+          <svg class="arrow-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 4l4 4-4 4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      }
     </article>
   `,
   styles: `
@@ -191,6 +208,56 @@ import { PlanetAvatarComponent } from '../planet-avatar/planet-avatar.component'
       font-family: 'JetBrains Mono', monospace;
       font-size: 11px;
       color: rgba(136, 146, 176, 0.5);
+    }
+
+    .system-badge {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      font-weight: 500;
+      color: rgba(109, 165, 255, 0.8);
+      background: rgba(77, 138, 255, 0.08);
+      border: 1px solid rgba(77, 138, 255, 0.12);
+      border-radius: 8px;
+      text-decoration: none;
+      transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      white-space: nowrap;
+      letter-spacing: 0.3px;
+    }
+
+    .system-badge:hover {
+      background: rgba(77, 138, 255, 0.18);
+      border-color: rgba(77, 138, 255, 0.35);
+      color: #9ac2ff;
+      box-shadow: 0 0 16px rgba(77, 138, 255, 0.2);
+      transform: translateY(-1px);
+    }
+
+    .system-icon {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
+
+    .arrow-icon {
+      width: 10px;
+      height: 10px;
+      flex-shrink: 0;
+      opacity: 0;
+      transform: translateX(-4px);
+      transition: all 200ms ease;
+    }
+
+    .system-badge:hover .arrow-icon {
+      opacity: 1;
+      transform: translateX(0);
     }
   `,
 })

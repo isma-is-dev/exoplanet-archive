@@ -62,10 +62,23 @@ import { getTelescopeWikiLink } from '../../core/constants/telescopes';
                   [systemName]="p.hostStar" />
 
                   <a [routerLink]="['/system', p.hostStar]" class="full-system-btn">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-                      <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    Explore Full System
+                    <div class="system-btn-bg"></div>
+                    <div class="system-btn-content">
+                      <div class="system-btn-left">
+                        <svg class="system-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                          <circle cx="12" cy="12" r="3" fill="currentColor" opacity="0.4"/>
+                          <ellipse cx="12" cy="12" rx="9" ry="4"/>
+                          <ellipse cx="12" cy="12" rx="5" ry="9" transform="rotate(60 12 12)"/>
+                        </svg>
+                        <div class="system-btn-text">
+                          <span class="system-btn-title">Explore {{ p.hostStar }} System</span>
+                          <span class="system-btn-sub">{{ systemPlanets().length }} planets discovered</span>
+                        </div>
+                      </div>
+                      <svg class="system-btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                        <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </div>
                   </a>
                 }
 
@@ -495,32 +508,99 @@ import { getTelescopeWikiLink } from '../../core/constants/telescopes';
     }
 
     .full-system-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
+      display: block;
+      position: relative;
+      overflow: hidden;
       width: 100%;
-      padding: 12px;
-      margin-top: -12px;
+      margin-top: -8px;
       margin-bottom: 24px;
-      background: rgba(77, 138, 255, 0.1);
+      padding: 16px 20px;
+      background: linear-gradient(135deg, rgba(77, 138, 255, 0.1) 0%, rgba(168, 85, 247, 0.08) 100%);
       border: 1px solid rgba(77, 138, 255, 0.2);
-      border-radius: 12px;
-      color: #6da5ff;
-      font-size: 13px;
-      font-weight: 500;
-      font-family: 'Inter', sans-serif;
-      text-transform: uppercase;
-      letter-spacing: 1px;
+      border-radius: 14px;
       text-decoration: none;
-      transition: all 300ms ease;
+      transition: all 400ms cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+    }
+
+    .system-btn-bg {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(77, 138, 255, 0.15) 0%, rgba(168, 85, 247, 0.12) 100%);
+      opacity: 0;
+      transition: opacity 400ms ease;
+    }
+
+    .full-system-btn:hover .system-btn-bg {
+      opacity: 1;
     }
 
     .full-system-btn:hover {
-      background: rgba(77, 138, 255, 0.15);
       border-color: rgba(77, 138, 255, 0.4);
       transform: translateY(-2px);
-      box-shadow: 0 4px 15px rgba(77, 138, 255, 0.15);
+      box-shadow: 0 8px 30px rgba(77, 138, 255, 0.15), 0 0 0 1px rgba(77, 138, 255, 0.1);
+    }
+
+    .system-btn-content {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 1;
+    }
+
+    .system-btn-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .system-btn-icon {
+      width: 32px;
+      height: 32px;
+      color: #6da5ff;
+      flex-shrink: 0;
+      filter: drop-shadow(0 0 6px rgba(109, 165, 255, 0.4));
+      transition: transform 400ms ease;
+    }
+
+    .full-system-btn:hover .system-btn-icon {
+      transform: rotate(30deg) scale(1.1);
+    }
+
+    .system-btn-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .system-btn-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: #e8eeff;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .system-btn-sub {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      color: #8892b0;
+      letter-spacing: 0;
+      text-transform: none;
+    }
+
+    .system-btn-arrow {
+      color: #6da5ff;
+      opacity: 0.5;
+      transform: translateX(-4px);
+      transition: all 300ms ease;
+    }
+
+    .full-system-btn:hover .system-btn-arrow {
+      opacity: 1;
+      transform: translateX(2px);
     }
 
     @media (max-width: 768px) {
