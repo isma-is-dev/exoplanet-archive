@@ -1,6 +1,7 @@
 import { Component, inject, ChangeDetectionStrategy, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -12,7 +13,7 @@ import { SearchInputComponent } from '@exodex/ui-components';
 @Component({
   selector: 'app-filter-panel',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslateModule, SearchInputComponent],
+  imports: [CommonModule, FormsModule, TranslateModule, SearchInputComponent, RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="filter-panel">
@@ -64,14 +65,28 @@ import { SearchInputComponent } from '@exodex/ui-components';
           <h3><span class="section-indicator"></span>{{ 'filters.discoveryMethod' | translate }}</h3>
           <div class="method-grid">
             @for (m of discoveryMethods(); track m.value) {
-              <button
-                class="method-chip"
-                [class.selected]="isMethodSelected(m.value)"
-                (click)="toggleMethod(m.value)"
-              >
-                <div class="method-icon" [innerHTML]="m.icon"></div>
-                <span class="method-label">{{ m.label }}</span>
-              </button>
+              <div class="method-chip-wrapper">
+                <button
+                  class="method-chip"
+                  [class.selected]="isMethodSelected(m.value)"
+                  (click)="toggleMethod(m.value)"
+                >
+                  <div class="method-icon" [innerHTML]="m.icon"></div>
+                  <span class="method-label">{{ m.label }}</span>
+                </button>
+                @if (m.route) {
+                  <a
+                    class="method-info-link"
+                    [routerLink]="m.route"
+                    title="Learn more about this method"
+                  >
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
+                      <circle cx="8" cy="8" r="6"/>
+                      <path d="M8 6v4M8 11h.01"/>
+                    </svg>
+                  </a>
+                }
+              </div>
             }
           </div>
         </div>
@@ -432,6 +447,44 @@ import { SearchInputComponent } from '@exodex/ui-components';
       text-overflow: ellipsis;
     }
 
+    .method-chip-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .method-chip-wrapper .method-chip {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .method-info-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: rgba(77, 138, 255, 0.1);
+      border: 1px solid rgba(77, 138, 255, 0.2);
+      color: rgba(77, 138, 255, 0.7);
+      text-decoration: none;
+      transition: all 200ms ease;
+      flex-shrink: 0;
+    }
+
+    .method-info-link:hover {
+      background: rgba(77, 138, 255, 0.2);
+      border-color: rgba(77, 138, 255, 0.4);
+      color: #4d8aff;
+      transform: scale(1.1);
+    }
+
+    .method-info-link svg {
+      width: 10px;
+      height: 10px;
+    }
+
     /* ═══ Range Inputs ═══ */
     .range-inputs {
       display: flex;
@@ -668,11 +721,14 @@ export class FilterPanelComponent {
     { initialValue: 0 }
   );
 
-  /** Maps raw discovery method names from data to i18n translation keys */
-  private methodToI18nKey: Record<string, string> = {
-    'Direct Imaging': 'Imaging',
-    'Imaging': 'Imaging',
-    'Other': 'Other',
+  /** Maps discovery method names to route slugs for method pages */
+  private methodToRoute: Record<string, string> = {
+    'Transit': '/metodo/transit',
+    'Radial Velocity': '/metodo/radial-velocity',
+    'Microlensing': '/metodo/microlensing',
+    'Astrometry': '/metodo/astrometry',
+    'Transit Timing Variations': '/metodo/transit-timing-variations',
+    'Other': '/metodo/other',
   };
 
   discoveryMethods = computed(() => {
@@ -688,6 +744,7 @@ export class FilterPanelComponent {
           value: method,
           label: this.translate.instant(`stats.methodNames.${i18nKey}`) || method,
           icon: this.trust(this.methodIcons[method] ?? this.methodIcons['_default']),
+          route: this.methodToRoute[method],
         };
       });
   });
