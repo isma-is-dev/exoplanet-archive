@@ -105,6 +105,20 @@
     "select": "Language",
     "es": "Español",
     "en": "English"
+  },
+  "didactic": {
+    "atmosphereTitle": "Atmosphere",
+    "atmosphereDesc": "Atmospheric composition derived from spectroscopic observations.",
+    "noAtmosphereData": "No atmospheric spectral data available for this planet.",
+    "sizeComparisonTitle": "Size Comparison",
+    "noSizeData": "No radius data available for size comparison."
+  },
+  "planetDetail": {
+    "exploreSystem": "Explore {{system}} system",
+    "planetsDiscovered": "{{count}} known planets"
+  },
+  "systemDetail": {
+    "type": "Type"
   }
 }
 

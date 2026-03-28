@@ -89,11 +89,17 @@ import { PlanetAvatarComponent } from '../planet-avatar/planet-avatar.component'
       50% { opacity: 1; }
     }
 
+    :host {
+      display: block;
+      height: 100%;
+    }
+
     .planet-card {
       --card-accent: rgba(77, 138, 255, 0.3);
       position: relative;
       display: flex;
       flex-direction: column;
+      height: 100%;
       padding: 20px;
       background: rgba(15, 20, 40, 0.5);
       backdrop-filter: blur(12px);
