@@ -730,12 +730,12 @@ export class FilterPanelComponent {
 
   /** Maps discovery method names to route slugs for method pages */
   private methodToRoute: Record<string, string> = {
-    'Transit': '/metodo/transit',
-    'Radial Velocity': '/metodo/radial-velocity',
-    'Microlensing': '/metodo/microlensing',
-    'Astrometry': '/metodo/astrometry',
-    'Transit Timing Variations': '/metodo/transit-timing-variations',
-    'Other': '/metodo/other',
+    'Transit': '/method/transit',
+    'Radial Velocity': '/method/radial-velocity',
+    'Microlensing': '/method/microlensing',
+    'Astrometry': '/method/astrometry',
+    'Transit Timing Variations': '/method/transit-timing-variations',
+    'Other': '/method/other',
   };
 
   discoveryMethods = computed(() => {
@@ -743,7 +743,7 @@ export class FilterPanelComponent {
     const s = this.stats();
     if (!s) return [];
     return Object.entries(s.methodDistribution)
-      .filter(([method, count]) => count > 0 && method !== 'Direct Imaging')
+      .filter(([method, count]) => count > 0 && method !== 'Imaging' && method !== 'Direct Imaging')
       .sort(([, a], [, b]) => b - a)
       .map(([method]) => {
         const i18nKey = this.methodToI18nKey[method] ?? method;
