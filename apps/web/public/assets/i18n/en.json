@@ -203,5 +203,44 @@
         ]
       }
     }
+  },
+  "footer": {
+    "home": "Home",
+    "about": "About",
+    "dataFrom": "Data sourced from the",
+    "inspiredBy": "Inspired by the exoplanets series by",
+    "madeWith": "Made with",
+    "by": "by",
+    "donate": "☕ Donate"
+  },
+  "about": {
+    "title": "About Exodex",
+    "subtitle": "An interactive exoplanet explorer designed to learn and discover worlds beyond our solar system.",
+    "whatIsTitle": "What is Exodex?",
+    "whatIsBody": "Exodex is an interactive web application that lets you explore the fascinating universe of exoplanets — planets orbiting stars other than the Sun. With procedural visualizations, real NASA data, and advanced filtering tools, Exodex aims to make planetary science accessible to the curious and astronomy enthusiasts alike.",
+    "dataSourceTitle": "Data Source",
+    "dataSourceBody": "All exoplanet data displayed in Exodex comes from the NASA Exoplanet Archive, a database maintained by the California Institute of Technology (Caltech) under contract with NASA. The archive contains data on more than 5,700 confirmed exoplanets.",
+    "visitArchive": "Visit NASA Exoplanet Archive",
+    "inspirationTitle": "Inspiration",
+    "inspirationBody": "Exodex is inspired by the magnificent exoplanets series from the YouTube channel QuantumFracture (José Luis Crespo). These videos combine scientific rigor with brilliant storytelling to explain how we discover worlds around other stars.",
+    "video1": "#1 · How to Photograph a Planet Orbiting Another Star",
+    "video2": "#2 · 3 Ways to Discover a New Planet",
+    "video3": "#3 · Why Our Solar System is WEIRD",
+    "video4": "#4 · Why Finding Habitable Planets is Impossible (for now)",
+    "video5": "#5 · Was an Alien Structure Found? The Mystery of Tabby's Star",
+    "supportTitle": "Support the Project",
+    "supportBody": "If you find Exodex useful or interesting, consider supporting the project's development with a donation.",
+    "donateBtn": "☕ Buy me a coffee",
+    "creditsTitle": "Credits",
+    "developer": "Developer & Design"
+  },
+  "didactic": {
+    "atmosphereTitle": "Atmospheric Spectrum",
+    "atmosphereDesc": "Elements detected in this planet's atmosphere via transit spectroscopy.",
+    "noAtmosphereData": "No atmospheric data has been detected for this planet.",
+    "detectedElements": "Detected elements",
+    "sizeComparisonTitle": "Size Comparison",
+    "earth": "Earth",
+    "timesEarth": "× Earth's radius"
   }
 }

@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { FooterComponent } from './core/components/footer/footer.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterModule],
+  imports: [RouterModule, FooterComponent],
   template: `
     <!-- Twinkling stars overlay -->
     <div class="twinkle-layer">
@@ -30,6 +31,7 @@ import { RouterModule } from '@angular/router';
     <div class="comet comet-2"></div>
 
     <router-outlet />
+    <app-footer />
   `,
   styles: `
     :host {

@@ -259,6 +259,40 @@ import { PlanetAvatarComponent } from '../planet-avatar/planet-avatar.component'
       opacity: 1;
       transform: translateX(0);
     }
+
+    @media (max-width: 480px) {
+      .planet-card {
+        padding: 16px;
+      }
+
+      .card-index {
+        top: 10px;
+        left: 10px;
+        font-size: 9px;
+        padding: 3px 8px;
+      }
+
+      .planet-name {
+        font-size: 13px;
+      }
+
+      .host-star {
+        font-size: 11px;
+      }
+
+      .card-year {
+        bottom: 10px;
+        right: 10px;
+        font-size: 10px;
+      }
+
+      .system-badge {
+        top: 10px;
+        right: 10px;
+        font-size: 9px;
+        padding: 3px 8px;
+      }
+    }
   `,
 })
 export class PlanetCardComponent {

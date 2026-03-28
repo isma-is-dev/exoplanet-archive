@@ -91,6 +91,36 @@ import { SortField } from '@exodex/shared-types';
       font-size: 10px;
       color: #4d8aff;
     }
+
+    @media (max-width: 768px) {
+      .sort-bar {
+        gap: 10px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        padding-bottom: 2px;
+      }
+
+      .sort-bar::-webkit-scrollbar {
+        display: none;
+      }
+
+      .sort-label {
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+
+      .sort-options {
+        flex-wrap: nowrap;
+      }
+
+      .sort-btn {
+        padding: 5px 10px;
+        font-size: 11px;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+    }
   `,
 })
 export class SortBarComponent {

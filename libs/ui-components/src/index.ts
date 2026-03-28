@@ -8,3 +8,5 @@ export * from './lib/search-input/search-input.component';
 export * from './lib/pagination/pagination.component';
 export * from './lib/empty-state/empty-state.component';
 export * from './lib/system-orbit-preview/system-orbit-preview.component';
+export * from './lib/atmosphere-spectrum/atmosphere-spectrum.component';
+export * from './lib/size-comparison/size-comparison.component';

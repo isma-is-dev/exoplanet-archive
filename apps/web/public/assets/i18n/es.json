@@ -203,5 +203,44 @@
         ]
       }
     }
+  },
+  "footer": {
+    "home": "Inicio",
+    "about": "Acerca de",
+    "dataFrom": "Datos obtenidos del",
+    "inspiredBy": "Inspirado en la serie de exoplanetas de",
+    "madeWith": "Hecho con",
+    "by": "por",
+    "donate": "☕ Donar"
+  },
+  "about": {
+    "title": "Acerca de Exodex",
+    "subtitle": "Un explorador interactivo de exoplanetas diseñado para aprender y descubrir mundos más allá de nuestro sistema solar.",
+    "whatIsTitle": "¿Qué es Exodex?",
+    "whatIsBody": "Exodex es una aplicación web interactiva que te permite explorar el fascinante universo de los exoplanetas — planetas que orbitan estrellas distintas al Sol. Con visualizaciones procedurales, datos reales de la NASA y herramientas de filtrado avanzadas, Exodex busca hacer accesible la ciencia planetaria tanto para curiosos como para entusiastas de la astronomía.",
+    "dataSourceTitle": "Fuente de datos",
+    "dataSourceBody": "Todos los datos de exoplanetas mostrados en Exodex provienen del NASA Exoplanet Archive, una base de datos mantenida por el California Institute of Technology (Caltech) bajo contrato con la NASA. El archivo contiene datos de más de 5.700 exoplanetas confirmados.",
+    "visitArchive": "Visitar NASA Exoplanet Archive",
+    "inspirationTitle": "Inspiración",
+    "inspirationBody": "Exodex está inspirado en la magnífica serie sobre exoplanetas del canal de YouTube QuantumFracture (José Luis Crespo). Estos vídeos combinan rigor científico con una narrativa brillante para explicar cómo descubrimos mundos alrededor de otras estrellas.",
+    "video1": "#1 · Cómo Fotografiar un Planeta que Orbita Otra Estrella",
+    "video2": "#2 · 3 Maneras de Descubrir un Planeta Nuevo",
+    "video3": "#3 · Por qué Nuestro Sistema Solar es RARO",
+    "video4": "#4 · Por qué Encontrar Planetas Habitables es Imposible (por ahora)",
+    "video5": "#5 · ¿Se encontró una Estructura Alienígena? La Estrella de Tabby",
+    "supportTitle": "Apoya el proyecto",
+    "supportBody": "Si Exodex te resulta útil o interesante, considera apoyar el desarrollo del proyecto con una donación.",
+    "donateBtn": "☕ Invítame a un café",
+    "creditsTitle": "Créditos",
+    "developer": "Desarrollador & Diseño"
+  },
+  "didactic": {
+    "atmosphereTitle": "Espectro Atmosférico",
+    "atmosphereDesc": "Elementos detectados en la atmósfera de este planeta mediante espectroscopía de tránsito.",
+    "noAtmosphereData": "No se han detectado datos atmosféricos para este planeta.",
+    "detectedElements": "Elementos detectados",
+    "sizeComparisonTitle": "Comparación de Tamaño",
+    "earth": "Tierra",
+    "timesEarth": "× el radio de la Tierra"
   }
 }

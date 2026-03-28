@@ -404,6 +404,27 @@ import { SearchInputComponent } from '@exodex/ui-components';
       background: rgba(239, 68, 68, 0.15);
       box-shadow: 0 0 15px rgba(239, 68, 68, 0.15);
     }
+
+    @media (max-width: 480px) {
+      .filter-panel {
+        padding: 20px 16px;
+        gap: 22px;
+      }
+
+      .star-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      .type-grid, .hab-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .range-inputs input {
+        width: 70px;
+        padding: 6px 8px;
+        font-size: 12px;
+      }
+    }
   `,
 })
 export class FilterPanelComponent {

@@ -6,14 +6,15 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { switchMap, catchError, of, shareReplay } from 'rxjs';
 import { ExoplanetApiService } from '../../core/services/exoplanet-api.service';
-import { PlanetAvatarComponent, StatBadgeComponent, StatRowComponent, SystemOrbitPreviewComponent } from '@exodex/ui-components';
+import { PlanetAvatarComponent, StatBadgeComponent, StatRowComponent, SystemOrbitPreviewComponent, AtmosphereSpectrumComponent, SizeComparisonComponent } from '@exodex/ui-components';
+import { ATMOSPHERE_DATABASE } from '@exodex/shared-types';
 import { renderStar } from '@exodex/planet-renderer';
 import { getTelescopeWikiLink } from '../../core/constants/telescopes';
 
 @Component({
   selector: 'app-planet-detail-page',
   standalone: true,
-  imports: [CommonModule, TranslateModule, PlanetAvatarComponent, StatBadgeComponent, StatRowComponent, SystemOrbitPreviewComponent, RouterLink],
+  imports: [CommonModule, TranslateModule, PlanetAvatarComponent, StatBadgeComponent, StatRowComponent, SystemOrbitPreviewComponent, AtmosphereSpectrumComponent, SizeComparisonComponent, RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (planet(); as p) {
@@ -133,19 +134,20 @@ import { getTelescopeWikiLink } from '../../core/constants/telescopes';
               <app-stat-row [label]="'stats.telescope' | translate" [value]="p.telescope" [href]="getTelescopeWikiLink(p.telescope)" [isExternalLink]="true" />
             </section>
 
-            <div class="data-attribution">
-              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14">
-                <circle cx="10" cy="10" r="8" />
-                <path d="M10 6v4M10 13h.01" stroke-linecap="round" />
-              </svg>
-              <span>
-                {{ 'planetDetail.dataSourcedFrom' | translate }}
-                <a href="https://exoplanetarchive.ipac.caltech.edu/" target="_blank" rel="noopener noreferrer" class="nasa-link">
-                  {{ 'planetDetail.nasaArchive' | translate }}
-                  <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                </a>
-              </span>
-            </div>
+            @if (atmosphereData(); as atm) {
+              <section class="detail-section atmosphere-section">
+                <h3><span class="section-icon"><svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="spec-icon" x1="0" y1="0" x2="20" y2="20"><stop offset="0%" stop-color="#ef4444"/><stop offset="25%" stop-color="#f59e0b"/><stop offset="50%" stop-color="#22c55e"/><stop offset="75%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#a855f7"/></linearGradient></defs><rect x="2" y="7" width="16" height="6" rx="1" fill="url(#spec-icon)" opacity="0.6"/><line x1="6" y1="5" x2="6" y2="15" stroke="#e8eeff" stroke-width="1" opacity="0.7"/><line x1="10" y1="4" x2="10" y2="16" stroke="#e8eeff" stroke-width="1" opacity="0.5"/><line x1="14" y1="5" x2="14" y2="15" stroke="#e8eeff" stroke-width="1" opacity="0.7"/></svg></span> {{ 'didactic.atmosphereTitle' | translate }}</h3>
+                <p class="atmosphere-desc">{{ 'didactic.atmosphereDesc' | translate }}</p>
+                <app-atmosphere-spectrum [data]="atm" />
+              </section>
+            }
+
+            @if (p.radiusEarth) {
+              <section class="detail-section">
+                <h3><span class="section-icon"><svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="14" cy="10" r="6" fill="rgba(77,138,255,0.2)" stroke="#4d8aff" stroke-width="0.8"/><circle cx="6" cy="12" r="3" fill="rgba(34,197,94,0.3)" stroke="#22c55e" stroke-width="0.8"/></svg></span> {{ 'didactic.sizeComparisonTitle' | translate }}</h3>
+                <app-size-comparison [planet]="p" />
+              </section>
+            }
           </div>
         </div>
       </div>
@@ -479,32 +481,12 @@ import { getTelescopeWikiLink } from '../../core/constants/telescopes';
       box-shadow: 0 0 20px rgba(77, 138, 255, 0.2);
     }
 
-    .data-attribution {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 14px 16px;
-      margin-top: 8px;
-      background: rgba(10, 14, 35, 0.4);
-      border: 1px solid rgba(77, 138, 255, 0.06);
-      border-radius: 12px;
-      font-size: 11px;
-      color: #5a6177;
+    .atmosphere-desc {
       font-family: 'Inter', sans-serif;
-    }
-
-    .nasa-link {
-      color: #6da5ff;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 3px;
-      transition: all 200ms ease;
-    }
-
-    .nasa-link:hover {
-      color: #9ac2ff;
-      text-shadow: 0 0 8px rgba(154, 194, 255, 0.3);
+      font-size: 12px;
+      color: #5a6177;
+      margin-bottom: 14px;
+      line-height: 1.6;
     }
 
     .full-system-btn {
@@ -610,12 +592,86 @@ import { getTelescopeWikiLink } from '../../core/constants/telescopes';
       }
 
       .planet-hero {
-        width: 240px;
-        height: 240px;
+        width: 220px;
+        height: 220px;
       }
 
       .planet-name {
         font-size: 1.5rem;
+      }
+
+      .planet-detail {
+        padding: 16px;
+      }
+
+      .back-btn {
+        margin-bottom: 20px;
+      }
+
+      .detail-section {
+        padding: 18px;
+      }
+
+      .full-system-btn {
+        padding: 12px 16px;
+      }
+
+      .system-btn-title {
+        font-size: 11px;
+      }
+
+      .system-btn-icon {
+        width: 26px;
+        height: 26px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .planet-detail {
+        padding: 12px;
+      }
+
+      .planet-hero {
+        width: 180px;
+        height: 180px;
+        margin-bottom: 20px;
+      }
+
+      .planet-name {
+        font-size: 1.2rem;
+        letter-spacing: 2px;
+      }
+
+      .planet-meta {
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .detail-section {
+        padding: 14px;
+        border-radius: 12px;
+      }
+
+      .detail-section h3 {
+        font-size: 10px;
+        flex-wrap: wrap;
+      }
+
+      .host-star-avatar {
+        width: 100px;
+        height: 100px;
+      }
+
+      .host-star-badges {
+        flex-wrap: wrap;
+        gap: 4px;
+      }
+
+      .back-btn {
+        padding: 8px 14px;
+        font-size: 13px;
+        margin-bottom: 16px;
       }
     }
   `,
@@ -670,6 +726,12 @@ export class PlanetDetailPageComponent {
       primaryColor: result.primaryColor,
       spectralClass: result.spectralClass
     };
+  });
+
+  atmosphereData = computed(() => {
+    const p = this.planet();
+    if (!p) return null;
+    return ATMOSPHERE_DATABASE[p.id] || null;
   });
 
   getTelescopeWikiLink = getTelescopeWikiLink;

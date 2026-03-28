@@ -112,6 +112,13 @@ interface ExoplanetResponse {
     app-planet-card {
       display: block;
     }
+
+    @media (max-width: 480px) {
+      .planet-grid, .skeleton-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+    }
   `,
 })
 export class PlanetGridComponent {

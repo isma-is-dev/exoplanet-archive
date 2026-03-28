@@ -723,11 +723,39 @@ import { Exoplanet } from '@exodex/shared-types';
       .system-container { padding: 0; }
       .system-header { padding: 0 16px 16px; }
       .back-btn { margin: 16px 16px 12px; }
-      .system-name { font-size: 1.6rem; }
-      .star-avatar-container { width: 350px; height: 350px; margin-left: -175px; }
-      .star-section { width: 280px; }
-      .planet-info-card { width: 170px; padding: 14px; }
-      .mini-stats { grid-template-columns: 1fr; }
+      .system-name { font-size: 1.4rem; gap: 10px; }
+      .header-icon { width: 24px; height: 24px; }
+      .star-avatar-container { width: 300px; height: 300px; margin-left: -100px; margin-top: -130px; }
+      .star-section { width: 260px; margin-left: -60px; }
+      .star-info { left: 80px; width: 200px; }
+      .star-title { font-size: 1rem; }
+      .star-stats-grid { width: 180px; padding: 10px; gap: 6px; }
+      .planet-info-card { width: 160px; padding: 12px; }
+      .planet-avatar-wrapper { width: 80px; height: 80px; margin-bottom: 12px; }
+      .mini-stats { grid-template-columns: 1fr; gap: 4px; }
+      .mini-val { font-size: 11px; }
+      .system-visualizer-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .system-name { font-size: 1.1rem; }
+      .system-subtitle { font-size: 13px; }
+      .star-avatar-container { width: 220px; height: 220px; margin-left: -80px; margin-top: -80px; }
+      .star-section { width: 200px; margin-left: -40px; }
+      .star-info { left: 50px; bottom: 16px; width: 160px; }
+      .star-title { font-size: 0.85rem; }
+      .spectral-badge { font-size: 8px; padding: 3px 8px; margin-bottom: 10px; }
+      .star-stats-grid { width: 160px; padding: 8px; font-size: 8px; }
+      .stat-val { font-size: 11px; }
+      .planet-info-card { width: 140px; padding: 10px; }
+      .planet-info-card h4 { font-size: 11px; }
+      .planet-type-tag { font-size: 8px; padding: 2px 6px; margin-bottom: 10px; }
+      .planet-avatar-wrapper { width: 65px; height: 65px; margin-bottom: 10px; }
+      .card-footer { margin-top: 10px; padding-top: 8px; }
+      .orbit-timeline { left: 200px; }
     }
   `
 })

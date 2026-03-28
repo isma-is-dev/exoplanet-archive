@@ -1,5 +1,6 @@
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { startWith } from 'rxjs';
@@ -16,6 +17,7 @@ import { LanguageSwitcherComponent } from '../../core/components/language-switch
   standalone: true,
   imports: [
     CommonModule,
+    RouterLink,
     TranslateModule,
     FilterPanelComponent,
     SortBarComponent,
@@ -40,6 +42,12 @@ import { LanguageSwitcherComponent } from '../../core/components/language-switch
           }
         </div>
         <div class="header-right">
+          <a routerLink="/about" class="about-link" title="About Exodex">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 16v-4M12 8h.01" stroke-linecap="round" />
+            </svg>
+          </a>
           <app-language-switcher />
           <app-search-input
             class="header-search"
@@ -60,6 +68,7 @@ import { LanguageSwitcherComponent } from '../../core/components/language-switch
       <aside class="filter-sidebar" [class.open]="sidebarOpen()">
         <app-filter-panel />
       </aside>
+      <div class="sidebar-overlay" [class.visible]="sidebarOpen()" (click)="filterState.toggleSidebar()"></div>
 
       <main class="exodex-main">
         <app-sort-bar />
@@ -153,6 +162,28 @@ import { LanguageSwitcherComponent } from '../../core/components/language-switch
       gap: 12px;
     }
 
+    .about-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      color: #5a6177;
+      background: rgba(77, 138, 255, 0.05);
+      border: 1px solid rgba(77, 138, 255, 0.08);
+      transition: all 300ms ease;
+      text-decoration: none;
+    }
+
+    .about-link:hover {
+      color: #4d8aff;
+      background: rgba(77, 138, 255, 0.1);
+      border-color: rgba(77, 138, 255, 0.2);
+      box-shadow: 0 0 12px rgba(77, 138, 255, 0.15);
+      text-shadow: none;
+    }
+
     .header-search {
       width: 260px;
     }
@@ -222,6 +253,26 @@ import { LanguageSwitcherComponent } from '../../core/components/language-switch
       .filter-sidebar.open {
         transform: translateX(0);
         box-shadow: 20px 0 60px rgba(0, 0, 0, 0.5);
+      }
+
+      .sidebar-overlay {
+        display: none;
+      }
+
+      .sidebar-overlay.visible {
+        display: block;
+        position: fixed;
+        inset: 0;
+        z-index: 99;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        animation: fadeIn 300ms ease;
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
       }
 
       .sidebar-toggle {

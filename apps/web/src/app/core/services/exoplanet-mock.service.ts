@@ -240,6 +240,7 @@ const MOCK_PLANETS_BASE: Array<Partial<Exoplanet> & { habitabilityClass: string;
     stellarMassSun: 1.15,
     stellarMetallicity: 0.02,
     stellarAge: 4,
+    hasAtmosphereData: true,
   },
   {
     id: 'kepler-22b',
@@ -292,6 +293,7 @@ const MOCK_PLANETS_BASE: Array<Partial<Exoplanet> & { habitabilityClass: string;
     stellarMassSun: 0.18,
     stellarMetallicity: null,
     stellarAge: 6,
+    hasAtmosphereData: true,
   },
   {
     id: 'k2-18b',
@@ -318,6 +320,7 @@ const MOCK_PLANETS_BASE: Array<Partial<Exoplanet> & { habitabilityClass: string;
     stellarMassSun: 0.36,
     stellarMetallicity: 0.1,
     stellarAge: 2.4,
+    hasAtmosphereData: true,
   },
   {
     id: 'wasp-12b',
@@ -344,6 +347,7 @@ const MOCK_PLANETS_BASE: Array<Partial<Exoplanet> & { habitabilityClass: string;
     stellarMassSun: 1.4,
     stellarMetallicity: 0.3,
     stellarAge: 2,
+    hasAtmosphereData: true,
   },
   {
     id: '55-cancri-e',
@@ -474,6 +478,7 @@ const MOCK_PLANETS_BASE: Array<Partial<Exoplanet> & { habitabilityClass: string;
     stellarMassSun: 0.82,
     stellarMetallicity: -0.03,
     stellarAge: null,
+    hasAtmosphereData: true,
   },
   {
     id: 'jupiter-analog',

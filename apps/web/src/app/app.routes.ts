@@ -29,5 +29,12 @@ export const appRoutes: Route[] = [
         (m) => m.SystemDetailPageComponent
       ),
   },
+  {
+    path: 'about',
+    loadComponent: () =>
+      import('./features/about/about-page.component').then(
+        (m) => m.AboutPageComponent
+      ),
+  },
   { path: '**', redirectTo: '' },
 ];
