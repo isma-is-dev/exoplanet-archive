@@ -1,4 +1,4 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
+import { ApplicationConfig, provideBrowserGlobalErrorListeners, APP_INITIALIZER } from '@angular/core';
 import { provideRouter, withViewTransitions } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
@@ -7,8 +7,9 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HttpClient } from '@angular/common/http';
 import { appRoutes } from './app.routes';
 import { retryInterceptor } from './core/interceptors/retry.interceptor';
-
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
+import { LanguageService } from '@exodex/i18n';
+import { firstValueFrom } from 'rxjs';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -24,5 +25,11 @@ export const appConfig: ApplicationConfig = {
       defaultLanguage: 'es',
     }).providers!,
     provideTranslateHttpLoader({ prefix: './assets/i18n/', suffix: '.json' }),
+    {
+      provide: APP_INITIALIZER,
+      useFactory: (languageService: LanguageService) => () => firstValueFrom(languageService.initialize()),
+      deps: [LanguageService],
+      multi: true,
+    },
   ],
 };

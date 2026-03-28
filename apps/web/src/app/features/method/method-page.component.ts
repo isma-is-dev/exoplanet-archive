@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 interface MethodInfo {
   name: string;
@@ -140,7 +140,7 @@ const METHODS: Record<string, MethodInfo> = {
                 {{ 'methodsData.advantages' | translate }}
               </h3>
               <ul>
-                @for (adv of ('methodsData.methods.' + m.name + '.advantages' | translate); track $index) {
+                @for (adv of advantages(); track $index) {
                   <li>{{ adv }}</li>
                 }
               </ul>
@@ -152,7 +152,7 @@ const METHODS: Record<string, MethodInfo> = {
                 {{ 'methodsData.limitations' | translate }}
               </h3>
               <ul>
-                @for (lim of ('methodsData.methods.' + m.name + '.limitations' | translate); track $index) {
+                @for (lim of limitations(); track $index) {
                   <li>{{ lim }}</li>
                 }
               </ul>
@@ -414,11 +414,33 @@ export class MethodPageComponent {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private sanitizer = inject(DomSanitizer);
+  private translateService = inject(TranslateService);
+
+  private langChange = toSignal(
+    this.translateService.onLangChange,
+    { initialValue: null }
+  );
 
   private slug = toSignal(
     this.route.params.pipe(map(p => p['name'] as string)),
     { initialValue: '' }
   );
+
+  advantages = computed<string[]>(() => {
+    this.langChange();
+    const m = this.method();
+    if (!m) return [];
+    const result = this.translateService.instant(`methodsData.methods.${m.name}.advantages`);
+    return Array.isArray(result) ? result : [];
+  });
+
+  limitations = computed<string[]>(() => {
+    this.langChange();
+    const m = this.method();
+    if (!m) return [];
+    const result = this.translateService.instant(`methodsData.methods.${m.name}.limitations`);
+    return Array.isArray(result) ? result : [];
+  });
 
   method = computed(() => {
     const s = this.slug();

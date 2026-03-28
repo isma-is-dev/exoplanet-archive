@@ -126,7 +126,7 @@
     "view": "Ver",
     "notFound": "Sistema no encontrado",
     "notFoundDesc": "No pudimos localizar ningún planeta para este sistema estelar.",
-    "returnToExodex": "← Volver a Exodex",
+    "returnToExodex": "Volver a Exodex",
     "scanning": "Escaneando el sistema estelar {{system}}..."
   },
   "planetDetail": {
