@@ -8,7 +8,7 @@ COPY package.json pnpm-lock.yaml .npmrc ./
 RUN pnpm install --frozen-lockfile
 
 COPY . .
-RUN NX_DAEMON=false pnpm exec nx build web --configuration=production
+RUN NX_DAEMON=false NX_NO_CLOUD=true pnpm exec nx build web
 
 # ---- Server ----
 FROM nginx:1.27-alpine AS server

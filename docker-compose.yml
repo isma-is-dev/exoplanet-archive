@@ -1,14 +1,26 @@
 services:
-  app:
+  api:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.api
     ports:
-      - "80:80"
+      - "3039:3000"
     env_file:
       - .env
+    environment:
+      - PORT=3000
     volumes:
-      - cache_data:/app/api/data
+      - cache_data:/app/data
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    ports:
+      - "8089:80"
+    depends_on:
+      - api
     restart: unless-stopped
 
 volumes:
