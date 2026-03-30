@@ -158,107 +158,81 @@ import { Exoplanet } from '@exodex/shared-types';
           </div>
         </div>
 
-        <!-- ══ MOBILE-ONLY VERTICAL TIMELINE ══ -->
+        <!-- ══ MOBILE-ONLY LAYOUT ══ -->
         <div class="mobile-layout">
-          <div class="mob-timeline">
 
-            <!-- ★ STAR NODE ★ -->
-            <div class="mob-node mob-node--star">
-              <div class="mob-track">
-                <div class="mob-track-line" [style.background]="'linear-gradient(180deg, transparent 0%, ' + (starData()?.primaryColor || '#4d8aff') + '60 30%, rgba(77,138,255,0.2) 100%)'"></div>
-                <div class="mob-track-dot mob-track-dot--star"
-                     [style.background]="starData()?.primaryColor"
-                     [style.box-shadow]="'0 0 12px ' + (starData()?.primaryColor || '#4d8aff') + '80'"></div>
+          <!-- ★ STAR HERO ★ -->
+          <div class="mob-star-hero">
+            <!-- SVG star: card=160×160, centre at y=80.
+                 Static inline style bypasses Angular encapsulation.
+                 margin-top:-80px + overflow:hidden shows only the bottom 90px. -->
+            <div class="mob-star-orb">
+              <div [innerHTML]="starDataMobile()?.svg"
+                   style="display:flex;justify-content:center;margin-top:-80px;line-height:0;"></div>
+            </div>
+            <h2 class="mob-star-name">{{ systemName() }}</h2>
+            <span class="mob-star-badge"
+                  [style.color]="starDataMobile()?.primaryColor"
+                  [style.border-color]="starDataMobile()?.primaryColor"
+                  [style.background]="(starDataMobile()?.primaryColor || '#4d8aff') + '18'">
+              <span class="mob-star-dot" [style.background]="starDataMobile()?.primaryColor"></span>
+              {{ 'systemDetail.type' | translate }} {{ starDataMobile()?.spectralClass }}
+            </span>
+            <div class="mob-star-stats">
+              <div class="mob-star-stat">
+                <span class="mob-star-lbl">{{ 'systemDetail.temp' | translate }}</span>
+                <span class="mob-star-val">{{ planets()[0].stellarTempK || '—' }}<small> K</small></span>
               </div>
-              <div class="mob-body">
-                <div class="mob-body-avatar mob-body-avatar--star">
-                  <div class="mob-star-svg" [innerHTML]="starData()?.svg"></div>
-                  <div class="mob-star-glow" [style.background]="'radial-gradient(circle, ' + (starData()?.primaryColor || '#4d8aff') + '25 0%, transparent 65%)'"></div>
-                </div>
+              <div class="mob-star-stat">
+                <span class="mob-star-lbl">{{ 'systemDetail.mass' | translate }}</span>
+                <span class="mob-star-val">{{ planets()[0].stellarMassSun || '—' }}<small> M☉</small></span>
               </div>
-              <div class="mob-info">
-                <h2 class="mob-info-title">{{ systemName() }}</h2>
-                <span class="mob-spectral"
-                      [style.color]="starData()?.primaryColor"
-                      [style.border-color]="starData()?.primaryColor"
-                      [style.background]="(starData()?.primaryColor || '#4d8aff') + '15'">
-                  <span class="mob-spectral-dot" [style.background]="starData()?.primaryColor"></span>
-                  {{ 'systemDetail.type' | translate }} {{ starData()?.spectralClass }}
-                </span>
-                <div class="mob-info-stats">
-                  <div class="mob-info-stat">
-                    <span class="mob-info-lbl">{{ 'systemDetail.temp' | translate }}</span>
-                    <span class="mob-info-val">{{ planets()[0].stellarTempK || '—' }} <small>K</small></span>
-                  </div>
-                  <div class="mob-info-stat">
-                    <span class="mob-info-lbl">{{ 'systemDetail.mass' | translate }}</span>
-                    <span class="mob-info-val">{{ planets()[0].stellarMassSun || '—' }} <small>M☉</small></span>
-                  </div>
-                  <div class="mob-info-stat">
-                    <span class="mob-info-lbl">{{ 'systemDetail.radius' | translate }}</span>
-                    <span class="mob-info-val">{{ planets()[0].stellarRadiusSun || '—' }} <small>R☉</small></span>
-                  </div>
-                </div>
+              <div class="mob-star-stat">
+                <span class="mob-star-lbl">{{ 'systemDetail.radius' | translate }}</span>
+                <span class="mob-star-val">{{ planets()[0].stellarRadiusSun || '—' }}<small> R☉</small></span>
+              </div>
+              <div class="mob-star-stat">
+                <span class="mob-star-lbl">{{ 'systemDetail.age' | translate }}</span>
+                <span class="mob-star-val">{{ planets()[0].stellarAge || '—' }}<small> Gyr</small></span>
               </div>
             </div>
-
-            <!-- 🪐 PLANET NODES 🪐 -->
-            @for (planet of mappedPlanets(); track planet.planet.id; let i = $index; let last = $last) {
-              <a class="mob-node mob-node--planet" [routerLink]="['/planeta', planet.planet.id]"
-                 [style.animation-delay]="(i * 100) + 'ms'">
-                <div class="mob-track">
-                  <div class="mob-track-line" [class.mob-track-line--last]="last"></div>
-                  <div class="mob-track-dot"
-                       [style.background]="planet.color"
-                       [style.box-shadow]="'0 0 10px ' + planet.color + '70'"></div>
-                </div>
-                <div class="mob-body">
-                  <div class="mob-body-avatar">
-                    <app-planet-avatar [planet]="planet.planet" size="card" />
-                  </div>
-                  <div class="mob-orbit-num" [style.color]="planet.color" [style.border-color]="planet.color + '50'">{{ i + 1 }}</div>
-                </div>
-                <div class="mob-info">
-                  <div class="mob-info-head">
-                    <h3 class="mob-info-title mob-info-title--planet">{{ planet.planet.name }}</h3>
-                    <span class="mob-type-badge"
-                          [style.color]="planet.color"
-                          [style.border-color]="planet.color + '40'"
-                          [style.background]="planet.color + '12'">
-                      {{ 'filters.planetTypes.' + planet.planet.planetType | translate }}
-                    </span>
-                  </div>
-                  <div class="mob-info-stats mob-info-stats--planet">
-                    <div class="mob-info-stat">
-                      <span class="mob-info-lbl">◷</span>
-                      <span class="mob-info-val">{{ planet.planet.orbitalPeriodDays !== null ? ((planet.planet.orbitalPeriodDays | number:'1.0-1') + ' d') : '—' }}</span>
-                    </div>
-                    <div class="mob-info-stat">
-                      <span class="mob-info-lbl">⟷</span>
-                      <span class="mob-info-val">{{ planet.planet.semiMajorAxisAU !== null ? ((planet.planet.semiMajorAxisAU | number:'1.0-3') + ' AU') : '—' }}</span>
-                    </div>
-                    <div class="mob-info-stat">
-                      <span class="mob-info-lbl">◎</span>
-                      <span class="mob-info-val">{{ planet.planet.radiusEarth !== null ? ((planet.planet.radiusEarth | number:'1.0-2') + ' R⊕') : '—' }}</span>
-                    </div>
-                    <div class="mob-info-stat">
-                      <span class="mob-info-lbl">🌡</span>
-                      <span class="mob-info-val">{{ planet.planet.equilibriumTempK !== null ? (planet.planet.equilibriumTempK + ' K') : '—' }}</span>
-                    </div>
-                  </div>
-                  <div class="mob-info-foot">
-                    <span class="mob-hab" [class]="'hab-' + planet.planet.habitabilityClass">
-                      {{ 'filters.habitabilityOptions.' + planet.planet.habitabilityClass | translate }}
-                    </span>
-                    <svg class="mob-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
-                      <path d="M6 4l4 4-4 4" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </div>
-                </div>
-              </a>
-            }
-
           </div>
+
+          <!-- Planets section header -->
+          <div class="mob-section-header">
+            <span class="mob-section-title">{{ 'systemDetail.system' | translate }}</span>
+            <span class="mob-section-count">{{ mappedPlanets().length }}</span>
+          </div>
+
+          <!-- 🪐 PLANET ROWS — simple list 🪐 -->
+          @for (planet of mappedPlanets(); track planet.planet.id; let i = $index) {
+            <a class="mob-planet-row"
+               [routerLink]="['/planeta', planet.planet.id]"
+               [style.animation-delay]="(i * 60) + 'ms'">
+
+              <!-- Left: planet avatar (micro, 32×32 – no overflow issues) -->
+              <div class="mob-row-avatar-wrap">
+                <app-planet-avatar [planet]="planet.planet" size="micro" />
+              </div>
+
+              <!-- Center: name + type -->
+              <div class="mob-row-info">
+                <span class="mob-row-name">{{ planet.planet.name }}</span>
+                <span class="mob-row-type" [style.color]="planet.color">
+                  {{ 'filters.planetTypes.' + planet.planet.planetType | translate }}
+                </span>
+              </div>
+
+              <!-- Right: hab pill + chevron -->
+              <span class="mob-row-hab" [class]="'mob-hab-' + planet.planet.habitabilityClass">
+                {{ 'filters.habitabilityOptions.' + planet.planet.habitabilityClass | translate }}
+              </span>
+              <svg class="mob-row-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12">
+                <path d="M6 4l4 4-4 4" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          }
+
         </div><!-- end mobile-layout -->
 
       } @else if (error()) {
@@ -397,6 +371,8 @@ import { Exoplanet } from '@exodex/shared-types';
       width: 100%;
       display: flex;
       align-items: center;
+      overflow-x: auto;
+      overflow-y: hidden;
       scrollbar-width: thin;
       scrollbar-color: rgba(77, 138, 255, 0.3) rgba(10, 14, 28, 0.3);
       background: 
@@ -827,256 +803,229 @@ import { Exoplanet } from '@exodex/shared-types';
       animation: spin 1s linear infinite;
     }
 
-    /* ═══════ RESPONSIVE ═══════ */
+    /* ═══════ RESPONSIVE - MOBILE ═══════ */
     @media (max-width: 768px) {
-      /* Hide desktop, show mobile timeline */
+
       .system-header { display: none; }
       .system-visualizer-wrapper { display: none; }
+      .system-container { padding: 0; overflow: hidden; }
+
       .mobile-layout {
         display: flex;
         flex-direction: column;
         flex: 1;
         overflow-y: auto;
+        overflow-x: hidden;
         -webkit-overflow-scrolling: touch;
+        padding-bottom: 48px;
       }
 
-      /* ══════ VERTICAL TIMELINE ══════ */
-      .mob-timeline {
-        display: flex;
-        flex-direction: column;
-        padding: 20px 16px 40px 8px;
-      }
-
-      /* Each node: track | body | info */
-      .mob-node {
-        display: flex;
-        align-items: flex-start;
-        position: relative;
-        text-decoration: none;
-      }
-      .mob-node--planet {
-        cursor: pointer;
-        animation: planetNodeEnter 500ms cubic-bezier(0.4,0,0.2,1) both;
-      }
-      .mob-node--planet:active { opacity: 0.85; }
-
-      /* ── Track (vertical line + dot) ── */
-      .mob-track {
-        width: 24px;
+      /* ══ STAR HERO ══ */
+      .mob-star-hero {
         display: flex;
         flex-direction: column;
         align-items: center;
-        flex-shrink: 0;
+        text-align: center;
+        padding: 40px 20px 28px;
         position: relative;
       }
-      .mob-track-line {
+      .mob-star-hero::after {
+        content: '';
         position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 2px;
-        background: rgba(77,138,255,0.2);
-        z-index: 0;
+        bottom: 0; left: 10%; right: 10%;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.07), transparent);
       }
-      .mob-node:first-child .mob-track-line {
-        top: 24px;
-      }
-      .mob-track-line--last {
-        background: linear-gradient(180deg, rgba(77,138,255,0.2) 0%, transparent 90%);
-      }
-      .mob-track-dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        margin-top: 18px;
-        z-index: 1;
-        flex-shrink: 0;
-        transition: transform 200ms ease;
-      }
-      .mob-track-dot--star {
-        width: 12px;
-        height: 12px;
-        margin-top: 24px;
-      }
-      .mob-node--planet:active .mob-track-dot { transform: scale(1.3); }
 
-      /* ── Body (avatar) ── */
-      .mob-body {
-        width: 70px;
-        flex-shrink: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        position: relative;
-      }
-      .mob-body-avatar {
-        width: 44px;
-        height: 44px;
-      }
-      .mob-body-avatar--star {
-        width: 60px;
-        height: 60px;
-        position: relative;
-        overflow: visible;
-      }
-      .mob-star-svg {
-        width: 60px;
-        height: 60px;
-        overflow: visible;
-      }
-      .mob-star-svg ::ng-deep svg {
+      /* Star orb: card SVG is 160×160, star centre at y=80.
+         overflow:hidden + height:90px shows only the bottom 90px of the SVG
+         (from centre downward), i.e. the lower corona + core edge. */
+      .mob-star-orb {
         width: 100%;
-        height: 100%;
-        overflow: visible;
+        height: 90px;
+        overflow: hidden;
+        margin-bottom: 24px;
+        flex-shrink: 0;
       }
-      .mob-star-glow {
-        position: absolute;
-        inset: -10px;
-        border-radius: 50%;
-        pointer-events: none;
-        z-index: 0;
-      }
-      .mob-orbit-num {
+
+      .mob-star-name {
         font-family: 'Orbitron', sans-serif;
-        font-size: 8px;
+        font-size: 1.5rem;
+        font-weight: 900;
+        letter-spacing: 2px;
+        margin: 0 0 12px;
+        background: linear-gradient(135deg, #e8eeff 30%, #4d8aff 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .mob-star-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 16px;
+        font-size: 10px;
+        font-family: 'Orbitron', sans-serif;
         font-weight: 700;
-        width: 16px;
-        height: 16px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border: 1px solid;
+        border-radius: 20px;
+        margin-bottom: 22px;
+      }
+      .mob-star-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+
+      /* 2×2 stats grid */
+      .mob-star-stats {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 16px;
+        overflow: hidden;
+      }
+      .mob-star-stat {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        padding: 14px 8px;
+        background: rgba(10, 14, 28, 0.8);
+      }
+      .mob-star-lbl {
+        font-size: 9px;
+        font-family: 'Inter', sans-serif;
+        color: #5a6177;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        white-space: nowrap;
+      }
+      .mob-star-val {
+        font-size: 15px;
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 700;
+        color: #e8eeff;
+      }
+      .mob-star-val small {
+        font-size: 9px;
+        color: #4a5568;
+        font-weight: 400;
+      }
+
+      /* ══ PLANETS SECTION HEADER ══ */
+      .mob-section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 16px 10px;
+      }
+      .mob-section-title {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 9px;
+        font-weight: 700;
+        color: #4d6aaa;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+      }
+      .mob-section-count {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 10px;
+        font-weight: 700;
+        color: #4d8aff;
+        background: rgba(77,138,255,0.1);
+        border: 1px solid rgba(77,138,255,0.2);
+        border-radius: 6px;
+        padding: 2px 8px;
+      }
+
+      /* ══ PLANET ROWS ══
+         Simple horizontal row: [avatar 40px] [name+type flex-1] [hab] [chevron]
+         size="micro" avatar is 32×32 — fits cleanly, no overflow */
+      .mob-planet-row {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 13px 16px;
+        text-decoration: none;
+        border-bottom: 1px solid rgba(255,255,255,0.04);
+        animation: mobRowIn 350ms cubic-bezier(0.4,0,0.2,1) both;
+        transition: background 150ms ease;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .mob-planet-row:active { background: rgba(255,255,255,0.03); }
+      @keyframes mobRowIn {
+        from { opacity: 0; transform: translateX(-10px); }
+        to   { opacity: 1; transform: translateX(0); }
+      }
+
+      /* Avatar wrapper — fixed 40×40, overflow visible so micro glows show */
+      .mob-row-avatar-wrap {
+        width: 40px;
+        height: 40px;
+        flex-shrink: 0;
         display: flex;
         align-items: center;
         justify-content: center;
-        border: 1px solid;
-        border-radius: 5px;
-        margin-top: 4px;
-        background: rgba(10,14,28,0.8);
+        overflow: visible;
       }
 
-      /* ── Info panel ── */
-      .mob-info {
+      /* Name + type column */
+      .mob-row-info {
         flex: 1;
         min-width: 0;
-        padding: 4px 0 18px 8px;
-      }
-      .mob-info-title {
-        font-family: 'Orbitron', sans-serif;
-        font-size: 1rem;
-        font-weight: 800;
-        color: #e8eeff;
-        margin: 0 0 6px 0;
-        letter-spacing: 0.6px;
-      }
-      .mob-info-title--planet {
-        font-size: 0.85rem;
-        margin: 0;
-      }
-      .mob-spectral, .mob-type-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        padding: 4px 10px;
-        font-size: 9px;
-        font-family: 'Orbitron', sans-serif;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.7px;
-        border: 1px solid;
-        border-radius: 6px;
-      }
-      .mob-spectral { margin-bottom: 14px; }
-      .mob-spectral-dot {
-        width: 5px;
-        height: 5px;
-        border-radius: 50%;
-        flex-shrink: 0;
-      }
-      .mob-info-head {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        flex-wrap: wrap;
-        margin-bottom: 10px;
-      }
-      .mob-info-stats {
         display: flex;
         flex-direction: column;
-        gap: 4px;
+        gap: 3px;
       }
-      .mob-info-stats--planet {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 5px 16px;
-        margin-bottom: 12px;
+      .mob-row-name {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #e8eeff;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
-      .mob-info-stat {
-        display: flex;
-        align-items: baseline;
-        gap: 6px;
-      }
-      .mob-info-lbl {
-        font-size: 9px;
-        color: #4a5568;
+      .mob-row-type {
         font-family: 'Inter', sans-serif;
-        text-transform: uppercase;
-        letter-spacing: 0.4px;
-        min-width: 14px;
-      }
-      .mob-info-val {
-        font-size: 12px;
-        color: #c9d1e5;
-        font-family: 'JetBrains Mono', monospace;
-        font-weight: 600;
-      }
-      .mob-info-val small { font-size: 9px; color: #4a5568; font-weight: 400; }
-      .mob-info-foot {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding-top: 10px;
-        border-top: 1px solid rgba(255,255,255,0.05);
-      }
-      .mob-hab {
-        font-size: 9px;
-        font-weight: 600;
+        font-size: 11px;
+        font-weight: 500;
         text-transform: capitalize;
-        padding: 3px 8px;
-        border-radius: 6px;
-        font-family: 'Inter', sans-serif;
-      }
-      .mob-chevron {
-        margin-left: auto;
-        color: #4d8aff;
-        opacity: 0.7;
+        opacity: 0.85;
       }
 
-      /* Keep some desktop adjustments */
-      .system-container { padding: 0; }
-      .back-btn { margin: 16px 16px 8px; }
-      .planet-avatar-wrapper { width: 80px; height: 80px; margin-bottom: 12px; }
-      .mini-stats { grid-template-columns: 1fr; gap: 4px; }
-      .mini-val { font-size: 11px; }
-      .system-visualizer-wrapper {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
+      /* Habitability pill */
+      .mob-row-hab {
+        font-family: 'Inter', sans-serif;
+        font-size: 9px;
+        font-weight: 600;
+        padding: 3px 8px;
+        border-radius: 20px;
+        flex-shrink: 0;
+        white-space: nowrap;
       }
+      .mob-hab-habitable { background: rgba(34,197,94,0.12);  color: #22c55e; }
+      .mob-hab-marginal  { background: rgba(234,179,8,0.12);  color: #eab308; }
+      .mob-hab-hostile   { background: rgba(239,68,68,0.12);  color: #ef4444; }
+      .mob-hab-extreme   { background: rgba(168,85,247,0.12); color: #a855f7; }
+      .mob-hab-unknown   { background: rgba(100,116,139,0.12);color: #64748b; }
+
+      .mob-row-chevron { color: rgba(255,255,255,0.2); flex-shrink: 0; }
+
+      .back-btn { margin: 12px 12px 6px; padding: 9px 14px; font-size: 13px; }
     }
 
-    @media (max-width: 480px) {
-      .system-name { font-size: 1.1rem; }
-      .system-subtitle { font-size: 13px; }
-      .star-avatar-container { width: 220px; height: 220px; margin-left: -80px; margin-top: -80px; }
-      .star-section { width: 200px; margin-left: -40px; }
-      .star-info { left: 50px; bottom: 16px; width: 160px; }
-      .star-title { font-size: 0.85rem; }
-      .spectral-badge { font-size: 8px; padding: 3px 8px; margin-bottom: 10px; }
-      .star-stats-grid { width: 160px; padding: 8px; font-size: 8px; }
-      .stat-val { font-size: 11px; }
-      .planet-info-card { width: 140px; padding: 10px; }
-      .planet-info-card h4 { font-size: 11px; }
-      .planet-type-tag { font-size: 8px; padding: 2px 6px; margin-bottom: 10px; }
-      .planet-avatar-wrapper { width: 65px; height: 65px; margin-bottom: 10px; }
-      .card-footer { margin-top: 10px; padding-top: 8px; }
-      .orbit-timeline { left: 200px; }
+    @media (max-width: 380px) {
+      .mob-star-orb  { width: 80px; height: 80px; }
+      .mob-star-name { font-size: 1.25rem; }
     }
   `
 })
@@ -1118,6 +1067,27 @@ export class SystemDetailPageComponent {
       stellarRadiusSun: p.stellarRadiusSun,
       stellarMassSun: p.stellarMassSun,
       size: 'detail' as const,
+      animationsEnabled: true,
+      numberOfStarsInSystem: 1
+    };
+    const { svgString, primaryColor, spectralClass } = renderStar(params, p.hostStar);
+    return {
+      svg: this.sanitizer.bypassSecurityTrustHtml(svgString),
+      primaryColor,
+      spectralClass
+    };
+  });
+
+  starDataMobile = computed(() => {
+    const list = this.planets();
+    if (!list || list.length === 0) return null;
+    const p = list[0];
+
+    const params = {
+      stellarTempK: p.stellarTempK,
+      stellarRadiusSun: p.stellarRadiusSun,
+      stellarMassSun: p.stellarMassSun,
+      size: 'card' as const,
       animationsEnabled: true,
       numberOfStarsInSystem: 1
     };

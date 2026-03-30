@@ -1,0 +1,18 @@
+# ---- Builder ----
+FROM node:22-alpine AS builder
+WORKDIR /app
+
+RUN npm install -g pnpm
+
+COPY package.json pnpm-lock.yaml .npmrc ./
+RUN pnpm install --frozen-lockfile
+
+COPY . .
+RUN NX_DAEMON=false pnpm exec nx build web --configuration=production
+
+# ---- Server ----
+FROM nginx:1.27-alpine AS server
+COPY --from=builder /app/dist/apps/web/browser /usr/share/nginx/html
+COPY apps/web/nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

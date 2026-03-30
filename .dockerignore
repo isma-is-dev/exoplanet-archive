@@ -1,0 +1,11 @@
+.git
+.angular
+.nx
+.vscode
+.windsurf
+node_modules
+dist
+tmp
+apps/api-e2e
+apps/web-e2e
+*.csv

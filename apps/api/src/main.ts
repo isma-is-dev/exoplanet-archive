@@ -16,7 +16,7 @@ async function bootstrap() {
 
   // CORS para el frontend Angular
   app.enableCors({
-    origin: 'http://localhost:4200',
+    origin: process.env.CORS_ORIGIN || 'http://localhost:4200',
   });
 
   const port = process.env.PORT || 3000;
