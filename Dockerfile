@@ -8,8 +8,8 @@ COPY package.json pnpm-lock.yaml .npmrc ./
 RUN pnpm install --frozen-lockfile
 
 COPY . .
-RUN NX_DAEMON=false pnpm exec nx build api && \
-    NX_DAEMON=false pnpm exec nx build web
+RUN NX_DAEMON=false NX_NO_CLOUD=true pnpm exec nx build api && \
+    NX_DAEMON=false NX_NO_CLOUD=true pnpm exec nx build web
 
 # ---- Runner ----
 FROM node:22-alpine AS runner
