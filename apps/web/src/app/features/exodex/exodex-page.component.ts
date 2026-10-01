@@ -6,7 +6,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { startWith } from 'rxjs';
+import { startWith, catchError, of } from 'rxjs';
 import { FilterStateService } from '../../core/services/filter-state.service';
 import { ExoplanetApiService } from '../../core/services/exoplanet-api.service';
 import { FilterPanelComponent } from './components/filter-panel/filter-panel.component';
@@ -335,7 +335,9 @@ export class ExodexPageComponent implements AfterViewInit, OnDestroy {
   @ViewChild('sidebarEl', { static: false }) sidebarRef!: ElementRef<HTMLElement>;
 
   sidebarOpen = this.filterState.sidebarOpen;
-  stats = toSignal(this.apiService.getStats$().pipe(startWith(null)));
+  stats = toSignal(
+    this.apiService.getStats$().pipe(startWith(null), catchError(() => of(null)))
+  );
 
   private lastScrollY = 0;
   private currentTop = 0;

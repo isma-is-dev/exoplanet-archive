@@ -41,6 +41,14 @@
             {
               "replace": "apps/web/src/environments/environment.ts",
               "with": "apps/web/src/environments/environment.prod.ts"
+            },
+            {
+              "replace": "apps/web/src/app/core/config/mock-data.config.ts",
+              "with": "apps/web/src/app/core/config/mock-data.config.prod.ts"
+            },
+            {
+              "replace": "apps/web/src/app/core/services/exoplanet-mock.service.ts",
+              "with": "apps/web/src/app/core/services/exoplanet-mock.service.prod.ts"
             }
           ]
         },

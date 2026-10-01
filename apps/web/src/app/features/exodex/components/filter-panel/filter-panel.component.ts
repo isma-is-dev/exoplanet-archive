@@ -5,7 +5,7 @@ import { Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { startWith, map } from 'rxjs';
+import { startWith, map, catchError, of } from 'rxjs';
 import { FilterStateService } from '../../../../core/services/filter-state.service';
 import { ExoplanetApiService } from '../../../../core/services/exoplanet-api.service';
 import { SearchInputComponent } from '@exodex/ui-components';
@@ -576,7 +576,9 @@ export class FilterPanelComponent {
   private sanitizer = inject(DomSanitizer);
 
   filters = this.filterState.filters;
-  stats = toSignal(this.apiService.getStats$().pipe(startWith(null)));
+  stats = toSignal(
+    this.apiService.getStats$().pipe(startWith(null), catchError(() => of(null)))
+  );
 
   private trust(html: string): SafeHtml {
     return this.sanitizer.bypassSecurityTrustHtml(html);

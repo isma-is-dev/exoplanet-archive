@@ -1,8 +1,9 @@
 import { Component, inject, ChangeDetectionStrategy, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { toSignal, toObservable } from '@angular/core/rxjs-interop';
-import { switchMap, startWith, tap, observeOn, asyncScheduler } from 'rxjs';
+import { switchMap, startWith, tap, observeOn, asyncScheduler, map, catchError, of } from 'rxjs';
 import { Exoplanet } from '@exodex/shared-types';
 import { FilterStateService } from '../../../../core/services/filter-state.service';
 import { ExoplanetApiService } from '../../../../core/services/exoplanet-api.service';
@@ -22,11 +23,16 @@ interface ExoplanetResponse {
   totalPages: number;
 }
 
+/** Sentinel for "the upstream API failed" — never rendered as data. */
+const UPSTREAM_UNAVAILABLE = Symbol('exodex-upstream-unavailable');
+type GridResult = ExoplanetResponse | typeof UPSTREAM_UNAVAILABLE;
+
 @Component({
   selector: 'app-planet-grid',
   standalone: true,
   imports: [
     CommonModule,
+    TranslateModule,
     PlanetCardComponent,
     SkeletonCardComponent,
     PaginationComponent,
@@ -41,6 +47,16 @@ interface ExoplanetResponse {
           @for (i of skeletonArray(); track $index) {
             <app-skeleton-card [viewMode]="viewMode()" />
           }
+        </div>
+      } @else if (upstreamUnavailable()) {
+        <!-- Honest degraded state: the NASA-backed API could not be reached -->
+        <div class="data-unavailable" role="alert">
+          <h3 class="data-unavailable-title">{{ 'dataUnavailable.title' | translate }}</h3>
+          <p class="data-unavailable-message">{{ 'dataUnavailable.message' | translate }}</p>
+          <p class="data-unavailable-note">{{ 'dataUnavailable.note' | translate }}</p>
+          <button class="data-unavailable-retry" (click)="retry()">
+            {{ 'dataUnavailable.retry' | translate }}
+          </button>
         </div>
       } @else if (exoplanets().length === 0) {
         <!-- Empty state -->
@@ -113,6 +129,64 @@ interface ExoplanetResponse {
       display: block;
     }
 
+    .data-unavailable {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 64px 24px;
+      text-align: center;
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      border-radius: 16px;
+      background: rgba(245, 158, 11, 0.06);
+    }
+
+    .data-unavailable-title {
+      margin: 0;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #f5a524;
+    }
+
+    .data-unavailable-message,
+    .data-unavailable-note {
+      margin: 0;
+      max-width: 520px;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #8892b0;
+    }
+
+    .data-unavailable-note {
+      font-size: 13px;
+      color: #5f6884;
+    }
+
+    .data-unavailable-retry {
+      margin-top: 8px;
+      padding: 10px 22px;
+      background: rgba(77, 138, 255, 0.1);
+      border: 1px solid rgba(77, 138, 255, 0.3);
+      border-radius: 12px;
+      color: #4d8aff;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-family: 'Orbitron', sans-serif;
+      cursor: pointer;
+      transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .data-unavailable-retry:hover {
+      background: rgba(77, 138, 255, 0.2);
+      box-shadow: 0 0 25px rgba(77, 138, 255, 0.2);
+    }
+
     @media (max-width: 480px) {
       .planet-grid, .skeleton-grid {
         grid-template-columns: 1fr;
@@ -133,6 +207,7 @@ export class PlanetGridComponent {
   viewMode = this.filterState.viewMode;
 
   isLoading = signal(true);
+  upstreamUnavailable = signal(false);
   exoplanets = signal<Exoplanet[]>([]);
   totalPages = signal(0);
   skeletonArray = signal(Array(12).fill(0));
@@ -142,12 +217,25 @@ export class PlanetGridComponent {
   private page$ = toObservable(this.page);
   private pageSize$ = toObservable(this.pageSize);
 
-  private response = toSignal(
-    combineLatest([this.filters$, this.sort$, this.page$, this.pageSize$]).pipe(
-      tap(() => this.isLoading.set(true)),
+  private reload$ = signal(0);
+
+  private response = toSignal<GridResult | null>(
+    combineLatest([
+      this.filters$,
+      this.sort$,
+      this.page$,
+      this.pageSize$,
+      toObservable(this.reload$),
+    ]).pipe(
+      tap(() => {
+        this.isLoading.set(true);
+        this.upstreamUnavailable.set(false);
+      }),
       switchMap(([filters, sort, page, pageSize]) =>
         this.apiService.getExoplanets$(filters, sort, page, pageSize).pipe(
-          observeOn(asyncScheduler)
+          observeOn(asyncScheduler),
+          map((res): GridResult => res),
+          catchError(() => of(UPSTREAM_UNAVAILABLE))
         )
       ),
       startWith(null)
@@ -159,6 +247,11 @@ export class PlanetGridComponent {
       const resp = this.response();
       if (resp === null) {
         this.isLoading.set(true);
+      } else if (resp === UPSTREAM_UNAVAILABLE) {
+        this.isLoading.set(false);
+        this.upstreamUnavailable.set(true);
+        this.exoplanets.set([]);
+        this.totalPages.set(0);
       } else {
         const data = resp as ExoplanetResponse;
         this.exoplanets.set(data.data);
@@ -187,5 +280,11 @@ export class PlanetGridComponent {
 
   clearFilters(): void {
     this.filterState.resetFilters();
+  }
+
+  /** Re-runs the query after an upstream failure. */
+  retry(): void {
+    this.apiService.clearCache();
+    this.reload$.update((n) => n + 1);
   }
 }

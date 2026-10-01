@@ -96,6 +96,12 @@
     "title": "No planets found",
     "message": "Try adjusting filters or performing a new search"
   },
+  "dataUnavailable": {
+    "title": "NASA data unavailable",
+    "message": "Exodex could not reach the NASA Exoplanet Archive service, so no planets are shown right now.",
+    "note": "Exodex never displays invented planets, so it shows nothing rather than fake data.",
+    "retry": "Try again"
+  },
   "units": {
     "radiusEarth": "R⊕",
     "massEarth": "M⊕",

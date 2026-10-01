@@ -12,6 +12,8 @@ import {
 } from '@exodex/shared-types';
 import { NasaExoplanetRaw, transformNasaData } from './exoplanet.transformer';
 
+export type DatasetState = 'loading' | 'ready' | 'error';
+
 @Injectable()
 export class ExoplanetService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(ExoplanetService.name);
@@ -20,6 +22,8 @@ export class ExoplanetService implements OnModuleInit, OnModuleDestroy {
   private searchIndex: Map<string, Set<string>> = new Map();
   private lastUpdated: Date | null = null;
   private refreshTimer: NodeJS.Timeout | null = null;
+  private datasetState: DatasetState = 'loading';
+  private lastError: string | null = null;
   
   // Filter result cache for O(1) lookups of common filter combinations
   private filterResultCache: Map<string, { data: Exoplanet[]; total: number; timestamp: number }> = new Map();
@@ -78,6 +82,8 @@ export class ExoplanetService implements OnModuleInit, OnModuleDestroy {
         }
         this.buildSearchIndex();
         this.lastUpdated = stat.mtime;
+        this.datasetState = 'ready';
+        this.lastError = null;
         this.logger.log(`Loaded ${this.exoplanets.length} exoplanets from cache in ${Date.now() - startTime}ms`);
         return;
       }
@@ -142,6 +148,8 @@ export class ExoplanetService implements OnModuleInit, OnModuleDestroy {
       this.buildSearchIndex();
 
       this.lastUpdated = new Date();
+      this.datasetState = 'ready';
+      this.lastError = null;
       const duration = Date.now() - startTime;
       this.logger.log(`Data processed in ${duration}ms`);
 
@@ -154,7 +162,18 @@ export class ExoplanetService implements OnModuleInit, OnModuleDestroy {
         this.logger.warn('Failed to write disk cache', writeErr);
       }
     } catch (error) {
-      this.logger.error('Failed to fetch data from NASA API', error);
+      // Never serve an empty dataset as if it were real: mark the failure so the
+      // API answers 503 instead of a fabricated-looking empty result.
+      this.lastError =
+        error instanceof Error ? error.message : 'Unknown error fetching NASA data';
+      if (this.exoplanets.length > 0) {
+        this.logger.warn(
+          `Failed to refresh from NASA API, continuing to serve ${this.exoplanets.length} cached planets`
+        );
+      } else {
+        this.datasetState = 'error';
+        this.logger.error('Failed to fetch data from NASA API', error);
+      }
       throw error;
     }
   }
@@ -275,6 +294,23 @@ export class ExoplanetService implements OnModuleInit, OnModuleDestroy {
     this.filterResultCache.set(key, { data, total: data.length, timestamp: Date.now() });
   }
 
+  /**
+   * True only when real NASA-derived data is loaded. Callers must refuse to
+   * answer with an empty result set while this is false, otherwise a dead
+   * upstream would look like "there are no exoplanets".
+   */
+  isDatasetAvailable(): boolean {
+    return this.datasetState === 'ready' && this.exoplanets.length > 0;
+  }
+
+  getDatasetState(): DatasetState {
+    return this.datasetState;
+  }
+
+  getDatasetError(): string | null {
+    return this.lastError;
+  }
+
   getById(id: string): Exoplanet | undefined {
     return this.exoplanetMap.get(id);
   }
@@ -340,6 +376,8 @@ export class ExoplanetService implements OnModuleInit, OnModuleDestroy {
     lastUpdated: Date | null;
     totalPlanets: number;
     cacheAge: number;
+    state: DatasetState;
+    lastError: string | null;
   } {
     const cacheAge = this.lastUpdated
       ? Date.now() - this.lastUpdated.getTime()
@@ -348,6 +386,8 @@ export class ExoplanetService implements OnModuleInit, OnModuleDestroy {
       lastUpdated: this.lastUpdated,
       totalPlanets: this.exoplanets.length,
       cacheAge,
+      state: this.datasetState,
+      lastError: this.lastError,
     };
   }
 
