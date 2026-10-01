@@ -146,6 +146,7 @@ Detalle operativo en [`docs/operations/deploy.md`](docs/operations/deploy.md).
 | i18n duplicado | `apps/web/public/assets/i18n/` y `libs/i18n/src/assets/i18n/` | 4 de los 8 clones de jscpd |
 | Sin `ValidationPipe` | `apps/api` | Los DTO son `interface`/`type`, sin decoradores |
 | `package.json` raíz sin scripts | raíz | Los comandos son targets Nx, no scripts npm |
+| 2 `console.*` sin `Logger` en el front | `apps/web/src/main.ts`, `apps/web/src/app/core/services/exoplanet-api.service.ts` | **Angular 21 no exporta `Logger`.** Ver `docs/operations/quality-gates.md` |
 
 ## 10. Documentos relacionados
 

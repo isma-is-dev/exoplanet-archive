@@ -185,3 +185,50 @@ configuracion**: la clave es un entero `u64` y el arranque falla con
 `invalid type: boolean 'true', expected u64`. Ademas `--fail-on-new-clones` y `--fail-on-empty` son
 flags de CLI, no claves de config. Aqui se usa `"failOnNewClones": 0` y `"failOnEmpty": true`, y los
 flags se pasan en el comando de la puerta.
+
+## 8. Angular 21 no tiene `Logger`: los `console.*` del front no se pueden quitar sin anadir dependencia
+
+Este es el hallazgo mas accionable del change, porque **se intento y se revirtio**.
+
+Se probo sustituir los dos `console.*` del codigo Angular por el `Logger` de `@angular/core`:
+
+```
+X [ERROR] TS2305: Module '"@angular/core"' has no exported member 'Logger'.
+    apps/web/src/main.ts:1:9
+    apps/web/src/app/core/services/exoplanet-api.service.ts:1:70
+```
+
+`nx build` paso de **verde a rojo**. Se verifico en los tipos instalados:
+
+| Comprobacion | Resultado |
+|---|---|
+| `Logger` en `types/core.d.ts` de `@angular/core@21.2.6` | **0 coincidencias** |
+| `Logger` en cualquier `*.d.ts` de los 14 paquetes `@angular/*` instalados | **0 coincidencias** |
+| Export principal de `@angular/core` | `types/core.d.ts` → `fesm2022/core.mjs`, sin `Logger` |
+
+**Conclusion:** Angular 21 retiro el `Logger` integrado. En NestJS la regla "Logger en vez de
+`console.log`" si es aplicable, y es lo que se aplico en `apps/api/src/main.ts` (que ya usaba
+`Logger`, y ahora ademas encamina su configuracion por `ConfigService`). En el front **no hay a donde
+migrar sin anadir una libreria de logging**, y anadir una dependencia mas elegir cual es una decision,
+no un cambio de forma. Se aplico la regla del contrato —*un fallo nuevo = revertir ese item*— y los
+dos ficheros volvieron a su estado original.
+
+### Inventario de `console.*` que queda
+
+| Fichero | Linea | Que es |
+|---|---|---|
+| `apps/web/src/main.ts` | 5 | `console.error(err)` en el `catch` de `bootstrapApplication` |
+| `apps/web/src/app/core/services/exoplanet-api.service.ts` | 109 | `console.log('API no disponible, usando datos mock')` |
+| `apps/api-e2e/src/support/global-setup.ts` | 8 | Andamiaje de Playwright |
+| `apps/api-e2e/src/support/global-teardown.ts` | 9 | Andamiaje de Playwright |
+
+Los dos ultimos **no son codigo de producto**: son el setup y el teardown de Playwright, se ejecutan
+una vez y su salida es el propio informe del runner. Alli `console` es lo correcto.
+
+### Arreglo propuesto (NO aplicado)
+
+Elegir una libreria de logging para el front y aplicarla en los dos puntos de la tabla. Es una
+decision con criterio, no una sustitucion mecanica: las dos opciones sobre la mesa son una libreria
+dedicada, o un servicio propio `providedIn: 'root'` que wrapee `console` y sirva de punto unico de
+sustitucion. La eleccion deberia ir en su propio change, porque anadir dependencia es decision de
+plataforma, igual que lo seria migrar a Biome o cambiar de orquestador.

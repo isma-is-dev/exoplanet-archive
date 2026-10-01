@@ -5,21 +5,23 @@
 
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app/app.module';
 import compression from 'compression';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const configService = app.get(ConfigService);
 
   // Compresión gzip
   app.use(compression());
 
   // CORS para el frontend Angular
   app.enableCors({
-    origin: process.env.CORS_ORIGIN || 'https://exodex.zemios.dev',
+    origin: configService.get<string>('CORS_ORIGIN') || 'https://exodex.zemios.dev',
   });
 
-  const port = process.env.PORT || 3000;
+  const port = configService.get<string>('PORT') || 3000;
   await app.listen(port);
   Logger.log(`🚀 Application is running on: http://localhost:${port}/api`);
 }

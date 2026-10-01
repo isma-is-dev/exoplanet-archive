@@ -82,9 +82,11 @@ Un documento actualizado "en una pasada final" es un documento que nunca se actu
   relativas entre proyectos.
 - **La API lee configuracion con `ConfigService`**, no con `process.env`. Ya es la convencion
   (`ExoplanetService` la sigue) y el unico que no la seguia era `main.ts`.
-- **Log a traves de `Logger`.** En NestJS, `new Logger(MiClase.name)`. En Angular, el `Logger` de
-  `@angular/core`. No `console.*` en codigo de producto. La excepcion son los ficheros
-  `apps/*-e2e/src/support/*.ts`, que son andamiaje de test.
+- **Log a traves de `Logger`.** En NestJS, `new Logger(MiClase.name)`. **En el front no hay
+  `Logger`: Angular 21 lo retiro del framework**, asi que los dos `console.*` de `apps/web` siguen
+  ahi a proposito hasta que se elija una libreria de logging. Ver
+  [seccion 8 de quality-gates.md](docs/operations/quality-gates.md). La excepcion natural son los
+  ficheros `apps/*-e2e/src/support/*.ts`, que son andamiaje de test.
 - **Comments y mensajes de log en ingles o espanol, pero el codigo en ingles.** Los mensajes de log
   existentes mezclan ambos idiomas; no unifiques el idioma en un change de otro tema.
 
