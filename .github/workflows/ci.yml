@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# Only the newest run per branch matters; do not queue duplicates.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CI: 'true'
+  NX_DAEMON: 'false'
+  NX_NO_CLOUD: 'true'
+
+jobs:
+  quality:
+    name: lint, test, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        # NOTE: currently red on 46 pre-existing errors, all in files this repo
+        # shipped before CI existed (see README "Known gaps"). Left blocking on
+        # purpose: dropping it would hide them.
+        run: pnpm exec nx run-many -t lint
+
+      - name: Test
+        run: pnpm exec nx run-many -t test
+
+      - name: Build
+        run: pnpm exec nx run-many -t build
