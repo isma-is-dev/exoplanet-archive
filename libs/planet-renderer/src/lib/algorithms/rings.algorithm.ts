@@ -44,18 +44,38 @@ function renderBandEllipses(
 }
 
 /**
+ * Deterministic id suffix so ring markup is a pure function of its inputs
+ * (server-rendered markup has to match the client) while staying unique per
+ * planet when several are rendered on the same page.
+ */
+function stableSuffix(...parts: Array<string | number>): string {
+  let h = 2166136261;
+  const text = parts.join('|');
+  for (let i = 0; i < text.length; i++) {
+    h ^= text.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return (h >>> 0).toString(36);
+}
+
+/**
  * Back rings — drawn BEFORE the planet body.
  * Clipped to the top half along the TILTED ring axis so only the portion
  * geometrically behind the planet is visible. The clip rect is rotated
  * by the same angle as the rings so the split follows the tilt correctly.
+ *
+ * @param idSuffix stable per-planet suffix; derived from the arguments when omitted
  */
 export function buildRings(
   radius: number,
   center: number,
-  secondaryColor: string
+  secondaryColor: string,
+  idSuffix?: string
 ): string {
   const rotation = -15;
-  const clipId = `ring-back-${Math.random().toString(36).substr(2, 9)}`;
+  const clipId = `ring-back-${
+    idSuffix ?? stableSuffix(radius, center, secondaryColor)
+  }`;
   const bands = getRingBands(secondaryColor);
   const vb = center * 2;
 
@@ -83,14 +103,19 @@ export function buildRings(
  * Because the white rect rotation matches the ring rotation, the front/back
  * boundary follows the correct tilted axis and never "cuts into" the planet
  * on the right side.
+ *
+ * @param idSuffix stable per-planet suffix; derived from the arguments when omitted
  */
 export function buildFrontRings(
   radius: number,
   center: number,
-  secondaryColor: string
+  secondaryColor: string,
+  idSuffix?: string
 ): string {
   const rotation = -15;
-  const clipId = `ring-front-${Math.random().toString(36).substr(2, 9)}`;
+  const clipId = `ring-front-${
+    idSuffix ?? stableSuffix(radius, center, secondaryColor)
+  }`;
   const bands = getRingBands(secondaryColor);
   const vb = center * 2;
 

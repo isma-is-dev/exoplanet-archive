@@ -1,9 +1,26 @@
 import { lightenHex, darkenHex } from './color.algorithm';
 
 /**
+ * Deterministic id suffix so the glow markup is a pure function of its inputs
+ * (server-rendered markup has to match the client) while staying unique per
+ * planet when several are rendered on the same page.
+ */
+function stableSuffix(...parts: Array<string | number | null>): string {
+  let h = 2166136261;
+  const text = parts.map((p) => String(p)).join('|');
+  for (let i = 0; i < text.length; i++) {
+    h ^= text.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return (h >>> 0).toString(36);
+}
+
+/**
  * Build a multi-layer atmospheric glow with Fresnel rim lighting.
  * The atmosphere color is inferred from the planet's equilibrium temperature.
  * When animated, adds subtle breathing pulsation to the glow layers.
+ *
+ * @param idSuffix stable per-planet suffix; derived from the arguments when omitted
  */
 export function buildAtmosphereGlow(
   radius: number,
@@ -11,7 +28,8 @@ export function buildAtmosphereGlow(
   color: string,
   equilibriumTempK: number | null,
   insolationFlux: number | null,
-  animate: boolean = false
+  animate: boolean = false,
+  idSuffix?: string
 ): string {
   // Only show atmosphere if we have temperature or flux data
   if (insolationFlux === null && equilibriumTempK === null) {
@@ -58,7 +76,9 @@ export function buildAtmosphereGlow(
     }
   }
 
-  const idPrefix = `atm-${Math.random().toString(36).substr(2, 9)}`;
+  const idPrefix = `atm-${
+    idSuffix ?? stableSuffix(radius, center, color, equilibriumTempK, insolationFlux)
+  }`;
   const outerGlowId = `${idPrefix}-outer`;
   const innerGlowId = `${idPrefix}-inner`;
   const rimGradId = `${idPrefix}-rim`;

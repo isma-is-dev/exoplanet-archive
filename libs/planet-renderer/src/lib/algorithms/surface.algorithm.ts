@@ -24,11 +24,38 @@ function nameToSeed(name: string): number {
   return Math.abs(h) % 100000;
 }
 
+/**
+ * Wide, collision-resistant scope id for a planet. `nameToSeed` is only 5
+ * digits, which is not enough to keep gradient ids unique when dozens of
+ * planets share a page.
+ */
+function renderScope(name: string): string {
+  let h = 2166136261;
+  for (let i = 0; i < name.length; i++) {
+    h ^= name.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return (h >>> 0).toString(36);
+}
+
 // ─── Unique ID helper ─────────────────────────────────────────
+//
+// Element ids must be stable for a given planet — the renderer is a pure
+// function of its inputs so that server-rendered markup matches the client —
+// while still being unique when several planets appear on the same page. The
+// scope comes from the planet name and the counter restarts on every render,
+// which gives both properties.
 
 let _idCounter = 0;
+let _renderScope = '0';
+
+function beginRenderScope(planetName: string): void {
+  _renderScope = renderScope(planetName || 'unknown');
+  _idCounter = 0;
+}
+
 function uid(prefix: string): string {
-  return `${prefix}-${_idCounter++}-${Math.random().toString(36).substr(2, 5)}`;
+  return `${prefix}-${_renderScope}-${_idCounter++}`;
 }
 
 // ─── Rotation speed from orbital period ───────────────────────
@@ -67,6 +94,7 @@ export function buildSurfaceDetails(
 ): string {
   const rand = seededRandom(planetName || 'unknown');
   const seed = nameToSeed(planetName || 'unknown');
+  beginRenderScope(planetName);
   const clipId = uid('surf-clip');
   const rotDur = getRotationDuration(orbitalPeriodDays, planetType);
 

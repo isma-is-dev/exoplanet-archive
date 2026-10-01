@@ -67,7 +67,7 @@ export function renderPlanet(
 
   // Layer 0: Back rings (behind everything)
   if (showRings) {
-    svgParts.push(buildRings(visualRadius, center, secondaryColor));
+    svgParts.push(buildRings(visualRadius, center, secondaryColor, idSuffix));
   }
 
   // Layer 1: Atmosphere glow (behind planet body)
@@ -77,7 +77,8 @@ export function renderPlanet(
     primaryColor,
     equilibriumTempK,
     insolationFlux,
-    shouldAnimate
+    shouldAnimate,
+    idSuffix
   );
   if (atmosphereSvg) {
     svgParts.push(atmosphereSvg);
@@ -161,7 +162,7 @@ export function renderPlanet(
 
   // Layer 7: Front rings (in front of planet)
   if (showRings) {
-    svgParts.push(buildFrontRings(visualRadius, center, secondaryColor));
+    svgParts.push(buildFrontRings(visualRadius, center, secondaryColor, idSuffix));
   }
 
   // Assemble final SVG
