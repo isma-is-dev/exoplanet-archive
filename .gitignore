@@ -1,11 +1,24 @@
+# Local environment files — never commit these
 .env
+.env.*
+!.env.example
+apps/*/.env
+apps/*/.env.*
+libs/*/.env
+libs/*/.env.*
+
+# Editors / OS
+.DS_Store
+Thumbs.db
+
+# Nx / build output
 .nx/installation
 .nx/cache
 .nx/workspace-data
-
 node_modules/
-
 .angular
 dist/
 __screenshots__/
+tmp/
 data/
+coverage/
