@@ -46,21 +46,28 @@ Nota de versión: en `jscpd` 5.4.0 `failOnNewClones` es un **número** (u64) en 
 booleano, y `--fail-on-new-clones` / `--fail-on-empty` son flags de CLI. La plantilla del contrato
 Zemios usa `"failOnNewClones": true` y jscpd 5 lo rechaza (`invalid type: boolean`).
 
-## Decisión 3 · `Logger` y `ConfigService` como sustituciones de categoría A
+## Decision 3 · `ConfigService` como sustitucion de categoria A, y por que el `Logger` angular no
 
-- `apps/web/src/main.ts`: `console.error(err)` en el `catch` de `bootstrapApplication` → `Logger`.
-- `apps/web/src/app/core/services/exoplanet-api.service.ts:109`: `console.log('API no disponible,
-  usando datos mock')` → `Logger` de Angular. Es el único `console.*` en código de producto.
 - `apps/api/src/main.ts`: `process.env.CORS_ORIGIN` y `process.env.PORT` → `ConfigService.get()`
-  con los mismos defaults. `ExoplanetService` ya usa `ConfigService`; `main.ts` era la excepción.
+  con los mismos defaults y el mismo operador `||` (para no cambiar el caso `PORT=""`).
+  `ExoplanetService` ya usaba `ConfigService`; `main.ts` era la unica excepcion.
 
-Los `console.log` de `apps/api-e2e/src/support/global-setup.ts` y `global-teardown.ts` **se dejan**:
-son andamiaje de test, se ejecutan una vez y su salida es el propio informe del runner.
-Los `process.env` de `apps/web-e2e/playwright.config.ts` y de `apps/api-e2e/src/support/*` también
-se dejan: son configuración de la herramienta de test, ejecutada antes de que exista contenedor DI.
+**El `Logger` de Angular no existe en esta version, y se comprobo empíricamente.** Se probo
+sustituir los dos `console.*` del front por `Logger` de `@angular/core` y `nx build` paso de verde a
+rojo con:
 
-Ambas sustituciones son 1:1 sobre el valor; ningún default cambia, así que el comportamiento en
-producción es idéntico.
+```
+TS2305: Module '"@angular/core"' has no exported member 'Logger'.
+```
+
+`@angular/core@21.2.6` no exporta `Logger`, y el simbolo **no aparece en ningun paquete `@angular/*`
+instalado**. Angular 21 retiro el `Logger` integrado. Sustituir `console.*` en el front exigiria anadir
+una libreria de logging, que es anadir dependencia y decidir cual: no es un cambio de forma.
+
+Segun la regla del contrato ("un fallo nuevo = revertir ese ítem"), **los dos cambios de Angular se
+revirtieron** y solo se aplica el de la API. Los `console.log` de `apps/api-e2e/src/support/*.ts` y los
+`process.env` de `apps/web-e2e/playwright.config.ts` y `apps/api-e2e/src/support/*` se dejan: son
+andamiaje de test, se ejecutan antes de que exista contenedor DI.
 
 ## Decisión 4 · ADR como registro de deuda asumida
 

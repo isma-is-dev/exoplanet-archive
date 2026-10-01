@@ -19,6 +19,8 @@ documenta y acota con una línea base para que no pueda empeorar.
 - Añade `.jscpd.json` + `.jscpd-baseline.json` con la **línea base real medida** (8 clones,
   179 líneas duplicadas, 1.28 %) para que la puerta de duplicidad detecte solo clones nuevos.
 - Sustituye `console.*` por `Logger` en el arranque de Angular y en `exoplanet-api.service.ts`.
+  **Revirtido:** Angular 21 no exporta `Logger` (ver `design.md`, decisión 3). Queda documentado
+  como pendiente.
 - Encamina la lectura de `process.env` de `apps/api/src/main.ts` a través de `ConfigService`.
 - Clasifica cada fallo de puerta existente (dependencia / configuración / código) en
   `docs/operations/quality-gates.md`, **sin aplicar el arreglo**.
@@ -33,8 +35,7 @@ documenta y acota con una línea base para que no pueda empeorar.
 
 - Ficheros nuevos: documentación (`README.md`, `ARCHITECTURE.md`, `CONTRIBUTING.md`, `docs/**`) y
   configuración (`.editorconfig`, `.gitattributes`, `.jscpd.json`, `.jscpd-baseline.json`).
-- Ficheros de código tocados: `apps/api/src/main.ts`, `apps/web/src/main.ts`,
-  `apps/web/src/app/core/services/exoplanet-api.service.ts`. Ningún cambio de comportamiento.
+- Ficheros de código tocados: `apps/api/src/main.ts`. Ningún cambio de comportamiento.
 - Puertas: `nx build` debe seguir en verde; `nx lint` y `nx test` deben seguir en rojo **igual**,
   con el mismo recuento de errores.
 

@@ -68,20 +68,35 @@ arreglo se haya aplicado.
 - **WHEN** se lee la sección de arreglo propuesto de un fallo
 - **THEN** el arreglo está descrito en prosa y **no** aplicado en el árbol
 
-### Requirement: Logging y configuración a través de los canales del framework
+### Requirement: Configuracion de la API por inyeccion
 
-El código de producto SHALL emitir logs a través del `Logger` del framework que lo Aloja y SHALL leer
-variables de entorno a través del módulo de configuración del framework, nunca a través de
-`console.*` ni de acceso directo a `process.env`.
-
-#### Scenario: Código de producto sin console
-
-- **WHEN** se busca `console.log|warn|error|info|debug` en `apps/` y `libs/`, excluyendo el
-  andamiaje de tests end-to-end
-- **THEN** no hay coincidencias
+El codigo de la API SHALL leer variables de entorno a traves del modulo de configuracion del
+framework, nunca por acceso directo a `process.env`.
 
 #### Scenario: La API lee su configuración por inyección
 
-- **WHEN** se busca `process.env` en el código de la API
+- **WHEN** se busca `process.env` en el codigo de la API
 - **THEN** no hay coincidencias, porque toda variable se resuelve con el servicio de configuración y
   conserva su valor por defecto previo
+
+#### Scenario: Una variable de entorno vacia conserva el comportamiento previo
+
+- **WHEN** `PORT` esta definida pero vacia
+- **THEN** la API escucha en el puerto por defecto, igual que antes de la sustitucion
+
+### Requirement: Registro de log por el canal propio de cada framework
+
+El codigo de NestJS SHALL emitir logs a traves de `Logger` de `@nestjs/common`. El codigo Angular
+SHALL emitir logs por el mecanismo de logging que se docione en
+`docs/operations/quality-gates.md` para la version de Angular en uso.
+
+#### Scenario: La API no escribe en consola
+
+- **WHEN** se busca `console.log|warn|error|info|debug` en `apps/api/src`
+- **THEN** no hay coincidencias, porque `main.ts` y `ExoplanetService` usan `Logger`
+
+#### Scenario: El front no puede usar el Logger de Angular
+
+- **WHEN** se busca `Logger` en los tipos de los paquetes `@angular/*` instalados
+- **THEN** no aparece, y por tanto los dos `console.*` del front quedan pendientes de una decision
+  sobre que libreria de logging usar

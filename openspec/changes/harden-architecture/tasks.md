@@ -42,13 +42,16 @@
 - [x] 4.4 Documentar los 3-5 clones más relevantes y entre qué paquetes.
       *Verificar:* están en `docs/operations/quality-gates.md`; **no se refactoriza ninguno**.
 
-## 5. Sustituciones de código seguras (categoría A)
+## 5. Sustituciones de codigo seguras (categoria A)
 
-- [x] 5.1 `console.*` → `Logger` en `apps/web/src/main.ts` y
-      `apps/web/src/app/core/services/exoplanet-api.service.ts`.
-      *Verificar:* `grep "console\." apps libs` no devuelve resultados en código de producto.
-- [x] 5.2 `process.env` → `ConfigService` en `apps/api/src/main.ts`, mismos defaults.
+- [x] 5.1 `process.env` → `ConfigService` en `apps/api/src/main.ts`, mismos defaults y mismo
+      operador `||` para no cambiar el caso `PORT=""`.
       *Verificar:* `grep "process\.env" apps/api/src` no devuelve resultados.
+- [x] 5.2 `console.*` → `Logger` en el front: **REVERTIDO, no se aplica.**
+      Se probo y `nx build` paso a rojo con `TS2305: Module '"@angular/core"' has no exported
+      member 'Logger'`. `@angular/core@21.2.6` no exporta `Logger` y el simbolo no esta en ningun
+      paquete `@angular/*` instalado. Sustituirlo exigiria anadir una libreria de logging.
+      *Verificar:* `nx build web` sigue en verde.
 
 ## 6. Verificación
 
