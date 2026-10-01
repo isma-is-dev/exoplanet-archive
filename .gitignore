@@ -9,3 +9,7 @@ node_modules/
 dist/
 __screenshots__/
 data/
+
+# Informe generado por jscpd (la linea base .jscpd-baseline.json SI se commitea).
+jscpd-report/
+report/

@@ -1,0 +1,28 @@
+# Configuracion de editor uniforme del repositorio exodex.
+# Complementa a .gitattributes: este fichero guia al editor, aquel fixa lo que se
+# guarda en el indice de Git.
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+max_line_length = 100
+
+[*.md]
+# Markdown usa dos espacios finales para el salto de linea: trim los romperia.
+trim_trailing_whitespace = false
+indent_size = 4
+
+[*.{ts,tsx,js,jsx,mjs,cjs,json,scss,css,html,yml,yaml,mts,cts}]
+indent_size = 2
+
+[Makefile]
+indent_style = tab
+
+[*.{bat,cmd,ps1}]
+end_of_line = crlf
