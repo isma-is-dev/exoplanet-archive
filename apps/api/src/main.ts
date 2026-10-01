@@ -5,14 +5,52 @@
 
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import type { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app/app.module';
 import compression from 'compression';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  // Cabeceras de seguridad (CSP, HSTS, nosniff, frameguard…).
+  // The API only serves JSON, so the policy can stay strict.
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'none'"],
+          frameAncestors: ["'none'"],
+          baseUri: ["'none'"],
+          formAction: ["'none'"],
+        },
+      },
+      crossOriginResourcePolicy: { policy: 'cross-origin' },
+      referrerPolicy: { policy: 'no-referrer' },
+    })
+  );
 
   // Compresión gzip
   app.use(compression());
+
+  // Límite de peticiones: la API es pública y de solo lectura, así que se
+  // protege contra abuso sin necesidad de autenticación.
+  const windowMs = Number(process.env.RATE_LIMIT_WINDOW_MS ?? 60_000);
+  const max = Number(process.env.RATE_LIMIT_MAX ?? 120);
+  app.use(
+    rateLimit({
+      windowMs,
+      limit: max,
+      standardHeaders: 'draft-7',
+      legacyHeaders: false,
+      message: {
+        statusCode: 429,
+        error: 'Too Many Requests',
+        message: 'Rate limit exceeded. Exodex is a free public read-only API; please slow down.',
+      },
+    })
+  );
 
   // CORS para el frontend Angular
   app.enableCors({
