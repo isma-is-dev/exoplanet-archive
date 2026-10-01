@@ -77,8 +77,12 @@
       "executor": "@nx/eslint:lint"
     },
     "test": {
-      "executor": "@angular/build:unit-test",
-      "options": {}
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/apps/web"],
+      "options": {
+        "jestConfig": "apps/web/jest.config.cts",
+        "tsConfig": "apps/web/tsconfig.spec.json"
+      }
     },
     "serve-static": {
       "continuous": true,
