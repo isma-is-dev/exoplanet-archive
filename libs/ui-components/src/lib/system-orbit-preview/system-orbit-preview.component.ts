@@ -4,7 +4,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { Exoplanet } from '@exodex/shared-types';
 
 @Component({
-  selector: 'app-system-orbit-preview',
+  selector: 'lib-system-orbit-preview',
   standalone: true,
   imports: [CommonModule, TranslateModule],
   template: `

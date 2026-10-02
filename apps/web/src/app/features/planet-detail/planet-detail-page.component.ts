@@ -35,7 +35,7 @@ import { getTelescopeWikiLink } from '../../core/constants/telescopes';
               <div class="orbital-ring ring-1"></div>
               <div class="orbital-ring ring-2"></div>
               <div class="planet-avatar-container">
-                <app-planet-avatar [planet]="p" size="detail" />
+                <lib-planet-avatar [planet]="p" size="detail" />
               </div>
             </div>
             <h1 class="planet-name">{{ p.name }}</h1>
@@ -48,13 +48,13 @@ import { getTelescopeWikiLink } from '../../core/constants/telescopes';
               </span>
             </div>
             <div class="planet-badges">
-              <app-stat-badge type="type" [value]="p.planetType" />
-              <app-stat-badge type="habitability" [value]="p.habitabilityClass" />
+              <lib-stat-badge type="type" [value]="p.planetType" />
+              <lib-stat-badge type="habitability" [value]="p.habitabilityClass" />
               @if (p.controversialFlag) {
-                <app-stat-badge type="controversial" value="disputed" />
+                <lib-stat-badge type="controversial" value="disputed" />
               }
               @if (p.visualMagnitude !== null && p.visualMagnitude !== undefined && p.visualMagnitude < 6.5) {
-                <app-stat-badge type="visibility" value="naked-eye" />
+                <lib-stat-badge type="visibility" value="naked-eye" />
               }
             </div>
             <div class="discovery-year">{{ 'common.discoveredIn' | translate: { year: p.discoveryYear } }}</div>
@@ -64,7 +64,7 @@ import { getTelescopeWikiLink } from '../../core/constants/telescopes';
           <section class="bento-tile section--orbital">
             <h3><span class="section-icon"><svg viewBox="0 0 20 20" fill="none" stroke="#4d8aff" stroke-width="1.2"><circle cx="10" cy="10" r="7"/><circle cx="10" cy="10" r="3"/><circle cx="10" cy="10" r="1" fill="#4d8aff"/></svg></span> {{ 'sections.orbitalProperties' | translate }}</h3>
             @if (systemPlanets().length > 0) {
-              <app-system-orbit-preview
+              <lib-system-orbit-preview
                 [planets]="systemPlanets()"
                 [currentPlanetId]="p.id"
                 [systemName]="p.hostStar" />
@@ -88,21 +88,21 @@ import { getTelescopeWikiLink } from '../../core/constants/telescopes';
                 </div>
               </a>
             }
-            <app-stat-row [label]="'stats.orbitalPeriod' | translate" [value]="p.orbitalPeriodDays" [unit]="'units.days' | translate" [errPlus]="p.orbitalPeriodErr1" [errMinus]="p.orbitalPeriodErr2" />
-            <app-stat-row [label]="'stats.semiMajorAxis' | translate" [value]="p.semiMajorAxisAU" [unit]="'units.au' | translate" />
-            <app-stat-row [label]="'stats.eccentricity' | translate" [value]="p.eccentricity" />
-            <app-stat-row [label]="'stats.inclination' | translate" [value]="p.inclinationDeg" [unit]="'units.deg' | translate" />
+            <lib-stat-row [label]="'stats.orbitalPeriod' | translate" [value]="p.orbitalPeriodDays" [unit]="'units.days' | translate" [errPlus]="p.orbitalPeriodErr1" [errMinus]="p.orbitalPeriodErr2" />
+            <lib-stat-row [label]="'stats.semiMajorAxis' | translate" [value]="p.semiMajorAxisAU" [unit]="'units.au' | translate" />
+            <lib-stat-row [label]="'stats.eccentricity' | translate" [value]="p.eccentricity" />
+            <lib-stat-row [label]="'stats.inclination' | translate" [value]="p.inclinationDeg" [unit]="'units.deg' | translate" />
           </section>
 
           <!-- Physical -->
           <section class="bento-tile section--physical">
             <h3><span class="section-icon"><svg viewBox="0 0 20 20" fill="none" stroke="#a855f7" stroke-width="1.2"><circle cx="10" cy="10" r="8"/><path d="M10 2v16M2 10h16" opacity="0.3"/><circle cx="10" cy="10" r="4" fill="rgba(168,85,247,0.2)"/></svg></span> {{ 'sections.physicalProperties' | translate }}</h3>
-            <app-stat-row [label]="'stats.radius' | translate" [value]="p.radiusEarth" [unit]="'units.radiusEarth' | translate" [errPlus]="p.radiusEarthErr1" [errMinus]="p.radiusEarthErr2" />
-            <app-stat-row [label]="'stats.mass' | translate" [value]="p.massEarth" [unit]="'units.massEarth' | translate" [errPlus]="p.massEarthErr1" [errMinus]="p.massEarthErr2" />
-            <app-stat-row [label]="'stats.density' | translate" [value]="p.densityGCC" [unit]="'units.density' | translate" />
-            <app-stat-row [label]="'stats.gravity' | translate" [value]="p.gravityMS2" [unit]="'units.gravity' | translate" />
-            <app-stat-row [label]="'stats.temperature' | translate" [value]="p.equilibriumTempK" [unit]="'units.tempK' | translate" [errPlus]="p.equilibriumTempErr1" [errMinus]="p.equilibriumTempErr2" />
-            <app-stat-row [label]="'stats.distance' | translate" [value]="p.distanceParsec" [unit]="'units.pc' | translate" />
+            <lib-stat-row [label]="'stats.radius' | translate" [value]="p.radiusEarth" [unit]="'units.radiusEarth' | translate" [errPlus]="p.radiusEarthErr1" [errMinus]="p.radiusEarthErr2" />
+            <lib-stat-row [label]="'stats.mass' | translate" [value]="p.massEarth" [unit]="'units.massEarth' | translate" [errPlus]="p.massEarthErr1" [errMinus]="p.massEarthErr2" />
+            <lib-stat-row [label]="'stats.density' | translate" [value]="p.densityGCC" [unit]="'units.density' | translate" />
+            <lib-stat-row [label]="'stats.gravity' | translate" [value]="p.gravityMS2" [unit]="'units.gravity' | translate" />
+            <lib-stat-row [label]="'stats.temperature' | translate" [value]="p.equilibriumTempK" [unit]="'units.tempK' | translate" [errPlus]="p.equilibriumTempErr1" [errMinus]="p.equilibriumTempErr2" />
+            <lib-stat-row [label]="'stats.distance' | translate" [value]="p.distanceParsec" [unit]="'units.pc' | translate" />
           </section>
 
           <!-- Host Star -->
@@ -112,56 +112,58 @@ import { getTelescopeWikiLink } from '../../core/constants/telescopes';
                 <span class="section-icon"><svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="4" fill="#f59e0b" opacity="0.8"/><path d="M10 2v3M10 15v3M2 10h3M15 10h3M4.3 4.3l2.1 2.1M13.6 13.6l2.1 2.1M4.3 15.7l2.1-2.1M13.6 6.4l2.1-2.1" stroke="#f59e0b" stroke-width="1.2" stroke-linecap="round"/></svg></span>
                 {{ 'sections.hostStar' | translate }}
               </div>
-              <div class="host-star-badges" *ngIf="p.hostStar">
-                <span class="star-name-badge">{{ p.hostStar }}</span>
-                @if (p.spectralType) {
-                  <span class="star-type-badge spectral-real"
-                        [style.color]="starData()?.primaryColor"
-                        [style.borderColor]="starData()?.primaryColor"
-                        [style.backgroundColor]="starData()?.primaryColor + '15'">
-                    {{ p.spectralType }}
-                  </span>
-                } @else if (starData()?.spectralClass) {
-                  <span class="star-type-badge"
-                        [style.color]="starData()?.primaryColor"
-                        [style.borderColor]="starData()?.primaryColor"
-                        [style.backgroundColor]="starData()?.primaryColor + '15'">
-                    {{ 'systemDetail.type' | translate }} {{ starData()?.spectralClass }}
-                  </span>
-                }
-                @if (p.visualMagnitude !== null && p.visualMagnitude !== undefined && p.visualMagnitude < 6.5) {
-                  <span class="naked-eye-indicator">
-                    <svg viewBox="0 0 16 16" fill="none" width="11" height="11">
-                      <path d="M8 3.5C4.7 3.5 2 6.3 1.3 8c.7 1.7 3.4 4.5 6.7 4.5s6-2.8 6.7-4.5c-.7-1.7-3.4-4.5-6.7-4.5z" stroke="#22d3ee" stroke-width="1" fill="rgba(34,211,238,0.1)"/>
-                      <circle cx="8" cy="8" r="2" fill="#22d3ee" opacity="0.7"/>
-                    </svg>
-                    {{ p.visualMagnitude | number:'1.1-1' }}m
-                  </span>
-                }
-              </div>
+              @if (p.hostStar) {
+                <div class="host-star-badges">
+                  <span class="star-name-badge">{{ p.hostStar }}</span>
+                  @if (p.spectralType) {
+                    <span class="star-type-badge spectral-real"
+                          [style.color]="starData()?.primaryColor"
+                          [style.borderColor]="starData()?.primaryColor"
+                          [style.backgroundColor]="starData()?.primaryColor + '15'">
+                      {{ p.spectralType }}
+                    </span>
+                  } @else if (starData()?.spectralClass) {
+                    <span class="star-type-badge"
+                          [style.color]="starData()?.primaryColor"
+                          [style.borderColor]="starData()?.primaryColor"
+                          [style.backgroundColor]="starData()?.primaryColor + '15'">
+                      {{ 'systemDetail.type' | translate }} {{ starData()?.spectralClass }}
+                    </span>
+                  }
+                  @if (p.visualMagnitude !== null && p.visualMagnitude !== undefined && p.visualMagnitude < 6.5) {
+                    <span class="naked-eye-indicator">
+                      <svg viewBox="0 0 16 16" fill="none" width="11" height="11">
+                        <path d="M8 3.5C4.7 3.5 2 6.3 1.3 8c.7 1.7 3.4 4.5 6.7 4.5s6-2.8 6.7-4.5c-.7-1.7-3.4-4.5-6.7-4.5z" stroke="#22d3ee" stroke-width="1" fill="rgba(34,211,238,0.1)"/>
+                        <circle cx="8" cy="8" r="2" fill="#22d3ee" opacity="0.7"/>
+                      </svg>
+                      {{ p.visualMagnitude | number:'1.1-1' }}m
+                    </span>
+                  }
+                </div>
+              }
             </h3>
             @if (starData()?.svg) {
               <div class="host-star-avatar-container">
                 <div class="host-star-avatar" [innerHTML]="starData()?.svg"></div>
               </div>
             }
-            <app-stat-row [label]="'stats.spectralType' | translate" [value]="p.spectralType" />
-            <app-stat-row [label]="'stats.stellarTemperature' | translate" [value]="p.stellarTempK" [unit]="'units.tempK' | translate" />
-            <app-stat-row [label]="'stats.stellarRadius' | translate" [value]="p.stellarRadiusSun" [unit]="'units.radiusSun' | translate" />
-            <app-stat-row [label]="'stats.stellarMass' | translate" [value]="p.stellarMassSun" [unit]="'units.massSun' | translate" />
-            <app-stat-row [label]="'stats.stellarMetallicity' | translate" [value]="p.stellarMetallicity" />
-            <app-stat-row [label]="'stats.stellarGravity' | translate" [value]="p.stellarSurfaceGravity" [unit]="'units.logg' | translate" />
-            <app-stat-row [label]="'stats.stellarAge' | translate" [value]="p.stellarAge" [unit]="'units.gyr' | translate" />
-            <app-stat-row [label]="'stats.visualMagnitude' | translate" [value]="p.visualMagnitude" />
+            <lib-stat-row [label]="'stats.spectralType' | translate" [value]="p.spectralType" />
+            <lib-stat-row [label]="'stats.stellarTemperature' | translate" [value]="p.stellarTempK" [unit]="'units.tempK' | translate" />
+            <lib-stat-row [label]="'stats.stellarRadius' | translate" [value]="p.stellarRadiusSun" [unit]="'units.radiusSun' | translate" />
+            <lib-stat-row [label]="'stats.stellarMass' | translate" [value]="p.stellarMassSun" [unit]="'units.massSun' | translate" />
+            <lib-stat-row [label]="'stats.stellarMetallicity' | translate" [value]="p.stellarMetallicity" />
+            <lib-stat-row [label]="'stats.stellarGravity' | translate" [value]="p.stellarSurfaceGravity" [unit]="'units.logg' | translate" />
+            <lib-stat-row [label]="'stats.stellarAge' | translate" [value]="p.stellarAge" [unit]="'units.gyr' | translate" />
+            <lib-stat-row [label]="'stats.visualMagnitude' | translate" [value]="p.visualMagnitude" />
           </section>
 
           <!-- Discovery (col 1, row 3) -->
           <section class="bento-tile section--discovery">
             <h3><span class="section-icon"><svg viewBox="0 0 20 20" fill="none" stroke="#22d3ee" stroke-width="1.2" stroke-linecap="round"><path d="M14 3l3 5-10 6-3-5z" fill="rgba(34,211,238,0.15)"/><path d="M7 14l-3 4"/><path d="M4 18h6"/><circle cx="16" cy="4" r="1.5" fill="rgba(34,211,238,0.3)"/></svg></span> {{ 'sections.discovery' | translate }}</h3>
-            <app-stat-row [label]="'stats.discoveryMethod' | translate" [value]="p.discoveryMethod ? ('stats.methodNames.' + p.discoveryMethod | translate) : '—'" [href]="getDiscoveryMethodLink(p.discoveryMethod)" [isExternalLink]="false" />
-            <app-stat-row [label]="'stats.discoveryYear' | translate" [value]="p.discoveryYear" />
-            <app-stat-row [label]="'stats.discoveryFacility' | translate" [value]="p.discoveryFacility" />
-            <app-stat-row [label]="'stats.telescope' | translate" [value]="p.telescope" [href]="getTelescopeWikiLink(p.telescope)" [isExternalLink]="true" />
+            <lib-stat-row [label]="'stats.discoveryMethod' | translate" [value]="p.discoveryMethod ? ('stats.methodNames.' + p.discoveryMethod | translate) : '—'" [href]="getDiscoveryMethodLink(p.discoveryMethod)" [isExternalLink]="false" />
+            <lib-stat-row [label]="'stats.discoveryYear' | translate" [value]="p.discoveryYear" />
+            <lib-stat-row [label]="'stats.discoveryFacility' | translate" [value]="p.discoveryFacility" />
+            <lib-stat-row [label]="'stats.telescope' | translate" [value]="p.telescope" [href]="getTelescopeWikiLink(p.telescope)" [isExternalLink]="true" />
           </section>
 
           <!-- Atmosphere (col 2, row 3) — always rendered -->
@@ -169,7 +171,7 @@ import { getTelescopeWikiLink } from '../../core/constants/telescopes';
             <h3><span class="section-icon"><svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="spec-icon" x1="0" y1="0" x2="20" y2="20"><stop offset="0%" stop-color="#ef4444"/><stop offset="25%" stop-color="#f59e0b"/><stop offset="50%" stop-color="#22c55e"/><stop offset="75%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#a855f7"/></linearGradient></defs><rect x="2" y="7" width="16" height="6" rx="1" fill="url(#spec-icon)" opacity="0.6"/><line x1="6" y1="5" x2="6" y2="15" stroke="#e8eeff" stroke-width="1" opacity="0.7"/><line x1="10" y1="4" x2="10" y2="16" stroke="#e8eeff" stroke-width="1" opacity="0.5"/><line x1="14" y1="5" x2="14" y2="15" stroke="#e8eeff" stroke-width="1" opacity="0.7"/></svg></span> {{ 'didactic.atmosphereTitle' | translate }}</h3>
             @if (atmosphereData(); as atm) {
               <p class="atmosphere-desc">{{ 'didactic.atmosphereDesc' | translate }}</p>
-              <app-atmosphere-spectrum [data]="atm" />
+              <lib-atmosphere-spectrum [data]="atm" />
             } @else {
               <p class="no-data-msg">{{ 'didactic.noAtmosphereData' | translate }}</p>
             }
@@ -179,7 +181,7 @@ import { getTelescopeWikiLink } from '../../core/constants/telescopes';
           <section class="bento-tile section--size">
             <h3><span class="section-icon"><svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="14" cy="10" r="6" fill="rgba(77,138,255,0.2)" stroke="#4d8aff" stroke-width="0.8"/><circle cx="6" cy="12" r="3" fill="rgba(34,197,94,0.3)" stroke="#22c55e" stroke-width="0.8"/></svg></span> {{ 'didactic.sizeComparisonTitle' | translate }}</h3>
             @if (p.radiusEarth) {
-              <app-size-comparison [planet]="p" />
+              <lib-size-comparison [planet]="p" />
             } @else {
               <p class="no-data-msg">{{ 'didactic.noSizeData' | translate }}</p>
             }
@@ -188,8 +190,8 @@ import { getTelescopeWikiLink } from '../../core/constants/telescopes';
           <!-- Metadata (col 2, row 4) — always rendered -->
           <section class="bento-tile section--metadata metadata-section">
             <h3><span class="section-icon"><svg viewBox="0 0 20 20" fill="none" stroke="#8892b0" stroke-width="1.2" stroke-linecap="round"><rect x="3" y="4" width="14" height="13" rx="2"/><path d="M3 9h14"/><path d="M7 4V2M13 4V2"/></svg></span> {{ 'sections.metadata' | translate }}</h3>
-            <app-stat-row [label]="'stats.publicationDate' | translate" [value]="p.publicationDate" />
-            <app-stat-row [label]="'stats.lastUpdated' | translate" [value]="p.lastUpdated" />
+            <lib-stat-row [label]="'stats.publicationDate' | translate" [value]="p.publicationDate" />
+            <lib-stat-row [label]="'stats.lastUpdated' | translate" [value]="p.lastUpdated" />
           </section>
 
         </div>

@@ -105,7 +105,7 @@ import { Exoplanet } from '@exodex/shared-types';
 
                   <div class="planet-avatar-wrapper" [style.transform]="'scale(' + planet.scale + ')'">
                     <div class="planet-glow" [style.background]="'radial-gradient(circle, ' + planet.color + '20 0%, transparent 70%)'"></div>
-                    <app-planet-avatar [planet]="planet.planet" size="card" />
+                    <lib-planet-avatar [planet]="planet.planet" size="card" />
                   </div>
 
                   <div class="planet-info-card">
@@ -212,7 +212,7 @@ import { Exoplanet } from '@exodex/shared-types';
 
               <!-- Left: planet avatar (micro, 32×32 – no overflow issues) -->
               <div class="mob-row-avatar-wrap">
-                <app-planet-avatar [planet]="planet.planet" size="micro" />
+                <lib-planet-avatar [planet]="planet.planet" size="micro" />
               </div>
 
               <!-- Center: name + type -->

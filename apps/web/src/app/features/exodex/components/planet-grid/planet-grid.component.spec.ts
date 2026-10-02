@@ -61,7 +61,7 @@ describe('PlanetGridComponent', () => {
     await fixture.whenStable();
 
     const element: HTMLElement = fixture.nativeElement;
-    expect(element.querySelectorAll('app-skeleton-card').length).toBeGreaterThan(0);
+    expect(element.querySelectorAll('lib-skeleton-card').length).toBeGreaterThan(0);
     expect(element.querySelector('.data-unavailable')).toBeNull();
   });
 
@@ -80,8 +80,8 @@ describe('PlanetGridComponent', () => {
     expect(element.querySelector('.data-unavailable')).not.toBeNull();
     expect(element.querySelector('[role="alert"]')).not.toBeNull();
     // Crucially: no planet cards and no "no planets found" empty state.
-    expect(element.querySelector('app-planet-card')).toBeNull();
-    expect(element.querySelector('app-empty-state')).toBeNull();
+    expect(element.querySelector('lib-planet-card')).toBeNull();
+    expect(element.querySelector('lib-empty-state')).toBeNull();
   });
 
   it('offers a retry that re-queries the API', async () => {
@@ -118,7 +118,7 @@ describe('PlanetGridComponent', () => {
     await flush();
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.querySelector('app-planet-card')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('lib-planet-card')).not.toBeNull();
     expect(fixture.nativeElement.querySelector('.data-unavailable')).toBeNull();
   });
 
@@ -137,7 +137,7 @@ describe('PlanetGridComponent', () => {
     fixture.detectChanges();
 
     const element: HTMLElement = fixture.nativeElement;
-    expect(element.querySelector('app-empty-state')).not.toBeNull();
+    expect(element.querySelector('lib-empty-state')).not.toBeNull();
     expect(element.querySelector('.data-unavailable')).toBeNull();
   });
 });

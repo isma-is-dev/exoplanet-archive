@@ -5,7 +5,7 @@ import { Exoplanet } from '@exodex/shared-types';
 import { renderPlanet } from '@exodex/planet-renderer';
 
 @Component({
-  selector: 'app-planet-avatar',
+  selector: 'lib-planet-avatar',
   standalone: true,
   imports: [CommonModule],
   template: `

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-search-input',
+  selector: 'lib-search-input',
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
@@ -18,11 +18,13 @@ import { FormsModule } from '@angular/forms';
         [(ngModel)]="value"
         (ngModelChange)="onInput($event)"
       />
-      <button class="clear-btn" *ngIf="value()" (click)="clear()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M18 6 6 18M6 6l12 12" />
-        </svg>
-      </button>
+      @if (value()) {
+        <button class="clear-btn" (click)="clear()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6 6 18M6 6l12 12" />
+          </svg>
+        </button>
+      }
     </div>
   `,
   styles: `
@@ -111,7 +113,7 @@ export class SearchInputComponent {
   placeholder = input<string>('');
   value = signal<string>('');
 
-  search = output<string>();
+  searchChange = output<string>();
   private debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
   onInput(value: string): void {
@@ -120,12 +122,12 @@ export class SearchInputComponent {
     }
 
     this.debounceTimer = setTimeout(() => {
-      this.search.emit(value);
+      this.searchChange.emit(value);
     }, 300);
   }
 
   clear(): void {
     this.value.set('');
-    this.search.emit('');
+    this.searchChange.emit('');
   }
 }

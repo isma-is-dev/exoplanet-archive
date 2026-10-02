@@ -2,7 +2,7 @@ import { Component, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-skeleton-card',
+  selector: 'lib-skeleton-card',
   standalone: true,
   imports: [CommonModule],
   template: `

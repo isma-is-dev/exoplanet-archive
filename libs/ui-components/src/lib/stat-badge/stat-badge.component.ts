@@ -5,7 +5,7 @@ import { TranslateModule } from '@ngx-translate/core';
 type BadgeType = 'type' | 'habitability' | 'method' | 'controversial' | 'visibility';
 
 @Component({
-  selector: 'app-stat-badge',
+  selector: 'lib-stat-badge',
   standalone: true,
   imports: [CommonModule, TranslateModule],
   template: `

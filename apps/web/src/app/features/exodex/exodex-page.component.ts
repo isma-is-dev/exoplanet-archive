@@ -52,10 +52,10 @@ import { LanguageSwitcherComponent } from '../../core/components/language-switch
             </svg>
           </a>
           <app-language-switcher />
-          <app-search-input
+          <lib-search-input
             class="header-search"
             [placeholder]="'common.search' | translate"
-            (search)="onSearch($event)"
+            (searchChange)="onSearch($event)"
             role="searchbox"
             aria-label="Search exoplanets"
           />

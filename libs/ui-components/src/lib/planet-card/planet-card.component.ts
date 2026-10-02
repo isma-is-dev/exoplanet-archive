@@ -8,7 +8,7 @@ import { StatRowComponent } from '../stat-row/stat-row.component';
 import { PlanetAvatarComponent } from '../planet-avatar/planet-avatar.component';
 
 @Component({
-  selector: 'app-planet-card',
+  selector: 'lib-planet-card',
   standalone: true,
   imports: [CommonModule, RouterLink, TranslateModule, StatBadgeComponent, StatRowComponent, PlanetAvatarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -22,7 +22,7 @@ import { PlanetAvatarComponent } from '../planet-avatar/planet-avatar.component'
       <div class="card-index">#{{ planet().index | number:'4.0-0' }}</div>
 
       <div class="card-avatar">
-        <app-planet-avatar [planet]="planet()" size="card" />
+        <lib-planet-avatar [planet]="planet()" size="card" />
       </div>
 
       <div class="card-info">
@@ -38,18 +38,18 @@ import { PlanetAvatarComponent } from '../planet-avatar/planet-avatar.component'
         </span>
 
         <div class="card-badges">
-          <app-stat-badge type="type" [value]="planet().planetType" />
-          <app-stat-badge type="habitability" [value]="planet().habitabilityClass" />
+          <lib-stat-badge type="type" [value]="planet().planetType" />
+          <lib-stat-badge type="habitability" [value]="planet().habitabilityClass" />
           @if (planet().controversialFlag) {
-            <app-stat-badge type="controversial" value="disputed" />
+            <lib-stat-badge type="controversial" value="disputed" />
           }
         </div>
 
         <div class="card-stats">
-          <app-stat-row [label]="'stats.radius' | translate" [value]="planet().radiusEarth" unit="R⊕" />
-          <app-stat-row [label]="'stats.mass' | translate" [value]="planet().massEarth" unit="M⊕" />
-          <app-stat-row [label]="'stats.temperature' | translate" [value]="planet().equilibriumTempK" unit="K" />
-          <app-stat-row [label]="'stats.period' | translate" [value]="planet().orbitalPeriodDays" [unit]="'units.days' | translate" />
+          <lib-stat-row [label]="'stats.radius' | translate" [value]="planet().radiusEarth" unit="R⊕" />
+          <lib-stat-row [label]="'stats.mass' | translate" [value]="planet().massEarth" unit="M⊕" />
+          <lib-stat-row [label]="'stats.temperature' | translate" [value]="planet().equilibriumTempK" unit="K" />
+          <lib-stat-row [label]="'stats.period' | translate" [value]="planet().orbitalPeriodDays" [unit]="'units.days' | translate" />
         </div>
       </div>
 

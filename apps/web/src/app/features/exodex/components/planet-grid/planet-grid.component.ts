@@ -45,7 +45,7 @@ type GridResult = ExoplanetResponse | typeof UPSTREAM_UNAVAILABLE;
         <!-- Loading state -->
         <div class="skeleton-grid">
           @for (i of skeletonArray(); track $index) {
-            <app-skeleton-card [viewMode]="viewMode()" />
+            <lib-skeleton-card [viewMode]="viewMode()" />
           }
         </div>
       } @else if (upstreamUnavailable()) {
@@ -60,7 +60,7 @@ type GridResult = ExoplanetResponse | typeof UPSTREAM_UNAVAILABLE;
         </div>
       } @else if (exoplanets().length === 0) {
         <!-- Empty state -->
-        <app-empty-state (clearFilters)="clearFilters()" />
+        <lib-empty-state (clearFilters)="clearFilters()" />
       } @else {
         <!-- Grid -->
         <div
@@ -68,7 +68,7 @@ type GridResult = ExoplanetResponse | typeof UPSTREAM_UNAVAILABLE;
           [class.planet-grid--list]="viewMode() === 'list'"
         >
           @for (planet of exoplanets(); track planet.id) {
-            <app-planet-card
+            <lib-planet-card
               [planet]="planet"
               (click)="navigateToDetail(planet)"
               [style.animation-delay]="getAnimationDelay($index)"
@@ -80,7 +80,7 @@ type GridResult = ExoplanetResponse | typeof UPSTREAM_UNAVAILABLE;
 
       @if (!isLoading() && totalPages() > 1) {
         <!-- Pagination -->
-        <app-pagination
+        <lib-pagination
           [currentPage]="page()"
           [totalPages]="totalPages()"
           (pageChange)="goToPage($event)"
@@ -125,7 +125,7 @@ type GridResult = ExoplanetResponse | typeof UPSTREAM_UNAVAILABLE;
       animation: fadeInUp 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
     }
 
-    app-planet-card {
+    lib-planet-card {
       display: block;
     }
 

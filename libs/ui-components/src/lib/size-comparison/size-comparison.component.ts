@@ -8,7 +8,7 @@ const MAX_PX = 140;
 const MIN_PX = 10;
 
 @Component({
-  selector: 'app-size-comparison',
+  selector: 'lib-size-comparison',
   standalone: true,
   imports: [CommonModule, TranslateModule],
   changeDetection: ChangeDetectionStrategy.OnPush,

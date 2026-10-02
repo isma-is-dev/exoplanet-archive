@@ -18,9 +18,9 @@ import { SearchInputComponent } from '@exodex/ui-components';
   template: `
     <div class="filter-panel">
       <div class="filter-section">
-        <app-search-input
+        <lib-search-input
           [placeholder]="'common.searchPlanet' | translate"
-          (search)="onSearch($event)"
+          (searchChange)="onSearch($event)"
         />
       </div>
 

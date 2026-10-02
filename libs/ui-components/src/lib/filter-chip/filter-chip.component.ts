@@ -2,7 +2,7 @@ import { Component, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-filter-chip',
+  selector: 'lib-filter-chip',
   standalone: true,
   imports: [CommonModule],
   template: `
@@ -13,7 +13,9 @@ import { CommonModule } from '@angular/common';
       (click)="toggle()"
     >
       <span class="chip-label">{{ label() }}</span>
-      <span class="chip-count" *ngIf="count() !== null">({{ count() }})</span>
+      @if (count() !== null) {
+        <span class="chip-count">({{ count() }})</span>
+      }
     </button>
   `,
   styles: `

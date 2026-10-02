@@ -1,11 +1,11 @@
-import { Component, input, computed, ChangeDetectionStrategy } from '@angular/core';
+import { Component, input, computed, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { AtmosphereData } from '@exodex/shared-types';
 
 @Component({
-  selector: 'app-atmosphere-spectrum',
+  selector: 'lib-atmosphere-spectrum',
   standalone: true,
   imports: [CommonModule, TranslateModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -170,11 +170,7 @@ import { AtmosphereData } from '@exodex/shared-types';
 export class AtmosphereSpectrumComponent {
   data = input.required<AtmosphereData>();
 
-  private sanitizer: DomSanitizer;
-
-  constructor(sanitizer: DomSanitizer) {
-    this.sanitizer = sanitizer;
-  }
+  private sanitizer = inject(DomSanitizer);
 
   spectrumSvg = computed<SafeHtml>(() => {
     const atm = this.data();
