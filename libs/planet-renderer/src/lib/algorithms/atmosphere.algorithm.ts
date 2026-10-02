@@ -1,4 +1,4 @@
-import { lightenHex, darkenHex } from './color.algorithm';
+import { lightenHex } from './color.algorithm';
 
 /**
  * Deterministic id suffix so the glow markup is a pure function of its inputs
@@ -28,7 +28,7 @@ export function buildAtmosphereGlow(
   color: string,
   equilibriumTempK: number | null,
   insolationFlux: number | null,
-  animate: boolean = false,
+  animate = false,
   idSuffix?: string
 ): string {
   // Only show atmosphere if we have temperature or flux data
@@ -101,7 +101,7 @@ export function buildAtmosphereGlow(
     <animate attributeName="opacity" values="1;0.8;1" dur="4s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1;0.4 0 0.2 1" />
   ` : '';
 
-  let svg = `
+  const svg = `
     <defs>
       <!-- Outer atmospheric glow — large, soft -->
       <radialGradient id="${outerGlowId}" cx="50%" cy="50%" r="50%">

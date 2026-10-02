@@ -32,7 +32,7 @@ function getAnimationTimingFactor(tempK: number | null): number {
 
 export function renderStar(
   params: StarRenderParams,
-  starName: string = 'Unknown Star'
+  starName = 'Unknown Star'
 ): StarRenderOutput {
   const {
     stellarTempK,
@@ -49,7 +49,7 @@ export function renderStar(
 
   // Get colors based on temperature
   const colors = getStarColors(stellarTempK);
-  const { primary, secondary, glow, core, spectralClass } = colors;
+  const { primary, secondary, core, spectralClass } = colors;
 
   // Animation timing
   const tf = getAnimationTimingFactor(stellarTempK);
@@ -209,7 +209,7 @@ export function renderStar(
   }
 
   const numStars = params.numberOfStarsInSystem || 1;
-  let extraStarsParts: string[] = [];
+  const extraStarsParts: string[] = [];
 
   if (numStars > 1 && !isMicro) {
     for (let i = 1; i < numStars; i++) {

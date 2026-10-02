@@ -4,7 +4,7 @@ import {
   lightenHex,
   darkenHex,
 } from './algorithms/color.algorithm';
-import { getPlanetVisualRadius, getViewBoxSize, RenderSize } from './algorithms/size.algorithm';
+import { getPlanetVisualRadius, getViewBoxSize } from './algorithms/size.algorithm';
 import { buildAtmosphereGlow } from './algorithms/atmosphere.algorithm';
 import { shouldShowRings, buildRings, buildFrontRings } from './algorithms/rings.algorithm';
 import { buildSurfaceDetails } from './algorithms/surface.algorithm';
@@ -21,17 +21,13 @@ function hashString(str: string): number {
 
 export function renderPlanet(
   params: PlanetRenderParams,
-  planetName: string = 'unknown'
+  planetName = 'unknown'
 ): PlanetRenderOutput {
   const {
     radiusEarth,
-    massEarth,
     equilibriumTempK,
     planetType,
-    densityGCC,
-    eccentricity,
     insolationFlux,
-    discoveryYear,
     size,
     animationsEnabled,
     orbitalPeriodDays,
@@ -63,7 +59,7 @@ export function renderPlanet(
 
   // ─── Assemble SVG layers in correct order ────────────────────
 
-  let svgParts: string[] = [];
+  const svgParts: string[] = [];
 
   // Layer 0: Back rings (behind everything)
   if (showRings) {

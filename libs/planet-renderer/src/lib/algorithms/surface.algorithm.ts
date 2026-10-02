@@ -87,9 +87,9 @@ export function buildSurfaceDetails(
   secondaryColor: string,
   equilibriumTempK: number | null,
   planetName: string,
-  tertiaryColor: string = '#888888',
-  accentColor: string = '#555555',
-  animate: boolean = false,
+  tertiaryColor = '#888888',
+  accentColor = '#555555',
+  animate = false,
   orbitalPeriodDays: number | null = null
 ): string {
   const rand = seededRandom(planetName || 'unknown');
@@ -297,8 +297,8 @@ function buildCloudLayer(
   center: number,
   rand: () => number,
   seed: number,
-  animate: boolean = false,
-  surfaceRotDur: number = 50
+  animate = false,
+  surfaceRotDur = 50
 ): string {
   const cloudFilterId = uid('clouds');
   const freq = 0.006 + rand() * 0.004;
@@ -346,8 +346,8 @@ function buildGaseousSurface(
   rand: () => number,
   seed: number,
   isJovian: boolean,
-  animate: boolean = false,
-  rotDur: number = 30
+  animate = false,
+  rotDur = 30
 ): string {
   let svg = '';
 
@@ -498,9 +498,9 @@ function buildGreatSpot(
   accent: string,
   rand: () => number,
   seed: number,
-  animate: boolean = false,
-  rotDur: number = 30,
-  scrollDist: number = 0
+  animate = false,
+  rotDur = 30,
+  scrollDist = 0
 ): string {
   const spotX = center + radius * (0.1 + rand() * 0.3);
   const spotY = center + radius * (-0.1 + rand() * 0.3);
