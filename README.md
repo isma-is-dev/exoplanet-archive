@@ -156,16 +156,26 @@ code**; the filter cache bound is hard-coded.
 ### Quality gates
 
 ```bash
-pnpm exec nx run-many -t lint    # 0 errors, 23 warnings
-pnpm exec nx run-many -t test    # 223 tests, green
+pnpm exec nx run-many -t lint    # 8/8 projects, 0 errors, 22 warnings
+pnpm exec nx run-many -t test    # 5/5 projects, 223 tests, green
 pnpm exec nx run-many -t build   # planet-renderer, api, web
+npx jscpd@5.4.0 --config .jscpd.json .   # 10 clones, 1.18 %, 0 new
+openspec validate --all --strict        # 1 spec, 0 failures
 ```
 
-`.github/workflows/ci.yml` runs all three on Node 22 with pnpm 10.18.2 for every
+The 22 lint warnings are all in three projects: `web` (17), `ui-components` (3) and
+`api-e2e` (2, both unused `eslint-disable` directives). The other five projects lint clean.
+
+`.github/workflows/ci.yml` runs lint, test and build on Node 22 with pnpm 10.18.2 for every
 push and pull request against `main`, and all three pass. Lint is a blocking
 gate: it was red for the 46 errors listed in older revisions of this file, and
 it is worth keeping it that way, because a gate that is never green is
 indistinguishable from a broken one. Warnings do not fail the build.
+
+**The duplication baseline was re-measured in this integration.** The one brought
+in by the architecture-polish pass was computed before the current campaign and
+flagged 4 new clones. The line base is a ratchet, not a score: the debt did not
+change, the reference point did.
 
 ## Mock data (development only)
 
@@ -212,9 +222,9 @@ fixtures/nasa          ps-table export, kept as a data-model reference
 Stated plainly rather than left to be discovered:
 
 - **`nx run-many -t lint` passes, but warnings are not enforced.** It reports
-  23 warnings, mostly unused imports and three `no-explicit-any` in
-  `exoplanet-mock.service.ts`, and there is no `max-warnings` budget, so they
-  cannot fail CI yet.
+  22 warnings, in `web` (17, mostly unused imports and `no-explicit-any`),
+  `ui-components` (3) and `api-e2e` (2, unused `eslint-disable` directives), and
+  there is no `max-warnings` budget, so they cannot fail CI yet.
 - **One lint rule is deliberately relaxed**, and it is scoped to one project:
   `libs/planet-renderer/eslint.config.mjs` turns off
   `enforceBuildableLibDependency` for itself. It is the only buildable library
@@ -233,6 +243,21 @@ Stated plainly rather than left to be discovered:
 - **`planet-detail` and `system-detail` show a "not found" state for any error**,
   including the 503 above, because they were written before the degraded state
   existed. Only the main explorer grid distinguishes the two.
+
+## Documentation
+
+| Document | What it is for |
+| --- | --- |
+| [`ARCHITECTURE.md`](ARCHITECTURE.md) | How it is built today: C4 L2, data flow, configuration, debt |
+| [`CONTRIBUTING.md`](CONTRIBUTING.md) | How to work here |
+| [`AGENTS.md`](AGENTS.md) | Conventions for agents |
+| [`docs/architecture/context.md`](docs/architecture/context.md) | C4 L1 + L2 diagrams in Mermaid |
+| [`docs/adr/README.md`](docs/adr/README.md) | Index of decisions |
+| [`docs/adr/0001-nx-como-orquestador-del-monorepo.md`](docs/adr/0001-nx-como-orquestador-del-monorepo.md) · [`0002-cache-en-memoria-y-disco-para-el-catalogo.md`](docs/adr/0002-cache-en-memoria-y-disco-para-el-catalogo.md) | Decisions and their negative consequences |
+| [`docs/operations/quality-gates.md`](docs/operations/quality-gates.md) | State of the gates, DTO audit, duplication baseline |
+| [`docs/operations/deploy.md`](docs/operations/deploy.md) | Images, compose, variables |
+| [`docs/operations/runbook.md`](docs/operations/runbook.md) | Symptoms and what to do about them |
+| `openspec/` | Spec-driven flow: `changes/` in flight, `specs/` consolidated |
 
 ## Data source and attribution
 

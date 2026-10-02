@@ -22,3 +22,7 @@ __screenshots__/
 tmp/
 data/
 coverage/
+
+# Informe generado por jscpd (la linea base .jscpd-baseline.json SI se commitea).
+jscpd-report/
+report/

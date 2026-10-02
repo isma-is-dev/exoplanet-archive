@@ -1,0 +1,33 @@
+# Normaliza finales de linea en el indice, sin importar como este el checkout.
+# Sin esto, cada commit en Windows mete un diff entero de lineas.
+
+* text=auto eol=lf
+
+# Ficheros que necesitan CRLF de verdad en Windows.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Binarios: Git no debe intentar normalizarlos.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.pdf binary
+*.zip binary
+*.gz binary
+
+# Lockfiles: se comparan como texto una vez, para que los diffs de dependencia
+# sean legibles.
+pnpm-lock.yaml text eol=lf
+package-lock.json text eol=lf
+
+# Informes generados: se ignoran en los diffs de cualquier lenguaje.
+*.md linguist-generated=true
+jscpd-report/** linguist-generated=true
