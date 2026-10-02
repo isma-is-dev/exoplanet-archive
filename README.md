@@ -10,7 +10,12 @@ Archive**, with procedurally generated planet and star artwork on the client.
 - Renderer: a dependency-free TypeScript library that draws each planet as SVG
   from its physical parameters (see [`libs/planet-renderer`](libs/planet-renderer)).
 
-Live at <https://exodex.zemios.dev> (API at <https://apiexodex.zemios.dev/api>).
+Not deployed at the moment of writing. The domain `exodex.zemios.dev` was
+announced here and the API was meant to answer on `apiexodex.zemios.dev`, but
+both were returning Cloudflare errors (HTTP 530 and error 1033) when this line
+was last checked, so there is no working URL to give you. CI does not deploy
+anything: `.github/workflows/ci.yml` only lints, tests and builds, and the
+Dockerfiles are the intended packaging.
 
 ## What it is, and what it is not
 
@@ -101,7 +106,10 @@ project.
 
 ## Running it
 
-Requires Node 22 and pnpm 10 (`corepack enable`).
+Requires Node 22 and pnpm 10.18.2, pinned in `package.json` via
+`packageManager` (`corepack enable` picks it up). `pnpm-lock.yaml` is the only
+lockfile; there is no `package-lock.json`, and CI installs with
+`--frozen-lockfile`.
 
 ```bash
 pnpm install
@@ -148,13 +156,16 @@ code**; the filter cache bound is hard-coded.
 ### Quality gates
 
 ```bash
-pnpm exec nx run-many -t lint    # red today, see Known gaps
+pnpm exec nx run-many -t lint    # 0 errors, 23 warnings
 pnpm exec nx run-many -t test    # 223 tests, green
 pnpm exec nx run-many -t build   # planet-renderer, api, web
 ```
 
-`.github/workflows/ci.yml` runs all three on Node 22 for every push and pull
-request against `main`.
+`.github/workflows/ci.yml` runs all three on Node 22 with pnpm 10.18.2 for every
+push and pull request against `main`, and all three pass. Lint is a blocking
+gate: it was red for the 46 errors listed in older revisions of this file, and
+it is worth keeping it that way, because a gate that is never green is
+indistinguishable from a broken one. Warnings do not fail the build.
 
 ## Mock data (development only)
 
@@ -200,14 +211,20 @@ fixtures/nasa          ps-table export, kept as a data-model reference
 
 Stated plainly rather than left to be discovered:
 
-- **`nx run-many -t lint` fails: 46 pre-existing errors**, all in code that
-  predates CI. `planet-renderer` 24 (12 `no-inferrable-types` on defaulted
-  parameters, 3 `prefer-const`, 6 module-boundary violations from
-  `shared-types` having no build target), `ui-components` 21 (component
-  selectors use the `app-` prefix where the project declares `lib-`, `ngIf`
-  instead of built-in control flow, one `no-output-native`), `web` 1 (an `ngIf`
-  in `planet-detail-page.component.ts`). CI runs lint as a blocking gate, so it
-  is red until these are fixed. Warnings do not fail the build.
+- **`nx run-many -t lint` passes, but warnings are not enforced.** It reports
+  23 warnings, mostly unused imports and three `no-explicit-any` in
+  `exoplanet-mock.service.ts`, and there is no `max-warnings` budget, so they
+  cannot fail CI yet.
+- **One lint rule is deliberately relaxed**, and it is scoped to one project:
+  `libs/planet-renderer/eslint.config.mjs` turns off
+  `enforceBuildableLibDependency` for itself. It is the only buildable library
+  here and its single cross-project import is `@exodex/shared-types`, used for
+  types only, so the bundle it emits has no runtime dependency on a package
+  that was never published. The rest of the rule, tags included, still applies.
+- **`ui-components` selectors changed.** They were `app-*` while the project
+  declared the `lib` prefix; they are now `lib-*`. Anything importing these
+  components has to update its templates. `SearchInputComponent` also renamed
+  its `search` output to `searchChange` (`search` is a DOM event name).
 - **No unit tests for the Angular components** beyond the pagination, empty
   state and planet-grid specs. Template behaviour is largely unverified.
 - **The two Playwright e2e projects are scaffolding** and are not run by CI.
