@@ -1,3 +1,24 @@
+# Exodex — visor de exoplanetas (NASA TAP), Angular + API NestJS.
+#
+#   docker compose up -d --build
+#   http://localhost:8089   web
+#   http://localhost:3039   api
+#   docker compose down -v
+#
+# ARRANCA SIN .env
+#
+# Antes este compose usaba `env_file: - .env`, y `docker compose up` fallaba con
+# "env file .env not found" en cualquier maquina que no lo tuviera — es decir, en
+# todas menos esta. Las variables van ahora en `environment:` con su default,
+# que es el patron del resto de repos.
+#
+# Los defaults son los que ya trae el codigo (ver apps/api/src/main.ts y
+# exoplanet.service.ts), no inventados aqui. Para cambiarlos, crea un .env a
+# partir de .env.example: compose lo lee automaticamente si existe.
+#
+# No hay ninguna API key que configurar: Exodex consulta un endpoint publico de
+# la NASA sin autenticar.
+
 services:
   api:
     build:
@@ -5,10 +26,19 @@ services:
       dockerfile: Dockerfile.api
     ports:
       - "3039:3000"
-    env_file:
-      - .env
     environment:
-      - PORT=3000
+      PORT: "3000"
+      # Origen permitido por CORS (default en main.ts).
+      CORS_ORIGIN: "${CORS_ORIGIN:-https://exodex.zemios.dev}"
+      NASA_TAP_BASE_URL: "${NASA_TAP_BASE_URL:-https://exoplanetarchive.ipac.caltech.edu/TAP/sync}"
+      # Cache en disco, en horas (default 24).
+      DISK_CACHE_TTL_HOURS: "${DISK_CACHE_TTL_HOURS:-24}"
+      DISK_CACHE_PATH: "${DISK_CACHE_PATH:-}"
+      # Re-chequeo en memoria, en segundos (default 3600).
+      CACHE_TTL_SECONDS: "${CACHE_TTL_SECONDS:-3600}"
+      # Rate limit por IP (defaults 60.000 ms / 120 peticiones).
+      RATE_LIMIT_WINDOW_MS: "${RATE_LIMIT_WINDOW_MS:-60000}"
+      RATE_LIMIT_MAX: "${RATE_LIMIT_MAX:-120}"
     volumes:
       - cache_data:/app/data
     restart: unless-stopped
